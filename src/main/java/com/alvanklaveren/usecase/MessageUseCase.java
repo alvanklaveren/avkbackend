@@ -4,6 +4,7 @@ import com.alvanklaveren.model.Message;
 import com.alvanklaveren.model.MessageDTO;
 import com.alvanklaveren.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -18,7 +19,7 @@ public class MessageUseCase {
     @Transactional
     public List<MessageDTO> getByCategoryCode(Integer codeCategory){
 
-        List<Message> messages = messageRepository.getByMessageCategory_Code(codeCategory);
+        List<Message> messages = messageRepository.getByMessageCategory_Code(codeCategory, Sort.by("code").descending());
         return MessageDTO.toDto(messages);
     }
 
