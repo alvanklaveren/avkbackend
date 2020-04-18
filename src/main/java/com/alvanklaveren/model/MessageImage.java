@@ -11,7 +11,6 @@ public class MessageImage {
     private Integer code;
 
     private Blob image;
-    private String messageText;
     private int sortorder;
 
     @Version
@@ -35,14 +34,6 @@ public class MessageImage {
 
     public void setImage(Blob image) {
         this.image = image;
-    }
-
-    public String getMessageText() {
-        return messageText;
-    }
-
-    public void setMessageText(String messageText) {
-        this.messageText = messageText;
     }
 
     public int getSortorder() {

@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 public class ForumUserDTO {
 
     public Integer code;
-    private String username;
-    private String password;
-    private String emailAddress;
-    private String displayName;
+    public String username;
+    public String password;
+    public String emailAddress;
+    public String displayName;
     private Blob avatar;
     public int version;
 
