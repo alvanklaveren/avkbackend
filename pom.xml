@@ -54,11 +54,18 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>javax.persistence</groupId>-->
-<!--            <artifactId>javax.persistence-api</artifactId>-->
-<!--            <version>2.2</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
+        </dependency>
+
     </dependencies>
 
     <build>
