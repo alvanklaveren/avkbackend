@@ -83,7 +83,7 @@ public final class StringLogic {
 		preparedText = preparedText.replaceAll( ">", "&gt" );
 		preparedText = preparedText.replaceAll( "\n", "<br>" );
 
-		preparedText = convertToHTML( preparedText, "`", "<span style=\"background:#DDD\">", "</span>" );
+		preparedText = convertToHTML( preparedText, "`", "<mark>", "</mark>" );
 		preparedText = convertToHTML( preparedText, "***", "<b><i>", "</i></b>" );
 		preparedText = convertToHTML( preparedText, "**", "<b>", "</b>" );
 		preparedText = convertToHTML( preparedText, "*", "<i>", "</i>" );
