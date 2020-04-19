@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/backend/translation")
 public class TranslationController {
@@ -20,7 +22,6 @@ public class TranslationController {
     public ResponseEntity<String> translate(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
-
         String isoA2 = jsonObject.optString("isoA2");
         String original = jsonObject.getString("original");
 
@@ -31,6 +32,16 @@ public class TranslationController {
         jsonObject.put("result", translatedText);
 
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/dictionary/{isoA2}", method = RequestMethod.GET, produces="application/json")
+    public ResponseEntity<Map<String,String>> getDictionary(@PathVariable("isoA2") String isoA2){
+
+        ELanguage eLanguage = ELanguage.getByisoA2(isoA2);
+        Map<String,String> dictionary = translationUseCase.getDictionary(eLanguage);
+
+        return new ResponseEntity<>(dictionary, HttpStatus.OK);
     }
 
 }

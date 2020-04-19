@@ -2,11 +2,9 @@ package com.alvanklaveren;
 
 import com.alvanklaveren.model.Translation;
 
-import java.util.Arrays;
-
 public enum ELanguage {
 
-    Unknown(0,""),
+    Unknown(0,"unknown"),
     US(1, "US"),
     NL(2, "NL");
 
@@ -48,7 +46,12 @@ public enum ELanguage {
     }
 
     public static ELanguage getByisoA2(String isoA2){
-        return Arrays.stream(values())
-                .filter(value -> value.getIsoA2().equalsIgnoreCase(isoA2)).findAny().orElse(Unknown);
+
+        for(ELanguage value:values()){
+            if(value.getIsoA2().equals(isoA2.toUpperCase())){
+                return value;
+            }
+        }
+        return Unknown;
     }
 }
