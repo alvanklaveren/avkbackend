@@ -6,13 +6,15 @@ import java.util.Arrays;
 
 public enum EProductSort {
 
-    Name_Ascending (0,"Name (ascending)", Sort.by("name").ascending()),
-    Name_Descending (1, "Name (descending)", Sort.by("name").descending()),
-    Rating          (2, "Rating", Sort.by("productRatings.rating").ascending());
+    Name_Ascending(0,"Name (A-Z)", Sort.by("name").ascending()),
+    Name_Descending(1, "Name (Z-A)", Sort.by("name").descending()),
+    Rating(2, "Rating", Sort.by("productRatings.rating").ascending()),
+    Newest(3, "Newest-Oldest", Sort.by("code").descending()),
+    Oldest(4, "Oldest-Newest", Sort.by("code").ascending());
 
-    private int id;
-    private String description;
-    private Sort sort;
+    private final int id;
+    private final String description;
+    private final Sort sort;
 
     public Sort getSort(){ return sort; }
 
