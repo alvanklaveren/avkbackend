@@ -12,11 +12,11 @@ public class GameConsoleDTO {
 
     public CompanyDTO company;
 
-    public static List<GameConsoleDTO> toDto(List<GameConsole> gameConsoles){
-        return gameConsoles.stream().map(GameConsoleDTO::toDto).collect(Collectors.toList());
+    public static List<GameConsoleDTO> toDto(List<GameConsole> gameConsoles, int level){
+        return gameConsoles.stream().map(g -> GameConsoleDTO.toDto(g, level)).collect(Collectors.toList());
     }
 
-    public static GameConsoleDTO toDto(GameConsole gameConsole) {
+    public static GameConsoleDTO toDto(GameConsole gameConsole, int level) {
         if (gameConsole == null) {
             return null;
         }
@@ -27,7 +27,9 @@ public class GameConsoleDTO {
         dto.sortorder = gameConsole.getSortorder();
         dto.version = gameConsole.getVersion();
 
-        dto.company = CompanyDTO.toDto(gameConsole.getCompany());
+        if(--level >= 0) {
+            dto.company = CompanyDTO.toDto(gameConsole.getCompany(), level);
+        }
 
         return dto;
     }

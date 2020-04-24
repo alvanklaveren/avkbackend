@@ -13,11 +13,11 @@ public class MessageImageDTO {
 
     public MessageDTO message;
 
-    public static List<MessageImageDTO> toDto(List<MessageImage> messageImages){
-        return messageImages.stream().map(MessageImageDTO::toDto).collect(Collectors.toList());
+    public static List<MessageImageDTO> toDto(List<MessageImage> messageImages, int level){
+        return messageImages.stream().map(m -> MessageImageDTO.toDto(m, level)).collect(Collectors.toList());
     }
 
-    public static MessageImageDTO toDto(MessageImage messageImage) {
+    public static MessageImageDTO toDto(MessageImage messageImage, int level) {
         if (messageImage == null) {
             return null;
         }
@@ -28,7 +28,9 @@ public class MessageImageDTO {
         dto.sortorder = messageImage.getSortorder();
         dto.version = messageImage.getVersion();
 
-        dto.message = MessageDTO.toDto(messageImage.getMessage());
+        if(--level >= 0) {
+            dto.message = MessageDTO.toDto(messageImage.getMessage(), level);
+        }
 
         return dto;
     }

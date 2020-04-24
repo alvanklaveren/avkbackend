@@ -9,11 +9,11 @@ public class MessageCategoryDTO {
     public String description;
     public int version;
 
-    public static List<MessageCategoryDTO> toDto(List<MessageCategory> messageCategories){
-        return messageCategories.stream().map(MessageCategoryDTO::toDto).collect(Collectors.toList());
+    public static List<MessageCategoryDTO> toDto(List<MessageCategory> messageCategories, int level){
+        return messageCategories.stream().map(m -> MessageCategoryDTO.toDto(m, level)).collect(Collectors.toList());
     }
 
-    public static MessageCategoryDTO toDto(MessageCategory messageCategory) {
+    public static MessageCategoryDTO toDto(MessageCategory messageCategory, int level) {
 
         if (messageCategory == null) {
             return null;

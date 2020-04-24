@@ -9,11 +9,11 @@ public class ProductTypeDTO {
     public String description;
     public int version;
 
-    public static List<ProductTypeDTO> toDto(List<ProductType> productTypes){
-        return productTypes.stream().map(ProductTypeDTO::toDto).collect(Collectors.toList());
+    public static List<ProductTypeDTO> toDto(List<ProductType> productTypes, int level){
+        return productTypes.stream().map(p -> ProductTypeDTO.toDto(p, level)).collect(Collectors.toList());
     }
 
-    public static ProductTypeDTO toDto(ProductType productType) {
+    public static ProductTypeDTO toDto(ProductType productType, int level) {
 
         if (productType == null) {
             return null;

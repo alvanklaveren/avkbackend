@@ -1,6 +1,6 @@
 package com.alvanklaveren.rest;
 
-import com.alvanklaveren.ELanguage;
+import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.usecase.TranslationUseCase;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

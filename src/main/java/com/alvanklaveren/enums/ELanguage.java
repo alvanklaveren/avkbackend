@@ -1,4 +1,4 @@
-package com.alvanklaveren;
+package com.alvanklaveren.enums;
 
 import com.alvanklaveren.model.Translation;
 

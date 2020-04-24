@@ -13,11 +13,11 @@ public class ProductImageDTO {
 
     public ProductDTO product;
 
-    public static List<ProductImageDTO> toDto(List<ProductImage> productImages){
-        return productImages.stream().map(ProductImageDTO::toDto).collect(Collectors.toList());
+    public static List<ProductImageDTO> toDto(List<ProductImage> productImages, int level){
+        return productImages.stream().map(p -> ProductImageDTO.toDto(p, level)).collect(Collectors.toList());
     }
 
-    public static ProductImageDTO toDto(ProductImage productImage) {
+    public static ProductImageDTO toDto(ProductImage productImage, int level) {
         if (productImage == null) {
             return null;
         }
@@ -28,7 +28,9 @@ public class ProductImageDTO {
         dto.sortorder = productImage.getSortorder();
         dto.version = productImage.getVersion();
 
-        dto.product = ProductDTO.toDto(productImage.getProduct());
+        if(--level >= 0) {
+            dto.product = ProductDTO.toDto(productImage.getProduct(), level);
+        }
 
         return dto;
     }

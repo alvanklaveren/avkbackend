@@ -12,11 +12,11 @@ public class ConstantsDTO {
     public Blob blobValue;
     public int version;
 
-    public static List<ConstantsDTO> toDto(List<Constants> constants){
-        return constants.stream().map(ConstantsDTO::toDto).collect(Collectors.toList());
+    public static List<ConstantsDTO> toDto(List<Constants> constants, int level){
+        return constants.stream().map(c -> ConstantsDTO.toDto(c, level)).collect(Collectors.toList());
     }
 
-    public static ConstantsDTO toDto(Constants constants) {
+    public static ConstantsDTO toDto(Constants constants, int level) {
 
         if (constants == null) {
             return null;

@@ -9,11 +9,11 @@ public class RatingUrlDTO {
     public String url;
     public int version;
 
-    public static List<RatingUrlDTO> toDto(List<RatingUrl> ratingUrls){
-        return ratingUrls.stream().map(RatingUrlDTO::toDto).collect(Collectors.toList());
+    public static List<RatingUrlDTO> toDto(List<RatingUrl> ratingUrls, int level){
+        return ratingUrls.stream().map(r -> RatingUrlDTO.toDto(r, level)).collect(Collectors.toList());
     }
 
-    public static RatingUrlDTO toDto(RatingUrl ratingUrl) {
+    public static RatingUrlDTO toDto(RatingUrl ratingUrl, int level) {
 
         if (ratingUrl == null) {
             return null;

@@ -17,11 +17,11 @@ public class MessageDTO {
     public MessageDTO message;
 
 
-    public static List<MessageDTO> toDto(List<Message> messages){
-        return messages.stream().map(MessageDTO::toDto).collect(Collectors.toList());
+    public static List<MessageDTO> toDto(List<Message> messages, int level){
+        return messages.stream().map(m -> MessageDTO.toDto(m, level)).collect(Collectors.toList());
     }
 
-    public static MessageDTO toDto(Message message) {
+    public static MessageDTO toDto(Message message, int level) {
         if (message == null) {
             return null;
         }
@@ -33,9 +33,11 @@ public class MessageDTO {
         dto.messageDate = message.getMessageDate();
         dto.version = message.getVersion();
 
-        dto.messageCategory = MessageCategoryDTO.toDto(message.getMessageCategory());
-        dto.forumUser = ForumUserDTO.toDto(message.getForumUser());
-        dto.message = MessageDTO.toDto(message.getMessage());
+        if(--level >= 0) {
+            dto.messageCategory = MessageCategoryDTO.toDto(message.getMessageCategory(), level);
+            dto.forumUser = ForumUserDTO.toDto(message.getForumUser(), level);
+            dto.message = MessageDTO.toDto(message.getMessage(), level);
+        }
 
         return dto;
     }

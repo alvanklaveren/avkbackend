@@ -9,11 +9,11 @@ public class CompanyDTO {
     public String description;
     public int version;
 
-    public static List<CompanyDTO> toDto(List<Company> companies){
-        return companies.stream().map(CompanyDTO::toDto).collect(Collectors.toList());
+    public static List<CompanyDTO> toDto(List<Company> companies, int level){
+        return companies.stream().map(c -> CompanyDTO.toDto(c, level)).collect(Collectors.toList());
     }
 
-    public static CompanyDTO toDto(Company company) {
+    public static CompanyDTO toDto(Company company, int level) {
 
         if (company == null) {
             return null;

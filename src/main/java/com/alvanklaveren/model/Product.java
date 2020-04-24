@@ -1,6 +1,7 @@
 package com.alvanklaveren.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Product {
@@ -27,6 +28,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name="code_company")
     private Company company;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductRating> productRatings;
 
     public Integer getCode() {
         return code;
@@ -91,4 +95,9 @@ public class Product {
     public void setCompany(Company company) {
         this.company = company;
     }
+
+    public Set<ProductRating> getProductRatings() { return productRatings; }
+
+    public void setProductRatings(Set<ProductRating> productRatings) { this.productRatings = productRatings; }
+
 }

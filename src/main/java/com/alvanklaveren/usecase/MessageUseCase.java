@@ -37,7 +37,7 @@ public class MessageUseCase {
             message.setMessageText(messageText);
         });
 
-        return MessageDTO.toDto(messages);
+        return MessageDTO.toDto(messages, 1);
     }
 
 

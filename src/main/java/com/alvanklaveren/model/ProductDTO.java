@@ -1,6 +1,7 @@
 package com.alvanklaveren.model;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ProductDTO {
@@ -15,11 +16,13 @@ public class ProductDTO {
     public ProductTypeDTO productType;
     public CompanyDTO company;
 
-    public static List<ProductDTO> toDto(List<Product> products){
-        return products.stream().map(ProductDTO::toDto).collect(Collectors.toList());
+    public Set<ProductRatingDTO> productRatings;
+
+    public static List<ProductDTO> toDto(List<Product> products, int level){
+        return products.stream().map(p -> ProductDTO.toDto(p, level)).collect(Collectors.toList());
     }
 
-    public static ProductDTO toDto(Product product) {
+    public static ProductDTO toDto(Product product, int level) {
         if (product == null) {
             return null;
         }
@@ -31,9 +34,13 @@ public class ProductDTO {
         dto.year = product.getYear();
         dto.version = product.getVersion();
 
-        dto.gameConsole = GameConsoleDTO.toDto(product.getGameConsole());
-        dto.productType = ProductTypeDTO.toDto(product.getProductType());
-        dto.company = CompanyDTO.toDto(product.getCompany());
+        if(--level >= 0) {
+            dto.gameConsole = GameConsoleDTO.toDto(product.getGameConsole(), level);
+            dto.productType = ProductTypeDTO.toDto(product.getProductType(), level);
+            dto.company = CompanyDTO.toDto(product.getCompany(), level);
+
+            dto.productRatings = ProductRatingDTO.toDto(product.getProductRatings(), level);
+        }
 
         return dto;
     }

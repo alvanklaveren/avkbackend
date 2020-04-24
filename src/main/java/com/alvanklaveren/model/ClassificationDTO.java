@@ -10,11 +10,11 @@ public class ClassificationDTO {
     public boolean isAdmin;
     public int version;
 
-    public static List<ClassificationDTO> toDto(List<Classification> classifications){
-        return classifications.stream().map(ClassificationDTO::toDto).collect(Collectors.toList());
+    public static List<ClassificationDTO> toDto(List<Classification> classifications, int level){
+        return classifications.stream().map(c -> ClassificationDTO.toDto(c, level)).collect(Collectors.toList());
     }
 
-    public static ClassificationDTO toDto(Classification classification) {
+    public static ClassificationDTO toDto(Classification classification, int level) {
 
         if (classification == null) {
             return null;

@@ -11,11 +11,11 @@ public class TranslationDTO {
     public String nl;
     public int version;
 
-    public static List<TranslationDTO> toDto(List<Translation> translations){
-        return translations.stream().map(TranslationDTO::toDto).collect(Collectors.toList());
+    public static List<TranslationDTO> toDto(List<Translation> translations, int level){
+        return translations.stream().map(t -> TranslationDTO.toDto(t, level)).collect(Collectors.toList());
     }
 
-    public static TranslationDTO toDto(Translation translation) {
+    public static TranslationDTO toDto(Translation translation, int level) {
 
         if (translation == null) {
             return null;

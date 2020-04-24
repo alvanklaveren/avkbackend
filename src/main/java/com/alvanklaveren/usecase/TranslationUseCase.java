@@ -1,6 +1,6 @@
 package com.alvanklaveren.usecase;
 
-import com.alvanklaveren.ELanguage;
+import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.Translation;
 import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.repository.TranslationRepository;
@@ -42,6 +42,6 @@ public class TranslationUseCase {
     public TranslationDTO getByOriginal(String original){
 
         Translation translation = translationRepository.getByOriginal(original);
-        return TranslationDTO.toDto(translation);
+        return TranslationDTO.toDto(translation, 0);
     }
 }
