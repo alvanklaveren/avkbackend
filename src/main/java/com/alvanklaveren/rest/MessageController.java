@@ -1,5 +1,6 @@
 package com.alvanklaveren.rest;
 
+import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.model.MessageDTO;
 import com.alvanklaveren.usecase.MessageUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins={AVKConfig.crossOrigin})
 @RequestMapping("/backend/message")
 public class MessageController {
 
     @Autowired
     private MessageUseCase messageUseCase;
 
-    @CrossOrigin
     @RequestMapping(value = "/homepage", method = RequestMethod.POST, produces="application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages() {
 

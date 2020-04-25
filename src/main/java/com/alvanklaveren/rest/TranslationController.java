@@ -1,5 +1,6 @@
 package com.alvanklaveren.rest;
 
+import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.usecase.TranslationUseCase;
 import org.json.JSONObject;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins={AVKConfig.crossOrigin})
 @RequestMapping("/backend/translation")
 public class TranslationController {
 
     @Autowired
     private TranslationUseCase translationUseCase;
 
-    @CrossOrigin
     @RequestMapping(value = "/translate", method = RequestMethod.POST, produces="application/text")
     public ResponseEntity<String> translate(@RequestBody String request) {
 
