@@ -55,7 +55,7 @@ public class GameShopUseCase {
             product.setDescription(StringLogic.prepareMessage(product.getDescription()));
         });
 
-        return ProductDTO.toDto(products, 1);
+        return ProductDTO.toDto(products, 3);
     }
 
     @Transactional(readOnly=true)

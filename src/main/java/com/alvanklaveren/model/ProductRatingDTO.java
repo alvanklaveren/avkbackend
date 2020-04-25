@@ -31,6 +31,7 @@ public class ProductRatingDTO {
 
         ProductRatingDTO dto = new ProductRatingDTO();
         dto.code = productRating.getCode();
+        dto.rating = productRating.getRating();
         dto.version = productRating.getVersion();
 
         if(--level > 0) {
