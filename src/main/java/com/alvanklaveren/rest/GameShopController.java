@@ -2,6 +2,7 @@ package com.alvanklaveren.rest;
 
 import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.enums.EProductSort;
+import com.alvanklaveren.model.EProductSortDTO;
 import com.alvanklaveren.model.GameConsoleDTO;
 import com.alvanklaveren.model.ProductDTO;
 import com.alvanklaveren.usecase.GameShopUseCase;
@@ -12,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins={AVKConfig.crossOrigin})
@@ -55,5 +56,21 @@ public class GameShopController {
 
         return gameShopUseCase.getProductMainImage(codeProduct);
     }
+
+    @RequestMapping(value = "/getProductSortList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<EProductSortDTO>> getProductSortList() {
+
+        List<EProductSortDTO> eProductSortDTOs = new ArrayList<>();
+
+        Arrays.stream(EProductSort.values()).forEach(s -> {
+            EProductSortDTO eProductSortDTO = new EProductSortDTO();
+            eProductSortDTO.id = s.getId();
+            eProductSortDTO.description = s.getDescription();
+            eProductSortDTOs.add(eProductSortDTO);
+        });
+
+        return new ResponseEntity<>(eProductSortDTOs, HttpStatus.OK);
+    }
+
 
 }

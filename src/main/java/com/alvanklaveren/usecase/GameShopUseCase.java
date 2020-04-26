@@ -43,12 +43,23 @@ public class GameShopUseCase {
 
         if(codeGameConsole <= 0){
             // retrieve only the most recently added products
-            products = productRepository.getAllProducts(pageRequest);
+            if(eProductSort.equals(EProductSort.Rating)) {
+                pageRequest = PageRequest.of(page, pageSize);
+                products = productRepository.getAllProductsByRating(pageRequest);
+            } else {
+                products = productRepository.getAllProducts(pageRequest);
+            }
         } else {
 
-            products = (codeProductType <= 0)
-                    ? productRepository.getByGameConsole_Code(codeGameConsole, pageRequest)
-                    : productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
+            if (eProductSort.equals(EProductSort.Rating)) {
+                products = (codeProductType <= 0)
+                        ? productRepository.getByGameConsole_Code(codeGameConsole, pageRequest)
+                        : productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
+            } else {
+                products = (codeProductType <= 0)
+                        ? productRepository.getByGameConsole_Code(codeGameConsole, pageRequest)
+                        : productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
+            }
         }
 
         products.forEach(product ->{

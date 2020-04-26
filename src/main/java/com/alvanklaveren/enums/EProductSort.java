@@ -8,7 +8,7 @@ public enum EProductSort {
 
     Name_Ascending(0,"Name (A-Z)", Sort.by("name").ascending()),
     Name_Descending(1, "Name (Z-A)", Sort.by("name").descending()),
-    Rating(2, "Rating", Sort.by("productRatings.rating").ascending()),
+    Rating(2, "Rating", Sort.by("name").ascending()),
     Newest(3, "Newest-Oldest", Sort.by("code").descending()),
     Oldest(4, "Oldest-Newest", Sort.by("code").ascending());
 
