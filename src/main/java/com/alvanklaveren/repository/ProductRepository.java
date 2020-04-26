@@ -13,6 +13,16 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> getByGameConsole_CodeAndProductType_Code(Integer codeGameConsole, Integer codeProductType, Pageable pageable);
 
+    @Query("select p from Product p join ProductRating pr on pr.product = p and pr.rating > 0 " +
+            "where p.gameConsole.code = :codeGameConsole " +
+            "order by pr.rating asc")
+    List<Product> getByGameConsole_CodeByRating(Integer codeGameConsole, Pageable pageable);
+
+    @Query("select p from Product p join ProductRating pr on pr.product = p and pr.rating > 0 " +
+            "where p.gameConsole.code = :codeGameConsole and p.productType.code = :codeProductType " +
+            "order by pr.rating asc")
+    List<Product> getByGameConsole_CodeAndProductType_CodeByRating(Integer codeGameConsole, Integer codeProductType, Pageable pageable);
+
     @Query("select p from Product p join ProductRating pr on pr.product = p and pr.rating > 0 order by pr.rating asc")
     List<Product> getAllProductsByRating(Pageable pageable);
 

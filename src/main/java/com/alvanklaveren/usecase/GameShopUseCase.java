@@ -53,8 +53,8 @@ public class GameShopUseCase {
 
             if (eProductSort.equals(EProductSort.Rating)) {
                 products = (codeProductType <= 0)
-                        ? productRepository.getByGameConsole_Code(codeGameConsole, pageRequest)
-                        : productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
+                        ? productRepository.getByGameConsole_CodeByRating(codeGameConsole, pageRequest)
+                        : productRepository.getByGameConsole_CodeAndProductType_CodeByRating(codeGameConsole, codeProductType, pageRequest);
             } else {
                 products = (codeProductType <= 0)
                         ? productRepository.getByGameConsole_Code(codeGameConsole, pageRequest)
