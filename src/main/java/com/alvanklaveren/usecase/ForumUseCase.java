@@ -6,6 +6,8 @@ import com.alvanklaveren.model.MessageImage;
 import com.alvanklaveren.repository.MessageImageRepository;
 import com.alvanklaveren.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,11 @@ public class ForumUseCase {
 
 
     @Transactional(readOnly=true)
-    public List<MessageDTO> getByCategoryCode(Integer codeCategory){
+    public List<MessageDTO> getByCategoryCode(Integer codeCategory, int page, int pageSize){
 
-        List<Message> messages = messageRepository.getByMessageCategory_Code(codeCategory, Sort.by("code").descending());
+        Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("code").descending());
+
+        List<Message> messages = messageRepository.getByMessageCategory_Code(codeCategory, pageRequest);
 
         messages.forEach(message -> {
             String messageText = message.getMessageText();
