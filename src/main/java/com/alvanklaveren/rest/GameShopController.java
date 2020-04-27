@@ -85,4 +85,12 @@ public class GameShopController {
         return new ResponseEntity<>(productTypeDtos, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/getCompanyList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<CompanyDTO>> getCompanyList() {
+
+        List<CompanyDTO> companyDTOs = gameShopUseCase.getCompanies();
+
+        return new ResponseEntity<>(companyDTOs, HttpStatus.OK);
+    }
+
 }

@@ -2,10 +2,7 @@ package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
-import com.alvanklaveren.repository.GameConsoleRepository;
-import com.alvanklaveren.repository.ProductImageRepository;
-import com.alvanklaveren.repository.ProductRepository;
-import com.alvanklaveren.repository.ProductTypeRepository;
+import com.alvanklaveren.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +19,7 @@ import java.util.List;
 public class GameShopUseCase {
 
     @Autowired private ProductRepository productRepository;
+    @Autowired private CompanyRepository companyRepository;
     @Autowired private GameConsoleRepository gameConsoleRepository;
     @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ProductImageRepository productImageRepository;
@@ -51,9 +49,18 @@ public class GameShopUseCase {
     @Transactional(readOnly=true)
     public List<GameConsoleDTO> getGameConsoles(){
 
-        List<GameConsole> gameConsoles = gameConsoleRepository.findAll(Sort.by("sortorder").ascending());
+        List<GameConsole> gameConsoles =
+                gameConsoleRepository.findAll(Sort.by("sortorder").ascending().and(Sort.by("description").ascending()));
 
         return GameConsoleDTO.toDto(gameConsoles, 1);
+    }
+
+    @Transactional(readOnly=true)
+    public List<CompanyDTO> getCompanies(){
+
+        List<Company> companies = companyRepository.findAll(Sort.by("description").ascending());
+
+        return CompanyDTO.toDto(companies, 1);
     }
 
     @Transactional(readOnly=true)
