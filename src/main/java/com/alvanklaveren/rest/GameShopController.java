@@ -5,6 +5,7 @@ import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.EProductSortDTO;
 import com.alvanklaveren.model.GameConsoleDTO;
 import com.alvanklaveren.model.ProductDTO;
+import com.alvanklaveren.model.ProductTypeDTO;
 import com.alvanklaveren.usecase.GameShopUseCase;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins={AVKConfig.crossOrigin})
@@ -43,14 +46,6 @@ public class GameShopController {
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getGameConsoleList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
-    public ResponseEntity<List<GameConsoleDTO>> getGameConsoleList() {
-
-        List<GameConsoleDTO> gameConsoleDTOs = gameShopUseCase.getGameConsoles();
-
-        return new ResponseEntity<>(gameConsoleDTOs, HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/getProductMainImage", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getProductMainImage(@RequestParam int codeProduct) {
 
@@ -72,5 +67,20 @@ public class GameShopController {
         return new ResponseEntity<>(eProductSortDTOs, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/getGameConsoleList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<GameConsoleDTO>> getGameConsoleList() {
+
+        List<GameConsoleDTO> gameConsoleDTOs = gameShopUseCase.getGameConsoles();
+
+        return new ResponseEntity<>(gameConsoleDTOs, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getProductTypeList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<ProductTypeDTO>> getProductTypeList() {
+
+        List<ProductTypeDTO> productTypeDtos = gameShopUseCase.getProductTypes();
+
+        return new ResponseEntity<>(productTypeDtos, HttpStatus.OK);
+    }
 
 }

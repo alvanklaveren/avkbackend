@@ -5,6 +5,7 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.GameConsoleRepository;
 import com.alvanklaveren.repository.ProductImageRepository;
 import com.alvanklaveren.repository.ProductRepository;
+import com.alvanklaveren.repository.ProductTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class GameShopUseCase {
 
     @Autowired private ProductRepository productRepository;
     @Autowired private GameConsoleRepository gameConsoleRepository;
+    @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ProductImageRepository productImageRepository;
 
     @Transactional(readOnly=true)
@@ -75,6 +77,14 @@ public class GameShopUseCase {
         List<GameConsole> gameConsoles = gameConsoleRepository.findAll(Sort.by("sortorder").ascending());
 
         return GameConsoleDTO.toDto(gameConsoles, 1);
+    }
+
+    @Transactional(readOnly=true)
+    public List<ProductTypeDTO> getProductTypes(){
+
+        List<ProductType> productTypes = productTypeRepository.findAll(Sort.by("description").ascending());
+
+        return ProductTypeDTO.toDto(productTypes, 1);
     }
 
     @Transactional(readOnly=true)
