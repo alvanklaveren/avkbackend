@@ -17,7 +17,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Component
-public class MessageUseCase {
+public class ForumUseCase {
 
     @Autowired private MessageRepository messageRepository;
     @Autowired private MessageImageRepository messageImageRepository;
