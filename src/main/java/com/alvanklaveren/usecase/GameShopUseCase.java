@@ -26,15 +26,6 @@ public class GameShopUseCase {
     @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ProductImageRepository productImageRepository;
 
-    @Transactional(readOnly=true)
-    public List<ProductDTO> getByGameConsole(Integer codeGameConsole, EProductSort eProductSort, int page, int pageSize){
-
-        Pageable pageRequest = PageRequest.of(page, pageSize, eProductSort.getSort());
-
-        List<Product> products = productRepository.getByGameConsole_Code(codeGameConsole, pageRequest);
-
-        return ProductDTO.toDto(products, 1);
-    }
 
     @Transactional(readOnly=true)
     public List<ProductDTO> getByGameConsoleAndProductType(Integer codeGameConsole, Integer codeProductType, EProductSort eProductSort, int page, int pageSize){
@@ -43,25 +34,11 @@ public class GameShopUseCase {
 
         Pageable pageRequest = PageRequest.of(page, pageSize, eProductSort.getSort());
 
-        if(codeGameConsole <= 0){
-            // retrieve only the most recently added products
-            if(eProductSort.equals(EProductSort.Rating)) {
-                pageRequest = PageRequest.of(page, pageSize);
-                products = productRepository.getAllProductsByRating(pageRequest);
-            } else {
-                products = productRepository.getAllProducts(pageRequest);
-            }
+        if(eProductSort.equals(EProductSort.Rating)) {
+            pageRequest = PageRequest.of(page, pageSize);
+            products = productRepository.getByGameConsole_CodeAndProductType_CodeByRating(codeGameConsole, codeProductType, pageRequest);
         } else {
-
-            if (eProductSort.equals(EProductSort.Rating)) {
-                products = (codeProductType <= 0)
-                        ? productRepository.getByGameConsole_CodeByRating(codeGameConsole, pageRequest)
-                        : productRepository.getByGameConsole_CodeAndProductType_CodeByRating(codeGameConsole, codeProductType, pageRequest);
-            } else {
-                products = (codeProductType <= 0)
-                        ? productRepository.getByGameConsole_Code(codeGameConsole, pageRequest)
-                        : productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
-            }
+            products = productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
         }
 
         products.forEach(product ->{

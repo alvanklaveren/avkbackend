@@ -2,10 +2,7 @@ package com.alvanklaveren.rest;
 
 import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.enums.EProductSort;
-import com.alvanklaveren.model.EProductSortDTO;
-import com.alvanklaveren.model.GameConsoleDTO;
-import com.alvanklaveren.model.ProductDTO;
-import com.alvanklaveren.model.ProductTypeDTO;
+import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.GameShopUseCase;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,18 +64,23 @@ public class GameShopController {
         return new ResponseEntity<>(eProductSortDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getGameConsoleList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getGameConsoleList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
     public ResponseEntity<List<GameConsoleDTO>> getGameConsoleList() {
 
-        List<GameConsoleDTO> gameConsoleDTOs = gameShopUseCase.getGameConsoles();
+        List<GameConsoleDTO> gameConsoleDTOs = new ArrayList<>();
+        gameConsoleDTOs.add( new GameConsoleDTO(0, "All", 0) );
+        gameConsoleDTOs.addAll(gameShopUseCase.getGameConsoles());
+
 
         return new ResponseEntity<>(gameConsoleDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getProductTypeList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getProductTypeList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
     public ResponseEntity<List<ProductTypeDTO>> getProductTypeList() {
 
-        List<ProductTypeDTO> productTypeDtos = gameShopUseCase.getProductTypes();
+        List<ProductTypeDTO> productTypeDtos = new ArrayList<>();
+        productTypeDtos.add( new ProductTypeDTO(0, "All") );
+        productTypeDtos.addAll(gameShopUseCase.getProductTypes());
 
         return new ResponseEntity<>(productTypeDtos, HttpStatus.OK);
     }

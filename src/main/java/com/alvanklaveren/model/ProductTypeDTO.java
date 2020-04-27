@@ -9,6 +9,14 @@ public class ProductTypeDTO {
     public String description;
     public int version;
 
+    public ProductTypeDTO(){ }
+
+    public ProductTypeDTO(Integer code, String description){
+        this.code = code;
+        this.description = description;
+        version = 0;
+    }
+
     public static List<ProductTypeDTO> toDto(List<ProductType> productTypes, int level){
         return productTypes.stream().map(p -> ProductTypeDTO.toDto(p, level)).collect(Collectors.toList());
     }

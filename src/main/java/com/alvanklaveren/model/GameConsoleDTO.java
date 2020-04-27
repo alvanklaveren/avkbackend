@@ -12,6 +12,16 @@ public class GameConsoleDTO {
 
     public CompanyDTO company;
 
+    public GameConsoleDTO(){ }
+
+    public GameConsoleDTO(Integer code, String description, int sortorder){
+        this.code = code;
+        this.description = description;
+        this.sortorder = sortorder;
+        version = 0;
+        company = null;
+    }
+
     public static List<GameConsoleDTO> toDto(List<GameConsole> gameConsoles, int level){
         return gameConsoles.stream().map(g -> GameConsoleDTO.toDto(g, level)).collect(Collectors.toList());
     }
