@@ -47,6 +47,31 @@ public class GameShopUseCase {
     }
 
     @Transactional(readOnly=true)
+    public List<ProductDTO> search(String search, int page, int pageSize){
+
+        List<Product> products;
+
+        String productName = search;
+        String altProductName = StringLogic.convertVersionNumbers(search);
+
+        productName = "%" + productName.trim().replace(" ", "%") + "%";
+        altProductName = "%" + altProductName.trim().replace(" ", "%");
+
+        Pageable pageRequest = PageRequest.of(page, pageSize, EProductSort.Name_Ascending.getSort());
+        products = productRepository.search(productName, altProductName, altProductName + "-%", pageRequest);
+
+        products.forEach(product ->{
+            product.setDescription(StringLogic.prepareMessage(product.getDescription()));
+        });
+
+        System.out.println("Searched for " + productName );
+        System.out.println("Searched for " + altProductName );
+        System.out.println("Retrieved rows: " + products.size());
+
+        return ProductDTO.toDto(products, 3);
+    }
+
+    @Transactional(readOnly=true)
     public List<GameConsoleDTO> getGameConsoles(){
 
         List<GameConsole> gameConsoles =

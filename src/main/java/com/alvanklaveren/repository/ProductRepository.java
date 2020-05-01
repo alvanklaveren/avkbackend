@@ -21,4 +21,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "and (p.productType.code = :codeProductType or 0 = :codeProductType) " +
             "order by pr.rating asc")
     List<Product> getByGameConsole_CodeAndProductType_CodeByRating(Integer codeGameConsole, Integer codeProductType, Pageable pageable);
+
+    @Query("select p from Product p " +
+            "where lower(replace(p.name, ' ', '')) like :productName " +
+            "or lower(replace(p.name, ' ', '')) like :altProductName " +
+            "or lower(replace(p.name, ' ', '')) like :altProductName2 ")
+    List<Product> search(String productName, String altProductName, String altProductName2, Pageable pageable);
+
 }
