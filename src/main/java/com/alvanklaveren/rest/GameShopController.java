@@ -6,12 +6,13 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.GameShopUseCase;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,17 +129,13 @@ public class GameShopController {
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/uploadImage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
-    public ResponseEntity<ProductDTO> uploadImage(@RequestBody String request) {
-
-        System.out.println(request);
-
-        JSONObject jsonObject = new JSONObject(request);
-        Integer codeProduct = jsonObject.getInt("codeProduct");
-        File file = (File) jsonObject.get("imageFile");
+    @RequestMapping(value="/uploadImage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    public ResponseEntity<ProductDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeProduct") Integer codeProduct){
 
         ProductDTO productDTO = gameShopUseCase.uploadImage(codeProduct, file);
-        return new ResponseEntity<>(productDTO, HttpStatus.OK);
+
+        return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
     }
+
 
 }

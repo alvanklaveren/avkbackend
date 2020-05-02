@@ -9,9 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import utils.StringLogic;
 
-import java.io.File;
+import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
@@ -119,7 +120,7 @@ public class GameShopUseCase {
 
         byte[] image = {};
 
-        Sort sort = Sort.by("sortorder").ascending().and(Sort.by("code").ascending());
+        Sort sort = Sort.by("sortorder").ascending().and(Sort.by("code").descending());
         List<ProductImage> images = productImageRepository.getByProduct_Code(codeProduct, sort);
 
         if(images == null || images.size() == 0) {
@@ -162,9 +163,26 @@ public class GameShopUseCase {
     }
 
     @Transactional
-    public ProductDTO uploadImage(Integer codeProduct, File file){
-        System.out.println("saving file");
-        return null;
+    public ProductDTO uploadImage(Integer codeProduct, MultipartFile file){
+
+        Product product = productRepository.getOne(codeProduct);
+
+        ProductImage productImage = new ProductImage();
+        productImage.setProduct(product);
+        productImage.setSortorder(0);
+
+        try {
+            Blob blob = new SerialBlob(file.getBytes());
+            productImage.setImage(blob);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        productImage = productImageRepository.save(productImage);
+
+        product = productRepository.getOne(codeProduct);
+
+        return ProductDTO.toDto(product, 3);
     }
 
 }
