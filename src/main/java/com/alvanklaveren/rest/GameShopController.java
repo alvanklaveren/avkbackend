@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -118,6 +119,26 @@ public class GameShopController {
         List<CompanyDTO> companyDTOs = gameShopUseCase.getCompanies();
 
         return new ResponseEntity<>(companyDTOs, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/save", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
+
+        productDTO = gameShopUseCase.save(productDTO);
+        return new ResponseEntity<>(productDTO, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/uploadImage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<ProductDTO> uploadImage(@RequestBody String request) {
+
+        System.out.println(request);
+
+        JSONObject jsonObject = new JSONObject(request);
+        Integer codeProduct = jsonObject.getInt("codeProduct");
+        File file = (File) jsonObject.get("imageFile");
+
+        ProductDTO productDTO = gameShopUseCase.uploadImage(codeProduct, file);
+        return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
 
 }

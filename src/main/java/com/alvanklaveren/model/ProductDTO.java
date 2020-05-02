@@ -39,7 +39,9 @@ public class ProductDTO {
             dto.productType = ProductTypeDTO.toDto(product.getProductType(), level);
             dto.company = CompanyDTO.toDto(product.getCompany(), level);
 
-            dto.productRatings = ProductRatingDTO.toDto(product.getProductRatings(), level);
+            if(product.getProductRatings() != null) {
+                dto.productRatings = ProductRatingDTO.toDto(product.getProductRatings(), level);
+            }
         }
 
         return dto;

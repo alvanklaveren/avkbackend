@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import utils.StringLogic;
 
+import java.io.File;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
@@ -136,5 +137,34 @@ public class GameShopUseCase {
         return image;
     }
 
+    @Transactional
+    public ProductDTO save(ProductDTO productDTO){
+
+        Product product = (productDTO.code == null) ? new Product() : productRepository.getOne(productDTO.code);
+
+        product.setCode(productDTO.code);
+        product.setName(productDTO.name);
+        product.setDescription(productDTO.description);
+        product.setYear(productDTO.year);
+        product.setVersion(productDTO.version);
+
+        GameConsole gameConsole = gameConsoleRepository.getByCode(productDTO.gameConsole.code);
+        ProductType productType = productTypeRepository.getByCode(productDTO.productType.code);
+        Company company = companyRepository.getByCode(productDTO.company.code);
+
+        product.setGameConsole(gameConsole);
+        product.setProductType(productType);
+        product.setCompany(company);
+
+        product = productRepository.saveAndFlush(product);
+
+        return ProductDTO.toDto(product, 3);
+    }
+
+    @Transactional
+    public ProductDTO uploadImage(Integer codeProduct, File file){
+        System.out.println("saving file");
+        return null;
+    }
 
 }
