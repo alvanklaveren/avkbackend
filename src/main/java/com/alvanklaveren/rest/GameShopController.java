@@ -56,6 +56,20 @@ public class GameShopController {
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/simpleSearch", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<String>> simpleSearch(@RequestBody String request) {
+
+        JSONObject jsonObject = new JSONObject(request);
+        String search = jsonObject.getString("productName");
+        int page = jsonObject.optInt("page", 0);
+        int pageSize = jsonObject.optInt("pageSize", 20);
+
+        List<String> productNames = gameShopUseCase.simpleSearch(search, page, pageSize);
+
+        return new ResponseEntity<>(productNames, HttpStatus.OK);
+    }
+
+
     @RequestMapping(value = "/getProductMainImage", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getProductMainImage(@RequestParam int codeProduct) {
 

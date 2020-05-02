@@ -14,6 +14,7 @@ import utils.StringLogic;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class GameShopUseCase {
@@ -64,12 +65,28 @@ public class GameShopUseCase {
             product.setDescription(StringLogic.prepareMessage(product.getDescription()));
         });
 
-        System.out.println("Searched for " + productName );
-        System.out.println("Searched for " + altProductName );
-        System.out.println("Retrieved rows: " + products.size());
-
         return ProductDTO.toDto(products, 3);
     }
+
+    /**
+     * Simple search is to quickly fill the autocomplete list when searching for games
+     * This returns an array of strings, so it is a much smaller set of data then List<Product>
+     *
+     * @param search
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public List<String> simpleSearch(String search, int page, int pageSize) {
+
+        Pageable pageRequest = PageRequest.of(page, pageSize, EProductSort.Name_Ascending.getSort());
+        String productName = "%" + search.trim().replace(" ", "%") + "%";
+        List<Product> products = productRepository.search(productName, productName, productName, pageRequest);
+
+        return products.stream().map(Product::getName).collect(Collectors.toList());
+    }
+
 
     @Transactional(readOnly=true)
     public List<GameConsoleDTO> getGameConsoles(){
