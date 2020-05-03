@@ -1,8 +1,7 @@
 package com.alvanklaveren.usecase;
 
-import com.alvanklaveren.model.Message;
-import com.alvanklaveren.model.MessageDTO;
-import com.alvanklaveren.model.MessageImage;
+import com.alvanklaveren.model.*;
+import com.alvanklaveren.repository.MessageCategoryRepository;
 import com.alvanklaveren.repository.MessageImageRepository;
 import com.alvanklaveren.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,12 @@ import java.util.List;
 @Component
 public class ForumUseCase {
 
-    @Autowired private MessageRepository messageRepository;
+    @Autowired private MessageCategoryRepository messageCategoryRepository;
     @Autowired private MessageImageRepository messageImageRepository;
+    @Autowired private MessageRepository messageRepository;
 
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<MessageDTO> getByCategoryCode(Integer codeCategory, int page, int pageSize){
 
         Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("code").descending());
@@ -44,17 +44,41 @@ public class ForumUseCase {
         return MessageDTO.toDto(messages, 1);
     }
 
+    @Transactional(readOnly = true)
+    public List<MessageCategoryDTO> getMessageCategories(){
+
+        List<MessageCategory> messageCategories = messageCategoryRepository.findAll();
+        return MessageCategoryDTO.toDto(messageCategories, 0);
+    }
+
+    @Transactional(readOnly = true)
+    public MessageCategoryDTO getMessageCategory(Integer codeMessageCategory){
+
+        MessageCategory messageCategory = messageCategoryRepository.getOne(codeMessageCategory);
+        return MessageCategoryDTO.toDto(messageCategory, 0);
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMessageCount(Integer codeMessageCategory){
+
+        Integer messageCount = messageRepository.countByMessageCategory(codeMessageCategory);
+        return messageCount;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MessageDTO> getMessagesByCategory(Integer codeMessageCategory){
+
+        List<Message> messages = messageRepository.findByMessageCategory_Code(codeMessageCategory, Sort.by("messageDate").descending());
+        return MessageDTO.toDto(messages, 1);
+    }
 
     private String setRawImage( String messageText ) {
 
         String modifiedMessageText = messageText;
-
         String imageCoded = StringLogic.findFirst(modifiedMessageText, "[i:", "]");
-
         while (imageCoded.length() > 0) {
 
             String imgHTML = "[image not found]";
-
             try {
                 int codeImage = Integer.parseInt(imageCoded.replace("[i:", "").replaceAll("]", ""));
                 byte[] rawImage = getImage(codeImage);
@@ -84,18 +108,17 @@ public class ForumUseCase {
     private byte[] getImage(int code){
 
         MessageImage messageImage = messageImageRepository.getByCode(code);
-        byte[] image = null;
+        if( messageImage == null ) { return null; }
 
-        if( messageImage != null ){
+        try {
             Blob blob = messageImage.getImage();
-            try {
-                image = messageImage.getImage().getBytes(1, (int) blob.length());
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
+            return blob.getBytes(1, (int) blob.length());
+
+        } catch (SQLException se) {
+            se.printStackTrace();
         }
 
-        return image;
+        return null;
     }
 
 
