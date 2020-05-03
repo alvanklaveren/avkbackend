@@ -165,8 +165,8 @@ public class GameShopUseCase {
             return null;
         }
 
-        description = description.trim().toLowerCase().replace(" ", "%");
-        List<Company> companies = companyRepository.findByDescription(description);
+        String searchDescription = description.trim().toLowerCase().replace(" ", "%");
+        List<Company> companies = companyRepository.findByDescription(searchDescription);
 
         if (companies.size() > 0){
             return CompanyDTO.toDto(companies.get(0), 0);
