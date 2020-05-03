@@ -3,6 +3,7 @@ package com.alvanklaveren.usecase;
 import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
+import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,8 +59,8 @@ public class GameShopUseCase {
         String productName = search;
         String altProductName = StringLogic.convertVersionNumbers(search);
 
-        productName = "%" + productName.trim().replace(" ", "%") + "%";
-        altProductName = "%" + altProductName.trim().replace(" ", "%");
+        productName = "%" + productName.trim().toLowerCase().replace(" ", "%") + "%";
+        altProductName = "%" + altProductName.trim().toLowerCase().replace(" ", "%");
 
         Pageable pageRequest = PageRequest.of(page, pageSize, EProductSort.Name_Ascending.getSort());
         products = productRepository.search(productName, altProductName, altProductName + "-%", pageRequest);
@@ -156,6 +157,27 @@ public class GameShopUseCase {
 
         productRepository.delete(product);
     }
+
+    @Transactional
+    public CompanyDTO addCompany(String description) {
+
+        if(StringUtils.isNullOrEmpty(description)){
+            return null;
+        }
+
+        description = description.trim().toLowerCase().replace(" ", "%");
+        List<Company> companies = companyRepository.findByDescription(description);
+
+        if (companies.size() > 0){
+            return CompanyDTO.toDto(companies.get(0), 0);
+        }
+
+        Company company = new Company();
+        company.setDescription(description);
+        company = companyRepository.save(company);
+
+        return CompanyDTO.toDto(company, 0);
+    };
 
     @Transactional
     public ProductDTO save(ProductDTO productDTO){

@@ -122,6 +122,13 @@ public class GameShopController {
         return new ResponseEntity<>(companyDTOs, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/addCompany", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<CompanyDTO> addCompany(@RequestBody String companyName) {
+
+        CompanyDTO companyDTO = gameShopUseCase.addCompany(companyName);
+        return new ResponseEntity<>(companyDTO, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/save", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
     public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
 
