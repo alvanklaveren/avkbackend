@@ -23,6 +23,7 @@ public class GameShopUseCase {
 
     @Autowired private ProductRepository productRepository;
     @Autowired private CompanyRepository companyRepository;
+    @Autowired private ProductRatingRepository productRatingRepository;
     @Autowired private GameConsoleRepository gameConsoleRepository;
     @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ProductImageRepository productImageRepository;
@@ -136,6 +137,24 @@ public class GameShopUseCase {
         }
 
         return image;
+    }
+
+    @Transactional
+    public void delete(Integer codeProduct) {
+
+        Product product = productRepository.getOne(codeProduct);
+
+        List<ProductRating> productRatings = productRatingRepository.getByProduct_Code(codeProduct, Sort.by("code"));
+        if(productRatings != null && productRatings.size() > 0) {
+            productRatingRepository.deleteAll(productRatings);
+        }
+
+        List<ProductImage> productImages = productImageRepository.getByProduct_Code(codeProduct, Sort.by("code"));
+        if(productImages != null && productImages.size() > 0) {
+            productImageRepository.deleteAll(productImages);
+        }
+
+        productRepository.delete(product);
     }
 
     @Transactional
