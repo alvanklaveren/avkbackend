@@ -101,6 +101,14 @@ public class ForumUseCase {
     }
 
     @Transactional(readOnly = true)
+    public List<MessageDTO> getMessagesByCategory(Integer codeMessageCategory){
+
+        List<Message> messages = messageRepository.findByMessageCategory_Code(codeMessageCategory, Sort.by("messageDate").descending());
+
+        return MessageDTO.toDto(messages, 1);
+    }
+
+    @Transactional(readOnly = true)
     public List<MessageCategoryDTO> getMessageCategories(){
 
         List<MessageCategory> messageCategories = messageCategoryRepository.findAll();
@@ -119,13 +127,6 @@ public class ForumUseCase {
 
         Integer messageCount = messageRepository.countByMessageCategory(codeMessageCategory);
         return messageCount;
-    }
-
-    @Transactional(readOnly = true)
-    public List<MessageDTO> getMessagesByCategory(Integer codeMessageCategory){
-
-        List<Message> messages = messageRepository.findByMessageCategory_Code(codeMessageCategory, Sort.by("messageDate").descending());
-        return MessageDTO.toDto(messages, 1);
     }
 
     @Transactional(readOnly=true)
