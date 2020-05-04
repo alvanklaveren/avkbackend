@@ -44,7 +44,7 @@ public class ForumUseCase {
         ForumUser forumUser = forumUserRepository.getOne(messageDTO.forumUser.code);
         message.setForumUser(forumUser);
 
-        if(messageDTO.message.code != null) {
+        if(messageDTO.message != null && messageDTO.message.code != null) {
             Message linkedMessage = messageRepository.getOne(messageDTO.message.code);
             message.setMessage(linkedMessage);
         }
