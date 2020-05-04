@@ -35,6 +35,31 @@ public class ForumController {
         return new ResponseEntity<>(messageDtos, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/getMessage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    public ResponseEntity<MessageDTO> getMessage(@RequestBody Integer codeMessage) {
+
+        MessageDTO messageDTO = forumUseCase.getMessage(codeMessage);
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/save", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<MessageDTO> save(@RequestBody MessageDTO messageDTO) {
+
+        messageDTO = forumUseCase.save(messageDTO);
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/delete", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<String> delete(@RequestBody Integer codeMessage) {
+
+        forumUseCase.delete(codeMessage);
+
+        JSONObject response = new JSONObject();
+        response.put("result", "true");
+
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/getMessageCategories", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces = "application/json")
     public ResponseEntity<List<MessageCategoryDTO>> getMessageCategories() {
 

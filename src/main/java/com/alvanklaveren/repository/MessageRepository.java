@@ -17,4 +17,6 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
 
     List<Message> findByMessageCategory_Code(Integer codeMessageCategory, Sort sort);
 
+    List<Message> findByMessage_Code(Integer codeMessage);
+
 }

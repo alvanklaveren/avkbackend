@@ -1,6 +1,7 @@
 package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.model.*;
+import com.alvanklaveren.repository.ForumUserRepository;
 import com.alvanklaveren.repository.MessageCategoryRepository;
 import com.alvanklaveren.repository.MessageImageRepository;
 import com.alvanklaveren.repository.MessageRepository;
@@ -22,8 +23,56 @@ public class ForumUseCase {
 
     @Autowired private MessageCategoryRepository messageCategoryRepository;
     @Autowired private MessageImageRepository messageImageRepository;
+    @Autowired private ForumUserRepository forumUserRepository;
     @Autowired private MessageRepository messageRepository;
 
+
+    @Transactional
+    public MessageDTO save(MessageDTO messageDTO){
+
+        Message message = (messageDTO.code == null) ? new Message() : messageRepository.getOne(messageDTO.code);
+
+        message.setCode(messageDTO.code);
+        message.setMessageDate(messageDTO.messageDate);
+        message.setDescription(messageDTO.description);
+        message.setMessageText(messageDTO.messageText);
+        message.setVersion(messageDTO.version);
+
+        MessageCategory messageCategory = messageCategoryRepository.getOne(messageDTO.messageCategory.code);
+        message.setMessageCategory(messageCategory);
+
+        ForumUser forumUser = forumUserRepository.getOne(messageDTO.forumUser.code);
+        message.setForumUser(forumUser);
+
+        if(messageDTO.message.code != null) {
+            Message linkedMessage = messageRepository.getOne(messageDTO.message.code);
+            message.setMessage(linkedMessage);
+        }
+
+        message = messageRepository.saveAndFlush(message);
+
+        return MessageDTO.toDto(message, 1);
+    }
+
+    @Transactional
+    public void delete(Integer codeMessage) {
+
+        Message message = messageRepository.getOne(codeMessage);
+
+        List<Message> linkedMessages = messageRepository.findByMessage_Code(message.getCode());
+        if(linkedMessages != null && linkedMessages.size() > 0) {
+            messageRepository.deleteAll(linkedMessages);
+        }
+
+        messageRepository.delete(message);
+    }
+
+    @Transactional(readOnly = true)
+    public MessageDTO getMessage(Integer codeMessage) {
+
+        Message message = messageRepository.getOne(codeMessage);
+        return MessageDTO.toDto(message, 1);
+    }
 
     @Transactional(readOnly = true)
     public List<MessageDTO> getByCategoryCode(Integer codeCategory, int page, int pageSize){
