@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import utils.StringLogic;
 
 import java.sql.Blob;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
@@ -30,18 +32,31 @@ public class ForumUseCase {
     @Transactional
     public MessageDTO save(MessageDTO messageDTO){
 
-        Message message = (messageDTO.code == null) ? new Message() : messageRepository.getOne(messageDTO.code);
+        boolean isNewMessage = messageDTO.code == null || messageDTO.code == 0;
 
-        message.setCode(messageDTO.code);
-        message.setMessageDate(messageDTO.messageDate);
+        Message message;
+        if(isNewMessage) {
+            message = new Message();
+            message.setMessageDate(Date.from(Instant.now()));
+        } else {
+            message = messageRepository.getOne(messageDTO.code);
+            message.setMessageDate(messageDTO.messageDate);
+            message.setVersion(messageDTO.version);
+        }
+
         message.setDescription(messageDTO.description);
         message.setMessageText(messageDTO.messageText);
-        message.setVersion(messageDTO.version);
 
         MessageCategory messageCategory = messageCategoryRepository.getOne(messageDTO.messageCategory.code);
         message.setMessageCategory(messageCategory);
 
-        ForumUser forumUser = forumUserRepository.getOne(messageDTO.forumUser.code);
+        ForumUser forumUser;
+        if(isNewMessage) {
+            // TODO: SPRING SECURITY: Implement and use UserContext to save forumuser.
+            forumUser = forumUserRepository.getOne(1);
+        } else {
+            forumUser = forumUserRepository.getOne(messageDTO.forumUser.code);
+        }
         message.setForumUser(forumUser);
 
         if(messageDTO.message != null && messageDTO.message.code != null) {
