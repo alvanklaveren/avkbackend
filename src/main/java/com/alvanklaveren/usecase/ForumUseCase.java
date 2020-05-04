@@ -121,7 +121,35 @@ public class ForumUseCase {
         return MessageDTO.toDto(messages, 1);
     }
 
-    private String setRawImage( String messageText ) {
+    @Transactional(readOnly=true)
+    public byte[] getAvatar(int codeForumUser) {
+
+        byte[] image = {};
+
+        ForumUser forumUser = forumUserRepository.getOne(codeForumUser);
+
+        Blob blob = forumUser.getAvatar();
+        if(blob == null) { return image; }
+
+        try {
+            int blobLength = (int) blob.length();
+            image = blob.getBytes(1, blobLength);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return image;
+    }
+
+    public String prepareMessage(String messageText) {
+
+        String prepared = StringLogic.prepareMessage(messageText);
+        prepared = setRawImage(prepared);
+
+        return prepared;
+    }
+
+    private String setRawImage(String messageText) {
 
         String modifiedMessageText = messageText;
         String imageCoded = StringLogic.findFirst(modifiedMessageText, "[i:", "]");
@@ -169,7 +197,4 @@ public class ForumUseCase {
 
         return null;
     }
-
-
-
 }

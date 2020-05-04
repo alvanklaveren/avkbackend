@@ -7,6 +7,7 @@ import com.alvanklaveren.usecase.ForumUseCase;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,23 @@ public class ForumController {
 
         MessageDTO messageDTO = forumUseCase.getMessage(codeMessage);
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getAvatar", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getAvatar(@RequestParam int codeForumUser) {
+
+        return forumUseCase.getAvatar(codeForumUser);
+    }
+
+    @RequestMapping(value = "/prepareMessage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    public ResponseEntity<String> prepareMessage(@RequestBody String messageText) {
+
+        String preparedMessageText = forumUseCase.prepareMessage(messageText);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("result", preparedMessageText);
+
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/save", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")

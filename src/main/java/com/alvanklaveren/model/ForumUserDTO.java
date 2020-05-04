@@ -1,6 +1,6 @@
 package com.alvanklaveren.model;
 
-import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +11,7 @@ public class ForumUserDTO {
     public String password;
     public String emailAddress;
     public String displayName;
-    private Blob avatar;
+    public byte[] avatar;
     public int version;
 
     private ClassificationDTO classification;
@@ -32,7 +32,12 @@ public class ForumUserDTO {
         dto.password = forumUser.getPassword();
         dto.emailAddress = forumUser.getEmailAddress();
         dto.displayName = forumUser.getDisplayName();
-        dto.avatar = forumUser.getAvatar();
+        try {
+            dto.avatar = forumUser.getAvatar().getBytes(1, (int) forumUser.getAvatar().length());
+        } catch(SQLException se){
+            se.printStackTrace();
+        }
+
         dto.version = forumUser.getVersion();
 
         if(--level >= 0) {
