@@ -43,6 +43,13 @@ public class ForumController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/getReplyMessages", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    public ResponseEntity<List<MessageDTO>> getReplyMessages(@RequestBody Integer codeMessage) {
+
+        List<MessageDTO> messageDTOs = forumUseCase.getReplyMessages(codeMessage);
+        return new ResponseEntity<>(messageDTOs, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/getAvatar", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getAvatar(@RequestParam int codeForumUser) {
 

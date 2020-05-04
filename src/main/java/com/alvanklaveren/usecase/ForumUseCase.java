@@ -59,9 +59,9 @@ public class ForumUseCase {
 
         Message message = messageRepository.getOne(codeMessage);
 
-        List<Message> linkedMessages = messageRepository.findByMessage_Code(message.getCode());
-        if(linkedMessages != null && linkedMessages.size() > 0) {
-            messageRepository.deleteAll(linkedMessages);
+        List<Message> replyMessages = messageRepository.findByMessage_Code(message.getCode());
+        if(replyMessages != null && replyMessages.size() > 0) {
+            messageRepository.deleteAll(replyMessages);
         }
 
         messageRepository.delete(message);
@@ -72,6 +72,13 @@ public class ForumUseCase {
 
         Message message = messageRepository.getOne(codeMessage);
         return MessageDTO.toDto(message, 1);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MessageDTO> getReplyMessages(Integer codeMessage) {
+
+        List<Message> replyMessages = messageRepository.findByMessage_Code(codeMessage);
+        return MessageDTO.toDto(replyMessages, 1);
     }
 
     @Transactional(readOnly = true)
