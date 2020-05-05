@@ -70,6 +70,26 @@ public class ForumUseCase {
     }
 
     @Transactional
+    public MessageCategoryDTO saveMessageCategory(MessageCategoryDTO messageCategoryDTO){
+
+        boolean isNewCategory = messageCategoryDTO.code == null || messageCategoryDTO.code == 0;
+
+        MessageCategory messageCategory;
+        if(isNewCategory) {
+            messageCategory = new MessageCategory();
+        } else {
+            messageCategory = messageCategoryRepository.getOne(messageCategoryDTO.code);
+            messageCategory.setVersion(messageCategoryDTO.version);
+        }
+
+        messageCategory.setDescription(messageCategoryDTO.description);
+
+        messageCategory = messageCategoryRepository.saveAndFlush(messageCategory);
+
+        return MessageCategoryDTO.toDto(messageCategory, 1);
+    }
+
+    @Transactional
     public void delete(Integer codeMessage) {
 
         Message message = messageRepository.getOne(codeMessage);
@@ -80,6 +100,14 @@ public class ForumUseCase {
         }
 
         messageRepository.delete(message);
+    }
+
+    @Transactional
+    public void deleteMessageCategory(Integer codeMessageCategory) {
+
+        MessageCategory messageCategory = messageCategoryRepository.getOne(codeMessageCategory);
+
+        messageCategoryRepository.delete(messageCategory);
     }
 
     @Transactional(readOnly = true)

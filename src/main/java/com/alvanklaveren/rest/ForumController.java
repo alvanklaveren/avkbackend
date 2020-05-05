@@ -74,10 +74,28 @@ public class ForumController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/saveMessageCategory", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<MessageCategoryDTO> saveMessageCategory(@RequestBody MessageCategoryDTO messageCategoryDTO) {
+
+        messageCategoryDTO = forumUseCase.saveMessageCategory(messageCategoryDTO);
+        return new ResponseEntity<>(messageCategoryDTO, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/delete", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeMessage) {
 
         forumUseCase.delete(codeMessage);
+
+        JSONObject response = new JSONObject();
+        response.put("result", "true");
+
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/deleteMessageCategory", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<String> deleteMessageCategory(@RequestBody Integer codeMessageCategory) {
+
+        forumUseCase.deleteMessageCategory(codeMessageCategory);
 
         JSONObject response = new JSONObject();
         response.put("result", "true");
