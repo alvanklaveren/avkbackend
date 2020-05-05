@@ -11,8 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import utils.StringLogic;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -233,10 +235,13 @@ public class ForumUseCase {
         return modifiedMessageText.trim();
     }
 
-    private byte[] getImage(int code){
+    @Transactional(readOnly=true)
+    public byte[] getImage(int code){
 
         MessageImage messageImage = messageImageRepository.getByCode(code);
-        if( messageImage == null ) { return null; }
+        if( messageImage == null ) {
+            return null;
+        }
 
         try {
             Blob blob = messageImage.getImage();
@@ -248,4 +253,38 @@ public class ForumUseCase {
 
         return null;
     }
+
+    @Transactional
+    public MessageImageDTO uploadImage(Integer codeMessage, MultipartFile file){
+
+        Message message = null;
+        if(codeMessage > 0) {
+            message = messageRepository.getOne(codeMessage);
+        }
+
+        MessageImage messageImage = new MessageImage();
+        messageImage.setMessage(message);
+        messageImage.setSortorder(0);
+
+        try {
+            Blob blob = new SerialBlob(file.getBytes());
+            messageImage.setImage(blob);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        messageImage = messageImageRepository.save(messageImage);
+
+        return MessageImageDTO.toDto(messageImage, 0);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MessageImageDTO> getImages() {
+        //TODO: This should be replaced by active (logged in) forumuser (usercontext)
+        ForumUser forumUser = forumUserRepository.getOne(1);
+
+        List<MessageImage> messageImages = messageImageRepository.findAll(forumUser.getCode());
+        return MessageImageDTO.toDto(messageImages, 1);
+    }
+
 }

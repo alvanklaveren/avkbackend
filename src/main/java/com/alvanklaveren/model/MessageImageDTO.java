@@ -1,13 +1,13 @@
 package com.alvanklaveren.model;
 
-import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MessageImageDTO {
 
     public Integer code;
-    public Blob image;
+    public byte[] image;
     public int sortorder;
     public int version;
 
@@ -24,7 +24,13 @@ public class MessageImageDTO {
 
         MessageImageDTO dto = new MessageImageDTO();
         dto.code = messageImage.getCode();
-        dto.image = messageImage.getImage();
+
+        try {
+            dto.image = messageImage.getImage().getBytes(1, (int) messageImage.getImage().length());
+        } catch(SQLException se){
+            se.printStackTrace();
+        }
+
         dto.sortorder = messageImage.getSortorder();
         dto.version = messageImage.getVersion();
 

@@ -3,13 +3,16 @@ package com.alvanklaveren.rest;
 import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.model.MessageCategoryDTO;
 import com.alvanklaveren.model.MessageDTO;
+import com.alvanklaveren.model.MessageImageDTO;
 import com.alvanklaveren.usecase.ForumUseCase;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -132,4 +135,28 @@ public class ForumController {
 
         return new ResponseEntity<>(messageDTOs, HttpStatus.OK);
     }
+
+    @RequestMapping(value="/uploadImage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    public ResponseEntity<MessageImageDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeMessage") Integer codeMessage){
+
+        MessageImageDTO messageImageDTO = forumUseCase.uploadImage(codeMessage, file);
+
+        return new ResponseEntity<>(messageImageDTO, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/getImages", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    public ResponseEntity<List<MessageImageDTO>> getImages(){
+
+        List<MessageImageDTO> messageImageDTOs = forumUseCase.getImages();
+
+        return new ResponseEntity<>(messageImageDTOs, new HttpHeaders(), HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value="/getMessageImage", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces=MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getMessageImage(@RequestParam Integer codeMessageImage){
+
+        return forumUseCase.getImage(codeMessageImage);
+    }
+
 }
