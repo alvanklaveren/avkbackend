@@ -71,7 +71,6 @@ public class GameShopController {
         return new ResponseEntity<>(productNames, HttpStatus.OK);
     }
 
-
     @RequestMapping(value = "/getProductMainImage", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getProductMainImage(@RequestParam int codeProduct) {
 
@@ -154,6 +153,4 @@ public class GameShopController {
 
         return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
     }
-
-
 }

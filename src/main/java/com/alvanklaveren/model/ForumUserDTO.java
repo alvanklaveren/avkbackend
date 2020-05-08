@@ -14,7 +14,7 @@ public class ForumUserDTO {
     public byte[] avatar;
     public int version;
 
-    private ClassificationDTO classification;
+    public ClassificationDTO classification;
 
     public static List<ForumUserDTO> toDto(List<ForumUser> forumUsers, int level){
         return forumUsers.stream().map(f -> ForumUserDTO.toDto(f, level)).collect(Collectors.toList());

@@ -24,9 +24,6 @@ public class ForumController {
     @Autowired
     private ForumUseCase forumUseCase;
 
-//    @RequestMapping(value = "/getProductList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
-//    public ResponseEntity<List<ProductDTO>> getProductList(@RequestBody String request) {
-
     @RequestMapping(value = "/getHomePageMessages", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages(@RequestBody String request) {
 
