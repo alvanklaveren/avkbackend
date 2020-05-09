@@ -32,8 +32,11 @@ public class ForumUserDTO {
         dto.password = forumUser.getPassword();
         dto.emailAddress = forumUser.getEmailAddress();
         dto.displayName = forumUser.getDisplayName();
+
         try {
-            dto.avatar = forumUser.getAvatar().getBytes(1, (int) forumUser.getAvatar().length());
+            if(forumUser.getAvatar() != null) {
+                dto.avatar = forumUser.getAvatar().getBytes(1, (int) forumUser.getAvatar().length());
+            }
         } catch(SQLException se){
             se.printStackTrace();
         }
