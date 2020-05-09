@@ -99,7 +99,6 @@ public class GameShopController {
         gameConsoleDTOs.add( new GameConsoleDTO(0, "All", 0) );
         gameConsoleDTOs.addAll(gameShopUseCase.getGameConsoles());
 
-
         return new ResponseEntity<>(gameConsoleDTOs, HttpStatus.OK);
     }
 
@@ -111,6 +110,16 @@ public class GameShopController {
         productTypeDtos.addAll(gameShopUseCase.getProductTypes());
 
         return new ResponseEntity<>(productTypeDtos, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getRatingUrls", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<RatingUrlDTO>> getRatingUrls() {
+
+        List<RatingUrlDTO> ratingUrlDTOs = new ArrayList<>();
+        ratingUrlDTOs.addAll(gameShopUseCase.getRatingUrls());
+
+
+        return new ResponseEntity<>(ratingUrlDTOs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getCompanyList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")

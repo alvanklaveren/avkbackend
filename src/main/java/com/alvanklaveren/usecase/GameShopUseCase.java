@@ -28,6 +28,7 @@ public class GameShopUseCase {
     @Autowired private GameConsoleRepository gameConsoleRepository;
     @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ProductImageRepository productImageRepository;
+    @Autowired private RatingUrlRepository ratingUrlRepository;
 
 
     @Transactional(readOnly=true)
@@ -115,6 +116,14 @@ public class GameShopUseCase {
         List<ProductType> productTypes = productTypeRepository.findAll(Sort.by("description").ascending());
 
         return ProductTypeDTO.toDto(productTypes, 1);
+    }
+
+    @Transactional(readOnly=true)
+    public List<RatingUrlDTO> getRatingUrls(){
+
+        List<RatingUrl> ratingUrls = ratingUrlRepository.findAll(Sort.by("url").ascending());
+
+        return RatingUrlDTO.toDto(ratingUrls, 1);
     }
 
     @Transactional(readOnly=true)
