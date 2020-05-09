@@ -2,9 +2,7 @@ package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
-import com.alvanklaveren.repository.ClassificationRepository;
-import com.alvanklaveren.repository.ConstantsRepository;
-import com.alvanklaveren.repository.ForumUserRepository;
+import com.alvanklaveren.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +17,12 @@ import java.util.List;
 @Component
 public class AdministratorUseCase {
 
+    @Autowired private CompanyRepository companyRepository;
     @Autowired private ConstantsRepository constantsRepository;
     @Autowired private ForumUserRepository forumUserRepository;
+    @Autowired private RatingUrlRepository ratingUrlRepository;
+    @Autowired private GameConsoleRepository gameConsoleRepository;
+    @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ClassificationRepository classificationRepository;
 
     @Transactional(readOnly = true)
@@ -147,6 +149,92 @@ public class AdministratorUseCase {
     }
 
     @Transactional
+    public CompanyDTO saveCompany(CompanyDTO companyDTO){
+
+        if(companyDTO.description == null || StringUtils.isEmpty(companyDTO.description)) {
+            throw new RuntimeException("company description is empty");
+        }
+
+        boolean isNewCompany = (companyDTO.code == null || companyDTO.code <= 0);
+        Company company = (isNewCompany) ? new Company() : companyRepository.getByCode(companyDTO.code);
+
+        company.setCode(companyDTO.code);
+        company.setDescription(companyDTO.description);
+        company.setVersion(companyDTO.version);
+
+        company = companyRepository.save(company);
+
+        return CompanyDTO.toDto(company, 0);
+    }
+
+    @Transactional
+    public ProductTypeDTO saveProductType(ProductTypeDTO productTypeDTO) {
+
+        if (productTypeDTO.description == null || StringUtils.isEmpty(productTypeDTO.description)) {
+            throw new RuntimeException("product type description is empty");
+        }
+
+        boolean isNewProductType = (productTypeDTO.code == null || productTypeDTO.code <= 0);
+        ProductType productType = (isNewProductType) ? new ProductType() : productTypeRepository.getByCode(productTypeDTO.code);
+
+        productType.setCode(productTypeDTO.code);
+        productType.setDescription(productTypeDTO.description);
+        productType.setVersion(productTypeDTO.version);
+
+        productType = productTypeRepository.save(productType);
+
+        return ProductTypeDTO.toDto(productType, 0);
+    }
+
+    @Transactional
+    public RatingUrlDTO saveRatingUrl(RatingUrlDTO ratingUrlDTO) {
+
+        if (ratingUrlDTO.url == null || StringUtils.isEmpty(ratingUrlDTO.url)) {
+            throw new RuntimeException("url is empty");
+        }
+
+        boolean isNewRatingUrl = (ratingUrlDTO.code == null || ratingUrlDTO.code <= 0);
+        RatingUrl ratingUrl = (isNewRatingUrl) ? new RatingUrl() : ratingUrlRepository.getByCode(ratingUrlDTO.code);
+
+        ratingUrl.setCode(ratingUrlDTO.code);
+        ratingUrl.setUrl(ratingUrlDTO.url);
+        ratingUrl.setVersion(ratingUrlDTO.version);
+
+        ratingUrl = ratingUrlRepository.save(ratingUrl);
+
+        return RatingUrlDTO.toDto(ratingUrl, 0);
+    }
+
+    @Transactional
+    public GameConsoleDTO saveGameConsole(GameConsoleDTO gameConsoleDTO){
+
+        if(gameConsoleDTO.description == null || StringUtils.isEmpty(gameConsoleDTO.description)) {
+            // without an email address, user cannot receive a (new) password
+            throw new RuntimeException("game console description is empty");
+        }
+
+        boolean isNewCompany = (gameConsoleDTO.code == null || gameConsoleDTO.code <= 0);
+        GameConsole gameConsole = (isNewCompany) ? new GameConsole() : gameConsoleRepository.getByCode(gameConsoleDTO.code);
+
+        gameConsole.setCode(gameConsoleDTO.code);
+        gameConsole.setDescription(gameConsoleDTO.description);
+        gameConsole.setSortorder(gameConsoleDTO.sortorder);
+        gameConsole.setVersion(gameConsoleDTO.version);
+
+        // default company = { code:6, description:'-' }
+        int codeCompany = (gameConsoleDTO.company != null)
+                        ? gameConsoleDTO.company.code : isNewCompany ? 6
+                        : gameConsole.getCompany().getCode();
+
+        Company company = companyRepository.getByCode(codeCompany);
+        gameConsole.setCompany(company);
+
+        gameConsole = gameConsoleRepository.save(gameConsole);
+
+        return GameConsoleDTO.toDto(gameConsole, 1);
+    }
+
+    @Transactional
     public boolean deleteUser(Integer codeForumUser) {
 
         try {
@@ -154,9 +242,66 @@ public class AdministratorUseCase {
             forumUserRepository.delete(forumUser);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
+            e.printStackTrace();
             return false;
         }
 
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteCompany(Integer code) {
+
+        try {
+            Company company = companyRepository.getByCode(code);
+            companyRepository.delete(company);
+        } catch(Exception e) {
+            // delete fails when user either does not exist or user is already connected to forum messages.
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteGameConsole(Integer code) {
+
+        try {
+            GameConsole gameConsole = gameConsoleRepository.getByCode(code);
+            gameConsoleRepository.delete(gameConsole);
+        } catch(Exception e) {
+            // delete fails when user either does not exist or user is already connected to forum messages.
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteProductType(Integer code) {
+
+        try {
+            ProductType productType = productTypeRepository.getByCode(code);
+            productTypeRepository.delete(productType);
+        } catch(Exception e) {
+            // delete fails when user either does not exist or user is already connected to forum messages.
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteRatingUrl(Integer code) {
+
+        try {
+            RatingUrl ratingUrl = ratingUrlRepository.getByCode(code);
+            ratingUrlRepository.delete(ratingUrl);
+        } catch(Exception e) {
+            // delete fails when user either does not exist or user is already connected to forum messages.
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 

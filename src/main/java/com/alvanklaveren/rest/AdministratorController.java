@@ -1,10 +1,12 @@
 package com.alvanklaveren.rest;
 
 import com.alvanklaveren.AVKConfig;
-import com.alvanklaveren.model.ClassificationDTO;
-import com.alvanklaveren.model.ConstantsDTO;
-import com.alvanklaveren.model.ForumUserDTO;
+import com.alvanklaveren.enums.ECodeTable;
+import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.AdministratorUseCase;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -91,9 +94,89 @@ public class AdministratorController {
         boolean isDeleted = administratorUseCase.deleteUser(codeForumUser);
 
         JSONObject response = new JSONObject();
-        response.put("result", isDeleted?"true":"false");
+        response.put("result", isDeleted ? "true" : "false");
 
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/saveCodeTableRow", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<String> saveCodeTable(@RequestBody String request) {
+
+        JSONObject jsonObject = new JSONObject(request);
+
+        String codeTableRow = jsonObject.get("codeTableRow").toString();
+
+        ECodeTable eCodeTable = ECodeTable.getByCode(jsonObject.getInt("codeTable"));
+        switch(eCodeTable){
+            case Companies:
+                CompanyDTO companyDTO = (CompanyDTO) toDTO(CompanyDTO.class, codeTableRow);
+                administratorUseCase.saveCompany(companyDTO);
+                break;
+
+            case GameConsole:
+                GameConsoleDTO gameConsoleDTO = (GameConsoleDTO) toDTO(GameConsoleDTO.class, codeTableRow);
+                administratorUseCase.saveGameConsole(gameConsoleDTO);
+                break;
+
+            case ProductType:
+                ProductTypeDTO productTypeDTO = (ProductTypeDTO) toDTO(ProductTypeDTO.class, codeTableRow);
+                administratorUseCase.saveProductType(productTypeDTO);
+                break;
+
+            case RatingUrl:
+                RatingUrlDTO ratingUrlDTO = (RatingUrlDTO) toDTO(RatingUrlDTO.class, codeTableRow);
+                administratorUseCase.saveRatingUrl(ratingUrlDTO);
+                break;
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("result", "true");
+
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/deleteCodeTableRow", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<String> deleteCodeTableRow(@RequestBody String request) {
+
+        JSONObject jsonObject = new JSONObject(request);
+
+        boolean isDeleted = false;
+
+        Integer code = jsonObject.getInt("code");
+
+        ECodeTable eCodeTable = ECodeTable.getByCode(jsonObject.getInt("codeTable"));
+        switch(eCodeTable){
+            case Companies:
+                isDeleted = administratorUseCase.deleteCompany(code);
+                break;
+            case GameConsole:
+                isDeleted = administratorUseCase.deleteGameConsole(code);
+                break;
+            case ProductType:
+                isDeleted = administratorUseCase.deleteProductType(code);
+                break;
+            case RatingUrl:
+                isDeleted = administratorUseCase.deleteRatingUrl(code);
+                break;
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("result", isDeleted ? "true" : "false");
+
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
+    public Object toDTO(Class clazz, String content) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectReader reader = mapper.readerFor(clazz);
+        try {
+            MappingIterator mappingIterator = reader.readValues(content);
+            return mappingIterator.next();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
