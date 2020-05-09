@@ -8,6 +8,7 @@ import com.alvanklaveren.repository.ForumUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -111,10 +112,17 @@ public class AdministratorUseCase {
     @Transactional
     public ForumUserDTO saveUser(ForumUserDTO forumUserDTO){
 
+        if(forumUserDTO.emailAddress == null || StringUtils.isEmpty(forumUserDTO.emailAddress)) {
+            // without an email address, user cannot receive a (new) password
+            throw new RuntimeException("Email address missing.");
+        }
+
         ForumUser forumUser;
         Classification classification;
 
-        if (forumUserDTO.code == null || forumUserDTO.code <= 0) {
+        boolean isNewUser = (forumUserDTO.code == null || forumUserDTO.code <= 0);
+
+        if (isNewUser) {
             forumUser = new ForumUser();
             classification = classificationRepository.getByCode(EClassification.Guest.getCode());
         } else {
@@ -122,15 +130,18 @@ public class AdministratorUseCase {
             classification = classificationRepository.getByCode(forumUserDTO.classification.code);
         }
 
-
         forumUser.setCode(forumUserDTO.code);
         forumUser.setDisplayName(forumUserDTO.displayName);
-        forumUser.setEmailAddress(forumUserDTO.emailAddress);
         forumUser.setUsername(forumUserDTO.username);
         forumUser.setPassword(forumUserDTO.password);
         forumUser.setClassification(classification);
+        forumUser.setEmailAddress(forumUserDTO.emailAddress);
 
         forumUser = forumUserRepository.save(forumUser);
+
+        if (isNewUser) {
+            // TODO: generate a password and email it
+        }
 
         return ForumUserDTO.toDto(forumUser, 1);
     }
