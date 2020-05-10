@@ -15,6 +15,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> getByGameConsole_CodeAndProductType_Code(Integer codeGameConsole, Integer codeProductType, Pageable pageable);
 
     @Query("select p from Product p " +
+            "where (p.gameConsole.code = :codeGameConsole or 0 = :codeGameConsole) " +
+            "and (p.productType.code = :codeProductType or 0 = :codeProductType) ")
+    List<Product> getByGameConsole_CodeAndProductType_Code(Integer codeGameConsole, Integer codeProductType);
+
+    @Query("select p from Product p " +
             "join ProductRating pr on pr.product = p " +
             "where pr.code = (select min(pr2.code) from ProductRating pr2 where pr2.product = p and pr2.rating > 0) " +
             "and (p.gameConsole.code = :codeGameConsole or 0 = :codeGameConsole) " +
@@ -27,5 +32,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "or lower(replace(p.name, ' ', '')) like :altProductName " +
             "or lower(replace(p.name, ' ', '')) like :altProductName2 ")
     List<Product> search(String productName, String altProductName, String altProductName2, Pageable pageable);
+
+    @Query("select p from Product p " +
+            "where lower(replace(p.name, ' ', '')) like :productName " +
+            "or lower(replace(p.name, ' ', '')) like :altProductName " +
+            "or lower(replace(p.name, ' ', '')) like :altProductName2 ")
+    List<Product> search(String productName, String altProductName, String altProductName2);
 
 }

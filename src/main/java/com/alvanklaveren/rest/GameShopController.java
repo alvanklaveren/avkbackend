@@ -118,7 +118,6 @@ public class GameShopController {
         List<RatingUrlDTO> ratingUrlDTOs = new ArrayList<>();
         ratingUrlDTOs.addAll(gameShopUseCase.getRatingUrls());
 
-
         return new ResponseEntity<>(ratingUrlDTOs, HttpStatus.OK);
     }
 
@@ -162,4 +161,48 @@ public class GameShopController {
 
         return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
     }
+
+    @RequestMapping(value = {"/gameshopmobile/{codeGameConsole}/{codeProductType}",
+                             "/gameshopmobile/{codeGameConsole}/{codeProductType}/{description}"},
+                    method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<List<ProductMobileDTO>> getGameShopMobile(@PathVariable("codeGameConsole") Integer codeGameConsole, @PathVariable("codeProductType") Integer codeProductType, @PathVariable(required = false) String description) {
+
+        // example usages of this function:
+        //  http://localhost:5000/backend/gameshop/gameshopmobile/0/0
+        //  http://localhost:5000/backend/gameshop/gameshopmobile/2/1
+        //  http://localhost:5000/backend/gameshop/gameshopmobile/0/0/Kingdom%Hearts
+
+        List<ProductDTO> productDTOs = gameShopUseCase.getProductsForMobile(codeGameConsole, codeProductType, description);
+
+        List<ProductMobileDTO> productMobileDTOs = new ArrayList<>();
+        for(ProductDTO productDTO : productDTOs) {
+            byte[] productImage = gameShopUseCase.getProductMainImage(productDTO.code);
+            ProductMobileDTO productMobileDTO = new ProductMobileDTO(productDTO, productImage);
+            productMobileDTOs.add(productMobileDTO);
+        }
+
+        return new ResponseEntity<>(productMobileDTOs, HttpStatus.OK);
+    }
+
+    // helper class to generate content for mobile app in playstore
+    class ProductMobileDTO {
+        public Integer code;
+        public String name;
+        public String description;
+        public String gameConsole;
+        public String productType;
+        public String company;
+        public byte[] productImage;
+
+        ProductMobileDTO(ProductDTO productDTO, byte[] productImage) {
+            this.code = productDTO.code;
+            this.name = productDTO.name;
+            this.description = productDTO.description;
+            this.gameConsole = productDTO.gameConsole.description;
+            this.productType = productDTO.productType.description;
+            this.company = productDTO.company.description;
+            this.productImage = productImage;
+        }
+    }
+
 }

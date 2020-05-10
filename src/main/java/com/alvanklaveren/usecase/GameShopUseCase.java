@@ -63,8 +63,12 @@ public class GameShopUseCase {
         productName = "%" + productName.trim().toLowerCase().replace(" ", "%") + "%";
         altProductName = "%" + altProductName.trim().toLowerCase().replace(" ", "%");
 
-        Pageable pageRequest = PageRequest.of(page, pageSize, EProductSort.Name_Ascending.getSort());
-        products = productRepository.search(productName, altProductName, altProductName + "-%", pageRequest);
+        if(pageSize > 0) {
+            Pageable pageRequest = PageRequest.of(page, pageSize, EProductSort.Name_Ascending.getSort());
+            products = productRepository.search(productName, altProductName, altProductName + "-%", pageRequest);
+        } else {
+            products = productRepository.search(productName, altProductName, altProductName + "-%");
+        }
 
         products.forEach(product ->{
             product.setDescription(StringLogic.prepareMessage(product.getDescription()));
@@ -228,11 +232,33 @@ public class GameShopUseCase {
             e.printStackTrace();
         }
 
-        productImage = productImageRepository.save(productImage);
+        productImageRepository.save(productImage);
 
         product = productRepository.getOne(codeProduct);
 
         return ProductDTO.toDto(product, 3);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getProductsForMobile(Integer codeGameConsole, Integer codeProductType, String description){
+
+        List<ProductDTO> productDTOs;
+
+        List<Product> products;
+        if(StringUtils.isNullOrEmpty(description)) {
+            if(codeGameConsole == 0 && codeProductType == 0) {
+                // this fetches EVERYTHING.. so limit it to 24
+                Pageable pageRequest = PageRequest.of(0,24, Sort.by("code").descending());
+                products = productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
+            } else {
+                products = productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType);
+            }
+            productDTOs = ProductDTO.toDto(products, 3);
+        } else {
+            productDTOs = search(description, 0, 0);
+        }
+
+        return productDTOs;
     }
 
 }
