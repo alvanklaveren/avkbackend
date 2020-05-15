@@ -217,6 +217,22 @@ public class GameShopUseCase {
     }
 
     @Transactional
+    public ProductRatingDTO saveProductRating(Integer codeProduct, Integer codeRatingUrl, Integer rating) {
+
+        Product product = productRepository.getOne(codeProduct);
+        RatingUrl ratingUrl = ratingUrlRepository.getOne(codeRatingUrl);
+
+        ProductRating productRating = new ProductRating();
+        productRating.setProduct(product);
+        productRating.setRatingUrl(ratingUrl);
+        productRating.setRating(rating);
+
+        productRating = productRatingRepository.save(productRating);
+
+        return ProductRatingDTO.toDto(productRating, 0);
+    }
+
+        @Transactional
     public ProductDTO uploadImage(Integer codeProduct, MultipartFile file){
 
         Product product = productRepository.getOne(codeProduct);

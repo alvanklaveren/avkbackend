@@ -143,6 +143,18 @@ public class GameShopController {
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/saveProductRating", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    public ResponseEntity<String> saveProductRating(@RequestBody String request) {
+
+        JSONObject jsonObject = new JSONObject(request);
+        int codeProduct = jsonObject.getInt("codeProduct");
+        int codeRatingUrl =  jsonObject.getInt("codeRatingUrl");
+        int rating =  jsonObject.getInt("rating");
+
+        gameShopUseCase.saveProductRating(codeProduct, codeRatingUrl, rating);
+        return new ResponseEntity<>("", HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/delete", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeProduct) {
 
