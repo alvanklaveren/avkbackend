@@ -5,6 +5,8 @@ import com.alvanklaveren.repository.ForumUserRepository;
 import com.alvanklaveren.repository.MessageCategoryRepository;
 import com.alvanklaveren.repository.MessageImageRepository;
 import com.alvanklaveren.repository.MessageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,8 @@ import java.util.List;
 
 @Component
 public class ForumUseCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ForumUseCase.class);
 
     @Autowired private MessageCategoryRepository messageCategoryRepository;
     @Autowired private MessageImageRepository messageImageRepository;

@@ -4,6 +4,8 @@ import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.mysql.cj.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class GameShopUseCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GameShopUseCase.class);
 
     @Autowired private ProductRepository productRepository;
     @Autowired private CompanyRepository companyRepository;

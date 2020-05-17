@@ -4,6 +4,8 @@ import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.Translation;
 import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.repository.TranslationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,8 @@ import java.util.Map;
 
 @Component
 public class TranslationUseCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TranslationUseCase.class);
 
     @Autowired private TranslationRepository translationRepository;
 

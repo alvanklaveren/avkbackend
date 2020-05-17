@@ -1,10 +1,11 @@
 package com.alvanklaveren.rest;
 
-import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.GameShopUseCase;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,17 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins={AVKConfig.crossOrigin})
 @RequestMapping("/backend/gameshop")
 public class GameShopController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GameShopController.class);
 
     @Autowired
     private GameShopUseCase gameShopUseCase;
 
     public GameShopController() { }
 
-    @RequestMapping(value = "/getProductList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getProductList", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<List<ProductDTO>> getProductList(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -45,7 +47,7 @@ public class GameShopController {
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/searchProductList", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/searchProductList", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<List<ProductDTO>> searchProductList(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -58,7 +60,7 @@ public class GameShopController {
         return new ResponseEntity<>(productDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/simpleSearch", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/simpleSearch", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<List<String>> simpleSearch(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -71,13 +73,13 @@ public class GameShopController {
         return new ResponseEntity<>(productNames, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getProductMainImage", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(value = "/getProductMainImage", method = {RequestMethod.GET}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getProductMainImage(@RequestParam int codeProduct) {
 
         return gameShopUseCase.getProductMainImage(codeProduct);
     }
 
-    @RequestMapping(value = "/getProductSortList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getProductSortList", method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<EProductSortDTO>> getProductSortList() {
 
         List<EProductSortDTO> eProductSortDTOs = new ArrayList<>();
@@ -92,7 +94,7 @@ public class GameShopController {
         return new ResponseEntity<>(eProductSortDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getGameConsoleList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getGameConsoleList", method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<GameConsoleDTO>> getGameConsoleList() {
 
         List<GameConsoleDTO> gameConsoleDTOs = new ArrayList<>();
@@ -102,7 +104,7 @@ public class GameShopController {
         return new ResponseEntity<>(gameConsoleDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getProductTypeList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getProductTypeList", method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<ProductTypeDTO>> getProductTypeList() {
 
         List<ProductTypeDTO> productTypeDtos = new ArrayList<>();
@@ -112,7 +114,7 @@ public class GameShopController {
         return new ResponseEntity<>(productTypeDtos, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getRatingUrls", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getRatingUrls", method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<RatingUrlDTO>> getRatingUrls() {
 
         List<RatingUrlDTO> ratingUrlDTOs = new ArrayList<>();
@@ -121,7 +123,7 @@ public class GameShopController {
         return new ResponseEntity<>(ratingUrlDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getCompanyList", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/getCompanyList", method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<CompanyDTO>> getCompanyList() {
 
         List<CompanyDTO> companyDTOs = gameShopUseCase.getCompanies();
@@ -129,21 +131,21 @@ public class GameShopController {
         return new ResponseEntity<>(companyDTOs, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/addCompany", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/addCompany", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<CompanyDTO> addCompany(@RequestBody String companyName) {
 
         CompanyDTO companyDTO = gameShopUseCase.addCompany(companyName);
         return new ResponseEntity<>(companyDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/save", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/save", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
 
         productDTO = gameShopUseCase.save(productDTO);
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/saveProductRating", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/saveProductRating", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> saveProductRating(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -155,7 +157,7 @@ public class GameShopController {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/delete", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/delete", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeProduct) {
 
         gameShopUseCase.delete(codeProduct);
@@ -166,7 +168,7 @@ public class GameShopController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(value="/uploadImage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    @RequestMapping(value="/uploadImage", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ProductDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeProduct") Integer codeProduct){
 
         ProductDTO productDTO = gameShopUseCase.uploadImage(codeProduct, file);
@@ -176,7 +178,7 @@ public class GameShopController {
 
     @RequestMapping(value = {"/gameshopmobile/{codeGameConsole}/{codeProductType}",
                              "/gameshopmobile/{codeGameConsole}/{codeProductType}/{description}"},
-                    method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces="application/json")
+                    method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<ProductMobileDTO>> getGameShopMobile(@PathVariable("codeGameConsole") Integer codeGameConsole, @PathVariable("codeProductType") Integer codeProductType, @PathVariable(required = false) String description) {
 
         // example usages of this function:

@@ -7,4 +7,6 @@ public interface ForumUserRepository extends JpaRepository<ForumUser, Integer> {
 
     ForumUser getByCode(Integer code);
 
+    ForumUser getByUsername(String username);
+
 }

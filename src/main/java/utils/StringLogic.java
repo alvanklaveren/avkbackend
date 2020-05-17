@@ -10,7 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class StringLogic {
-	
+
+	private static final Logger LOG = LoggerFactory.getLogger(StringLogic.class);
+
 	static{ new StringLogic(); }
 
    	private static Logger log = LoggerFactory.getLogger(StringLogic.class);

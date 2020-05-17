@@ -1,6 +1,5 @@
 package com.alvanklaveren.rest;
 
-import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.AdministratorUseCase;
@@ -8,6 +7,8 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,14 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins={AVKConfig.crossOrigin})
 @RequestMapping("/backend/administrator")
 public class AdministratorController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AdministratorController.class);
+
     @Autowired private AdministratorUseCase administratorUseCase;
 
-    @RequestMapping(value = "/getConstant", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    @RequestMapping(value = "/getConstant", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
 
         ConstantsDTO constantsDTO = administratorUseCase.getByCode(codeConstants);
@@ -34,7 +36,7 @@ public class AdministratorController {
         return new ResponseEntity<>(constantsDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getConstantById", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    @RequestMapping(value = "/getConstantById", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstantById(@RequestBody String codeConstants) {
 
         ConstantsDTO constantsDTO = administratorUseCase.getById(codeConstants);
@@ -42,14 +44,14 @@ public class AdministratorController {
         return new ResponseEntity<>(constantsDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/saveConstant", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/saveConstant", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<ConstantsDTO> saveConstant(@RequestBody ConstantsDTO constantsDTO) {
 
         constantsDTO = administratorUseCase.save(constantsDTO);
         return new ResponseEntity<>(constantsDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value="/uploadConstantsImage", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    @RequestMapping(value="/uploadConstantsImage", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ConstantsDTO> uploadConstantImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeConstants") Integer codeConstants){
 
         ConstantsDTO constantsDTO = administratorUseCase.uploadImage(codeConstants, file);
@@ -57,13 +59,13 @@ public class AdministratorController {
         return new ResponseEntity<>(constantsDTO, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getConstantsImage", method = {RequestMethod.GET, RequestMethod.OPTIONS}, produces= MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(value = "/getConstantsImage", method = {RequestMethod.GET}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getConstantsImage(@RequestParam Integer codeConstants) {
 
         return administratorUseCase.getConstantsImage(codeConstants);
     }
 
-    @RequestMapping(value = "/getUsers", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    @RequestMapping(value = "/getUsers", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<List<ForumUserDTO>> getUsers() {
 
         List<ForumUserDTO> userDTOs = administratorUseCase.getUsers();
@@ -74,21 +76,21 @@ public class AdministratorController {
         return new ResponseEntity<>(userDTOs, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getClassifications", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces = "application/json")
+    @RequestMapping(value = "/getClassifications", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<List<ClassificationDTO>> getClassifications() {
 
         List<ClassificationDTO> classificationDTOs = administratorUseCase.getClassifications();
         return new ResponseEntity<>(classificationDTOs, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/saveUser", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/saveUser", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<ForumUserDTO> saveUser(@RequestBody ForumUserDTO forumUserDTO) {
 
         forumUserDTO = administratorUseCase.saveUser(forumUserDTO);
         return new ResponseEntity<>(forumUserDTO, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/deleteUser", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/deleteUser", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> deleteUser(@RequestBody Integer codeForumUser) {
 
         boolean isDeleted = administratorUseCase.deleteUser(codeForumUser);
@@ -99,7 +101,7 @@ public class AdministratorController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/saveCodeTableRow", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/saveCodeTableRow", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> saveCodeTable(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -135,7 +137,7 @@ public class AdministratorController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/deleteCodeTableRow", method = {RequestMethod.POST, RequestMethod.OPTIONS}, produces="application/json")
+    @RequestMapping(value = "/deleteCodeTableRow", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> deleteCodeTableRow(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);

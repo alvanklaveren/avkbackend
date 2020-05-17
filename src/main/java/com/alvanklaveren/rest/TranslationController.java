@@ -1,9 +1,10 @@
 package com.alvanklaveren.rest;
 
-import com.alvanklaveren.AVKConfig;
 import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.usecase.TranslationUseCase;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins={AVKConfig.crossOrigin})
 @RequestMapping("/backend/translation")
 public class TranslationController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TranslationController.class);
 
     @Autowired
     private TranslationUseCase translationUseCase;
@@ -36,7 +38,6 @@ public class TranslationController {
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
-    @CrossOrigin
     @RequestMapping(value = "/dictionary/{isoA2}", method = RequestMethod.GET, produces="application/json")
     public ResponseEntity<Map<String,String>> getDictionary(@PathVariable("isoA2") String isoA2){
 
