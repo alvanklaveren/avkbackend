@@ -1,21 +1,22 @@
 package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.model.*;
-import com.alvanklaveren.repository.ForumUserRepository;
-import com.alvanklaveren.repository.MessageCategoryRepository;
-import com.alvanklaveren.repository.MessageImageRepository;
-import com.alvanklaveren.repository.MessageRepository;
+import com.alvanklaveren.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import utils.StringLogic;
+import utils.email.HotmailMessage;
 
+import javax.mail.MessagingException;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.Date;
@@ -32,6 +33,7 @@ public class ForumUseCase {
     @Autowired private MessageCategoryRepository messageCategoryRepository;
     @Autowired private MessageImageRepository messageImageRepository;
     @Autowired private ForumUserRepository forumUserRepository;
+    @Autowired private ConstantsRepository constantsRepository;
     @Autowired private MessageRepository messageRepository;
 
 
@@ -289,6 +291,61 @@ public class ForumUseCase {
 
         List<MessageImage> messageImages = messageImageRepository.findAll(forumUser.getCode());
         return MessageImageDTO.toDto(messageImages, 1);
+    }
+
+    @Transactional
+    public boolean emailNewPassword(String username){
+
+        ForumUser forumUser = forumUserRepository.getByUsername(username);
+
+        String newPassword = randomPassword();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        forumUser.setPassword(passwordEncoder.encode(username + newPassword));
+        forumUser = forumUserRepository.save(forumUser);
+
+        String to = forumUser.getEmailAddress();
+        String from = getConstantsStringValueById("email_address");
+        String fromPassword = getConstantsStringValueById("email_password");
+
+        HotmailMessage hotmailMessage = new HotmailMessage(to, from, fromPassword);
+        hotmailMessage.setSubject("Your password at alvanklaveren.com has been reset");
+        hotmailMessage.setBody("Username: " + username + "\nPassword: " + newPassword);
+
+        try {
+            hotmailMessage.send();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            LOG.error(e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    private String randomPassword() {
+
+        final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!";
+
+        StringBuilder builder = new StringBuilder();
+
+        int length = 8;
+
+        while (length-- != 0) {
+            int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        }
+
+        return builder.toString();
+    }
+
+    @Transactional(readOnly = true)
+    public String getConstantsStringValueById(String id){
+        List<Constants> constantsList = constantsRepository.getById(id);
+        if(constantsList.size() == 0){
+            return null;
+        }
+
+        return ConstantsDTO.toDto(constantsList.get(0), 0).stringValue;
     }
 
 }

@@ -151,11 +151,21 @@ public class ForumController {
         return new ResponseEntity<>(messageImageDTOs, new HttpHeaders(), HttpStatus.OK);
     }
 
-
     @RequestMapping(value="/getMessageImage", method = {RequestMethod.GET}, produces=MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getMessageImage(@RequestParam Integer codeMessageImage){
 
         return forumUseCase.getImage(codeMessageImage);
+    }
+
+    @RequestMapping(value = "/emailNewPassword", method = {RequestMethod.POST}, produces = "application/json")
+    public ResponseEntity<String> emailNewPassword(@RequestBody String username) {
+
+        boolean emailed = forumUseCase.emailNewPassword(username);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("result", emailed);
+
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
 }
