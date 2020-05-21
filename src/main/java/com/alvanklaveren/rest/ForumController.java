@@ -1,8 +1,6 @@
 package com.alvanklaveren.rest;
 
-import com.alvanklaveren.model.MessageCategoryDTO;
-import com.alvanklaveren.model.MessageDTO;
-import com.alvanklaveren.model.MessageImageDTO;
+import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.ForumUseCase;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -166,6 +164,20 @@ public class ForumController {
         jsonObject.put("result", emailed);
 
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/getForumUser", method = {RequestMethod.POST}, produces="application/json")
+    public @ResponseBody ResponseEntity<ForumUserDTO> getForumUser(@RequestBody String request){
+
+        JSONObject jsonObject = new JSONObject(request);
+        Integer code = jsonObject.getInt("code");
+
+        ForumUserDTO forumUserDTO = forumUseCase.getForumUser(code);
+
+        // never reveal password info outside of backend
+        forumUserDTO.password = "";
+
+        return new ResponseEntity<>(forumUserDTO, HttpStatus.OK);
     }
 
 }

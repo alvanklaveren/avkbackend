@@ -293,6 +293,13 @@ public class ForumUseCase {
         return MessageImageDTO.toDto(messageImages, 1);
     }
 
+    @Transactional(readOnly = true)
+    public ForumUserDTO getForumUser(Integer code) {
+
+        ForumUser forumUser = forumUserRepository.getOne(code);
+        return ForumUserDTO.toDto(forumUser, 1);
+    }
+
     @Transactional
     public boolean emailNewPassword(String username){
 
