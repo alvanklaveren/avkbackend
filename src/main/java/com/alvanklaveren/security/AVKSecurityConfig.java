@@ -21,8 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class AVKSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String ADMIN = "ADMIN";
-
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -63,9 +61,10 @@ public class AVKSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/").permitAll()
                 .antMatchers("/backend/forum/**").permitAll()
                 .antMatchers("/backend/gameshop/**").permitAll()
-                .antMatchers("/backend/administrator/**").hasRole(ADMIN)
+                .antMatchers("/backend/translation/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // We filter the /login requests
@@ -76,7 +75,6 @@ public class AVKSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(alwaysSendUnauthorized401AuthenticationEntryPoint);
         // @formatter:on
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
