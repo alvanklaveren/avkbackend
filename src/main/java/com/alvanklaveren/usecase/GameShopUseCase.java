@@ -15,7 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import utils.StringLogic;
 
+import javax.imageio.ImageIO;
 import javax.sql.rowset.serial.SerialBlob;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
@@ -154,6 +161,11 @@ public class GameShopUseCase {
             e.printStackTrace();
         }
 
+        // resize image to decrease the load of data being pushed to browser
+//        BufferedImage bufferedImage = createImageFromBytes(image);
+//        bufferedImage = scale(bufferedImage,0.5);
+//        image = toBytes(bufferedImage);
+
         return image;
     }
 
@@ -173,6 +185,13 @@ public class GameShopUseCase {
         }
 
         productRepository.delete(product);
+    }
+
+    @Transactional
+    public void deleteProductRating(Integer codeProductRating) {
+
+        ProductRating productRating = productRatingRepository.getOne(codeProductRating);
+        productRatingRepository.delete(productRating);
     }
 
     @Transactional
@@ -281,4 +300,35 @@ public class GameShopUseCase {
         return productDTOs;
     }
 
+    private BufferedImage scale(BufferedImage source, double ratio) {
+        int w = (int) (source.getWidth() * ratio);
+        int h = (int) (source.getHeight() * ratio);
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bi.createGraphics();
+        double xScale = (double) w / source.getWidth();
+        double yScale = (double) h / source.getHeight();
+        AffineTransform at = AffineTransform.getScaleInstance(xScale,yScale);
+        g2d.drawRenderedImage(source, at);
+        g2d.dispose();
+        return bi;
+    }
+
+    private BufferedImage createImageFromBytes(byte[] imageData) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+        try {
+            return ImageIO.read(bais);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] toBytes(BufferedImage img){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(img, "jpg", baos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return baos.toByteArray();
+    }
 }

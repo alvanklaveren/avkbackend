@@ -176,6 +176,18 @@ public class GameShopController {
     }
 
     @Secured({ROLE_ADMIN})
+    @RequestMapping(value = "/deleteProductRating", method = {RequestMethod.POST}, produces="application/json")
+    public ResponseEntity<String> deleteProductRating(@RequestBody Integer codeProductRating) {
+
+        gameShopUseCase.deleteProductRating(codeProductRating);
+
+        JSONObject response = new JSONObject();
+        response.put("result", "true");
+
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
+    @Secured({ROLE_ADMIN})
     @RequestMapping(value="/uploadImage", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ProductDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeProduct") Integer codeProduct){
 
