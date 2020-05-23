@@ -1,5 +1,8 @@
 package com.alvanklaveren.enums;
 
+import com.alvanklaveren.model.ClassificationDTO;
+import com.alvanklaveren.model.ForumUserDTO;
+
 public enum EClassification {
 
     Unknown(0, "<unknown"),
@@ -26,10 +29,19 @@ public enum EClassification {
     public static EClassification getByCode(int code){
 
         for(EClassification value:values()){
-            if(value.getCode() ==code){
+            if(value.getCode() == code){
                 return value;
             }
         }
         return Unknown;
     }
+
+    public static EClassification get(ClassificationDTO classificationDTO){
+        return getByCode(classificationDTO.code);
+    }
+
+    public static EClassification get(ForumUserDTO forumUserDTO){
+        return getByCode(forumUserDTO.classification.code);
+    }
+
 }

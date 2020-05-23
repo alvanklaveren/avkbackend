@@ -3,6 +3,7 @@ package com.alvanklaveren.rest;
 import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.AdministratorUseCase;
+import com.alvanklaveren.usecase.ForumUseCase;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -31,6 +32,7 @@ public class AdministratorController {
     private static final Logger LOG = LoggerFactory.getLogger(AdministratorController.class);
 
     @Autowired private AdministratorUseCase administratorUseCase;
+    @Autowired private ForumUseCase forumUseCase;
 
     @RequestMapping(value = "/getConstant", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
@@ -90,7 +92,15 @@ public class AdministratorController {
     @RequestMapping(value = "/saveUser", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<ForumUserDTO> saveUser(@RequestBody ForumUserDTO forumUserDTO) {
 
+        boolean isNewUser = (forumUserDTO.code == null || forumUserDTO.code <= 0);
+
         forumUserDTO = administratorUseCase.saveUser(forumUserDTO);
+
+        // a new user needs to be emailed a new password
+        if(isNewUser) {
+            forumUseCase.emailNewPassword(forumUserDTO.username);
+        }
+
         return new ResponseEntity<>(forumUserDTO, HttpStatus.OK);
     }
 

@@ -130,7 +130,17 @@ public class AdministratorUseCase {
 
         if (isNewUser) {
             forumUser = new ForumUser();
-            classification = classificationRepository.getByCode(EClassification.Guest.getCode());
+            EClassification eClassification = EClassification.get(forumUserDTO);
+            switch(eClassification){
+                case Administrator: case Unknown:
+                    // for security reasons, never allow a new user to immediately get administrator privileges.
+                    // the same goes for Unknown. In both cases, default to GUEST
+                    eClassification = EClassification.Guest;
+                    break;
+                default:
+            }
+
+            classification = classificationRepository.getByCode(eClassification.getCode());
         } else {
             forumUser = forumUserRepository.getByCode(forumUserDTO.code);
             classification = classificationRepository.getByCode(forumUserDTO.classification.code);
@@ -142,12 +152,7 @@ public class AdministratorUseCase {
         forumUser.setPassword(forumUserDTO.password);
         forumUser.setClassification(classification);
         forumUser.setEmailAddress(forumUserDTO.emailAddress);
-
         forumUser = forumUserRepository.save(forumUser);
-
-        if (isNewUser) {
-            // TODO: generate a password and email it
-        }
 
         return ForumUserDTO.toDto(forumUser, 1);
     }
