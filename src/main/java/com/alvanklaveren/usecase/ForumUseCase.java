@@ -2,6 +2,7 @@ package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
+import com.alvanklaveren.security.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+
+import static com.alvanklaveren.security.SecurityConstants.ROLE_ADMIN;
 
 @Component
 public class ForumUseCase {
@@ -48,6 +51,11 @@ public class ForumUseCase {
             message.setMessageDate(Date.from(Instant.now()));
         } else {
             message = messageRepository.getOne(messageDTO.code);
+
+            if(!isEditable(message)) {
+                throw new RuntimeException("Saving failed: User is not owner of this message");
+            }
+
             message.setMessageDate(messageDTO.messageDate);
             message.setVersion(messageDTO.version);
         }
@@ -101,6 +109,10 @@ public class ForumUseCase {
     public void delete(Integer codeMessage) {
 
         Message message = messageRepository.getOne(codeMessage);
+
+        if(!isEditable(message)) {
+            throw new RuntimeException("Deletion failed: User is not owner of this message");
+        }
 
         List<Message> replyMessages = messageRepository.findByMessage_Code(message.getCode());
         if(replyMessages != null && replyMessages.size() > 0) {
@@ -286,8 +298,12 @@ public class ForumUseCase {
 
     @Transactional(readOnly = true)
     public List<MessageImageDTO> getImages() {
-        //TODO: This should be replaced by active (logged in) forumuser (usercontext)
-        ForumUser forumUser = forumUserRepository.getOne(1);
+
+        if(UserContext.getId() == null) {
+            throw new RuntimeException("Fetching images failed: No active user found.");
+        }
+
+        ForumUser forumUser = forumUserRepository.getOne(UserContext.getId());
 
         List<MessageImage> messageImages = messageImageRepository.findAll(forumUser.getCode());
         return MessageImageDTO.toDto(messageImages, 1);
@@ -355,4 +371,12 @@ public class ForumUseCase {
         return ConstantsDTO.toDto(constantsList.get(0), 0).stringValue;
     }
 
+    private boolean isEditable(Message message) {
+
+        if(UserContext.hasRole(ROLE_ADMIN) || message == null || message.getForumUser() == null){
+            return true;
+        }
+
+        return message.getForumUser().getCode().equals(UserContext.getId());
+    }
 }

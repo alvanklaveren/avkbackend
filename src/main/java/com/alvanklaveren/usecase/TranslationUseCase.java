@@ -2,7 +2,6 @@ package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.Translation;
-import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.repository.TranslationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +39,5 @@ public class TranslationUseCase {
         }
 
         return translationMap;
-    }
-
-    @Transactional(readOnly=true)
-    public TranslationDTO getByOriginal(String original){
-
-        Translation translation = translationRepository.getByOriginal(original);
-        return TranslationDTO.toDto(translation, 0);
     }
 }

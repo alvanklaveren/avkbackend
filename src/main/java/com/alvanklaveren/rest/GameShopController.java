@@ -11,12 +11,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.alvanklaveren.security.SecurityConstants.ROLE_ADMIN;
 
 @RestController
 @RequestMapping("/backend/gameshop")
@@ -131,6 +134,7 @@ public class GameShopController {
         return new ResponseEntity<>(companyDTOs, HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN})
     @RequestMapping(value = "/addCompany", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<CompanyDTO> addCompany(@RequestBody String companyName) {
 
@@ -138,6 +142,7 @@ public class GameShopController {
         return new ResponseEntity<>(companyDTO, HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN})
     @RequestMapping(value = "/save", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
 
@@ -145,6 +150,7 @@ public class GameShopController {
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN})
     @RequestMapping(value = "/saveProductRating", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> saveProductRating(@RequestBody String request) {
 
@@ -157,6 +163,7 @@ public class GameShopController {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN})
     @RequestMapping(value = "/delete", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeProduct) {
 
@@ -168,6 +175,7 @@ public class GameShopController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN})
     @RequestMapping(value="/uploadImage", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ProductDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeProduct") Integer codeProduct){
 
