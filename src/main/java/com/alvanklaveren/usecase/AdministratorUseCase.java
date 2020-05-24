@@ -3,12 +3,12 @@ package com.alvanklaveren.usecase;
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
+import com.mysql.cj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -25,6 +25,7 @@ public class AdministratorUseCase {
     @Autowired private ConstantsRepository constantsRepository;
     @Autowired private ForumUserRepository forumUserRepository;
     @Autowired private RatingUrlRepository ratingUrlRepository;
+    @Autowired private TranslationRepository translationRepository;
     @Autowired private GameConsoleRepository gameConsoleRepository;
     @Autowired private ProductTypeRepository productTypeRepository;
     @Autowired private ClassificationRepository classificationRepository;
@@ -118,7 +119,7 @@ public class AdministratorUseCase {
     @Transactional
     public ForumUserDTO saveUser(ForumUserDTO forumUserDTO){
 
-        if(forumUserDTO.emailAddress == null || StringUtils.isEmpty(forumUserDTO.emailAddress)) {
+        if(StringUtils.isNullOrEmpty(forumUserDTO.emailAddress)) {
             // without an email address, user cannot receive a (new) password
             throw new RuntimeException("Email address missing.");
         }
@@ -160,7 +161,7 @@ public class AdministratorUseCase {
     @Transactional
     public CompanyDTO saveCompany(CompanyDTO companyDTO){
 
-        if(companyDTO.description == null || StringUtils.isEmpty(companyDTO.description)) {
+        if(StringUtils.isNullOrEmpty(companyDTO.description)) {
             throw new RuntimeException("company description is empty");
         }
 
@@ -179,7 +180,7 @@ public class AdministratorUseCase {
     @Transactional
     public ProductTypeDTO saveProductType(ProductTypeDTO productTypeDTO) {
 
-        if (productTypeDTO.description == null || StringUtils.isEmpty(productTypeDTO.description)) {
+        if (StringUtils.isNullOrEmpty(productTypeDTO.description)) {
             throw new RuntimeException("product type description is empty");
         }
 
@@ -198,7 +199,7 @@ public class AdministratorUseCase {
     @Transactional
     public RatingUrlDTO saveRatingUrl(RatingUrlDTO ratingUrlDTO) {
 
-        if (ratingUrlDTO.url == null || StringUtils.isEmpty(ratingUrlDTO.url)) {
+        if (StringUtils.isNullOrEmpty(ratingUrlDTO.url)) {
             throw new RuntimeException("url is empty");
         }
 
@@ -215,9 +216,34 @@ public class AdministratorUseCase {
     }
 
     @Transactional
+    public TranslationDTO saveTranslation(TranslationDTO translationDTO) {
+
+        if (StringUtils.isNullOrEmpty(translationDTO.original)) {
+            throw new RuntimeException("url is empty");
+        }
+
+        Translation translation;
+
+        if(translationDTO.code == null || translationDTO.code <= 0) {
+            translation = new Translation();
+        } else {
+            translation = translationRepository.getOne(translationDTO.code);
+            translation.setVersion(translationDTO.version);
+        }
+
+        translation.setOriginal(translationDTO.original);
+        translation.setNl(translationDTO.nl);
+        translation.setUs(translationDTO.us);
+
+        translation = translationRepository.save(translation);
+
+        return TranslationDTO.toDto(translation, 0);
+    }
+
+    @Transactional
     public GameConsoleDTO saveGameConsole(GameConsoleDTO gameConsoleDTO){
 
-        if(gameConsoleDTO.description == null || StringUtils.isEmpty(gameConsoleDTO.description)) {
+        if(StringUtils.isNullOrEmpty(gameConsoleDTO.description)) {
             // without an email address, user cannot receive a (new) password
             throw new RuntimeException("game console description is empty");
         }
@@ -306,6 +332,20 @@ public class AdministratorUseCase {
         try {
             RatingUrl ratingUrl = ratingUrlRepository.getByCode(code);
             ratingUrlRepository.delete(ratingUrl);
+        } catch(Exception e) {
+            // delete fails when user either does not exist or user is already connected to forum messages.
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteTranslation(Integer code) {
+
+        try {
+            Translation translation = translationRepository.getOne(code);
+            translationRepository.delete(translation);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
             e.printStackTrace();

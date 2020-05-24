@@ -6,7 +6,8 @@ public enum ECodeTable {
     Companies(0, "Company"),
     GameConsole(1,"Game Console"),
     ProductType(2, "Product Type"),
-    RatingUrl(3, "Rating URLs");
+    RatingUrl(3, "Rating URLs"),
+    Translation(4, "Translation");
 
     private int id;
     private String description;

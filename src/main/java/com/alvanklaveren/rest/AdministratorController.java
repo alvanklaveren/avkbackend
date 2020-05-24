@@ -143,6 +143,9 @@ public class AdministratorController {
                 RatingUrlDTO ratingUrlDTO = (RatingUrlDTO) toDTO(RatingUrlDTO.class, codeTableRow);
                 administratorUseCase.saveRatingUrl(ratingUrlDTO);
                 break;
+            case Translation:
+                TranslationDTO translationDTO = (TranslationDTO) toDTO(TranslationDTO.class, codeTableRow);
+                administratorUseCase.saveTranslation(translationDTO);
         }
 
         JSONObject response = new JSONObject();
@@ -174,6 +177,8 @@ public class AdministratorController {
             case RatingUrl:
                 isDeleted = administratorUseCase.deleteRatingUrl(code);
                 break;
+            case Translation:
+                isDeleted = administratorUseCase.deleteTranslation(code);
         }
 
         JSONObject response = new JSONObject();
