@@ -1,6 +1,7 @@
 package com.alvanklaveren.rest;
 
 import com.alvanklaveren.enums.ELanguage;
+import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.usecase.TranslationUseCase;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -8,10 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.alvanklaveren.security.SecurityConstants.ROLE_ADMIN;
 
 @RestController
 @RequestMapping("/backend/translation")
@@ -49,6 +54,14 @@ public class TranslationController {
         Map<String,String> dictionary = translationUseCase.getDictionary(eLanguage);
 
         return new ResponseEntity<>(dictionary, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getTranslations", method = RequestMethod.GET, produces="application/json")
+    @Secured(ROLE_ADMIN)
+    public ResponseEntity<List<TranslationDTO>> getTranslations(){
+
+        List<TranslationDTO> translations = translationUseCase.getTranslations();
+        return new ResponseEntity<>(translations, HttpStatus.OK);
     }
 
 }
