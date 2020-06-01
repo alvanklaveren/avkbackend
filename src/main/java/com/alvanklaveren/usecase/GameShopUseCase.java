@@ -3,6 +3,7 @@ package com.alvanklaveren.usecase;
 import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
+import com.alvanklaveren.utils.StringLogic;
 import com.mysql.cj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import utils.StringLogic;
 
 import javax.imageio.ImageIO;
 import javax.sql.rowset.serial.SerialBlob;

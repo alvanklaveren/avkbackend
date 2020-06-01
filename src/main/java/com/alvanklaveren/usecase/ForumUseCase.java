@@ -14,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import utils.StringLogic;
-import utils.email.HotmailMessage;
+import com.alvanklaveren.utils.StringLogic;
+import com.alvanklaveren.utils.email.HotmailMessage;
 
 import javax.mail.MessagingException;
 import javax.sql.rowset.serial.SerialBlob;

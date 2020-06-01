@@ -1,4 +1,4 @@
-package utils.email;
+package com.alvanklaveren.utils.email;
 
 
 import javax.mail.Authenticator;
