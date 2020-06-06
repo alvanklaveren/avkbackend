@@ -196,6 +196,22 @@ public class GameShopController {
         return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN})
+    @RequestMapping(value="/uploadImageAlt", method = {RequestMethod.POST}, produces = "application/json")
+    public ResponseEntity<ProductDTO> uploadImageAlt(@RequestBody String request) {
+
+        JSONObject jsonObject = new JSONObject(request);
+
+        Integer codeProduct = jsonObject.getInt("codeProduct");
+        String fileContent = jsonObject.getString("fileContent");
+
+        System.out.println(codeProduct);
+        System.out.println(fileContent.substring(0,20));
+
+        ProductDTO productDTO = gameShopUseCase.uploadImageAlt(codeProduct, fileContent);
+        return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = {"/gameshopmobile/{codeGameConsole}/{codeProductType}",
                              "/gameshopmobile/{codeGameConsole}/{codeProductType}/{description}"},
                     method = {RequestMethod.GET}, produces="application/json")
