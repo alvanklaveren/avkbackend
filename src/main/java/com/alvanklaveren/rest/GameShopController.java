@@ -205,9 +205,6 @@ public class GameShopController {
         Integer codeProduct = jsonObject.getInt("codeProduct");
         String fileContent = jsonObject.getString("fileContent");
 
-        System.out.println(codeProduct);
-        System.out.println(fileContent.substring(0,20));
-
         ProductDTO productDTO = gameShopUseCase.uploadImageAlt(codeProduct, fileContent);
         return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
     }
