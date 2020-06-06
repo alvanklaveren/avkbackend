@@ -11,6 +11,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,6 +27,16 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		super(new AntPathRequestMatcher(url));
 		setAuthenticationManager(authManager);
 		this.tokenAuthenticationService = tokenAuthenticationService;
+	}
+
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+			throws IOException, ServletException {
+
+		// transform the request into a cached request, so we can read it as often as we want
+		CachedBodyHttpServletRequest cachedRequest = new CachedBodyHttpServletRequest( (HttpServletRequest) req);
+
+		super.doFilter(cachedRequest, res, chain);
 	}
 
 	@Override
