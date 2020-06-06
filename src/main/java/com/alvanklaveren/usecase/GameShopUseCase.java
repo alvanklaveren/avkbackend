@@ -5,6 +5,7 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.alvanklaveren.utils.StringLogic;
 import com.mysql.cj.util.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
 import javax.sql.rowset.serial.SerialBlob;
@@ -286,15 +286,7 @@ public class GameShopUseCase {
     @Transactional
     public ProductDTO uploadImageAlt(Integer codeProduct, String fileContent){
 
-        byte[] imageByte;
-
-        BASE64Decoder decoder = new BASE64Decoder();
-        try {
-            imageByte = decoder.decodeBuffer(fileContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        byte[] imageByte = Base64.decodeBase64(fileContent.getBytes());
 
         Product product = productRepository.getOne(codeProduct);
 
