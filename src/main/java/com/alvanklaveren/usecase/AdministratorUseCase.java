@@ -4,6 +4,7 @@ import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.mysql.cj.util.StringUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,25 @@ public class AdministratorUseCase {
 
         try {
             Blob blob = new SerialBlob(file.getBytes());
+            constants.setBlobValue(blob);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        constants = constantsRepository.save(constants);
+
+        return ConstantsDTO.toDto(constants, 0);
+    }
+
+    @Transactional
+    public ConstantsDTO uploadImageAlt(Integer codeConstants, String fileContent){
+
+        byte[] imageByte = Base64.decodeBase64(fileContent.getBytes());
+
+        Constants constants = constantsRepository.getByCode(codeConstants);
+
+        try {
+            Blob blob = new SerialBlob(imageByte);
             constants.setBlobValue(blob);
         } catch (Exception e){
             e.printStackTrace();

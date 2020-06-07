@@ -153,6 +153,19 @@ public class ForumController {
         return new ResponseEntity<>(messageImageDTO, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @Secured({ROLE_ADMIN, ROLE_MEMBER})
+    @RequestMapping(value="/uploadImageAlt", method = {RequestMethod.POST}, produces = "application/json")
+    public ResponseEntity<MessageImageDTO> uploadImageAlt(@RequestBody String request){
+
+        JSONObject jsonObject = new JSONObject(request);
+        Integer codeMessage = jsonObject.getInt("codeMessage");
+        String fileContent = jsonObject.getString("fileContent");
+
+        MessageImageDTO messageImageDTO = forumUseCase.uploadImageAlt(codeMessage, fileContent);
+
+        return new ResponseEntity<>(messageImageDTO, new HttpHeaders(), HttpStatus.OK);
+    }
+
     @RequestMapping(value="/getImages", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<List<MessageImageDTO>> getImages(){
 

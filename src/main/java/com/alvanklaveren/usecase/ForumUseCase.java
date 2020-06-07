@@ -296,6 +296,32 @@ public class ForumUseCase {
         return MessageImageDTO.toDto(messageImage, 0);
     }
 
+    @Transactional
+    public MessageImageDTO uploadImageAlt(Integer codeMessage, String fileContent){
+
+        byte[] imageByte = org.apache.tomcat.util.codec.binary.Base64.decodeBase64(fileContent.getBytes());
+
+        Message message = null;
+        if(codeMessage > 0) {
+            message = messageRepository.getOne(codeMessage);
+        }
+
+        MessageImage messageImage = new MessageImage();
+        messageImage.setMessage(message);
+        messageImage.setSortorder(0);
+
+        try {
+            Blob blob = new SerialBlob(imageByte);
+            messageImage.setImage(blob);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        messageImage = messageImageRepository.save(messageImage);
+
+        return MessageImageDTO.toDto(messageImage, 0);
+    }
+
     @Transactional(readOnly = true)
     public List<MessageImageDTO> getImages() {
 

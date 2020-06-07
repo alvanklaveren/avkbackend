@@ -201,7 +201,6 @@ public class GameShopController {
     public ResponseEntity<ProductDTO> uploadImageAlt(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
-
         Integer codeProduct = jsonObject.getInt("codeProduct");
         String fileContent = jsonObject.getString("fileContent");
 

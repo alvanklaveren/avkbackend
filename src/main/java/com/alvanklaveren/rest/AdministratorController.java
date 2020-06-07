@@ -65,6 +65,18 @@ public class AdministratorController {
         return new ResponseEntity<>(constantsDTO, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @RequestMapping(value="/uploadConstantsImageAlt", method = {RequestMethod.POST}, produces = "application/json")
+    public ResponseEntity<ConstantsDTO> uploadConstantsImageAlt(@RequestBody String request){
+
+        JSONObject jsonObject = new JSONObject(request);
+        Integer codeConstants = jsonObject.getInt("codeConstants");
+        String fileContent = jsonObject.getString("fileContent");
+
+        ConstantsDTO constantsDTO = administratorUseCase.uploadImageAlt(codeConstants, fileContent);
+
+        return new ResponseEntity<>(constantsDTO, new HttpHeaders(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/getConstantsImage", method = {RequestMethod.GET}, produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getConstantsImage(@RequestParam Integer codeConstants) {
 
