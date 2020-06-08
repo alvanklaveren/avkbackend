@@ -17,15 +17,15 @@ public class Message {
     @Version
     private int version;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_category")
     private MessageCategory messageCategory;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_forum_user")
     private ForumUser forumUser;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_message")
     private Message message; // contains the original message to which THIS message is replying
 

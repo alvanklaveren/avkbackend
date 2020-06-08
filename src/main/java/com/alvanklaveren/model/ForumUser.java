@@ -19,7 +19,7 @@ public class ForumUser {
     @Version
     private int version;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_classification")
     private Classification classification;
 

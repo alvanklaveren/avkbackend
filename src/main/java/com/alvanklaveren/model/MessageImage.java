@@ -16,7 +16,7 @@ public class MessageImage {
     @Version
     private int version;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_message")
     private Message message;
 

@@ -14,11 +14,11 @@ public class ProductRating {
     @Version
     private int version;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_product")
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_rating_url")
     private RatingUrl ratingUrl;
 

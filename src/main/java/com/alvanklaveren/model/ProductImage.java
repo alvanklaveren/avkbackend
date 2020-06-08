@@ -17,7 +17,7 @@ public class ProductImage {
     @Version
     private int version;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_product")
     private Product product;
 

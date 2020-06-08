@@ -17,15 +17,15 @@ public class Product {
     @Version
     private int version;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_game_console")
     private GameConsole gameConsole;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_product_type")
     private ProductType productType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_company")
     private Company company;
 
