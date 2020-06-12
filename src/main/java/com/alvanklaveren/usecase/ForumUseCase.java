@@ -175,6 +175,15 @@ public class ForumUseCase {
     public List<MessageCategoryDTO> getMessageCategories(){
 
         List<MessageCategory> messageCategories = messageCategoryRepository.findAll();
+
+        // remove the Homepage (admin only) category when not logged in as Admin
+        if (!UserContext.hasRole(ROLE_ADMIN)) {
+            MessageCategory messageCategory =
+                    messageCategories.stream().filter(mc -> mc.getCode() == -1).findFirst().orElse(null);
+
+            messageCategories.remove(messageCategory);
+        }
+
         return MessageCategoryDTO.toDto(messageCategories, 0);
     }
 
