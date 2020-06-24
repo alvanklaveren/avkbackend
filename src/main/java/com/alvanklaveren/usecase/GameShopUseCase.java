@@ -330,7 +330,14 @@ public class GameShopUseCase {
         return productDTOs;
     }
 
-    private BufferedImage scale(BufferedImage source, double ratio) {
+    @Transactional(readOnly=true)
+    public ProductDTO getProduct(Integer codeProduct) {
+
+        Product product = productRepository.getOne(codeProduct);
+        return ProductDTO.toDto(product, 1);
+    }
+
+        private BufferedImage scale(BufferedImage source, double ratio) {
         int w = (int) (source.getWidth() * ratio);
         int h = (int) (source.getHeight() * ratio);
         BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -361,4 +368,5 @@ public class GameShopUseCase {
         }
         return baos.toByteArray();
     }
+
 }

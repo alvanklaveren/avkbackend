@@ -230,6 +230,21 @@ public class GameShopController {
         return new ResponseEntity<>(productMobileDTOs, HttpStatus.OK);
     }
 
+    /** Returns the actual, not-yet-html-formatted, description stored in the database
+     *
+     * @param codeProduct
+     * @return the (original) description
+     */
+    @RequestMapping(value = "/getProductDescription", method = {RequestMethod.POST}, produces="application/json")
+    public ResponseEntity<String> getProductList(@RequestBody Integer codeProduct) {
+
+        ProductDTO productDTO = gameShopUseCase.getProduct(codeProduct);
+
+        JSONObject result = new JSONObject();
+        result.put("description", productDTO.description);
+        return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+    }
+
     // helper class to generate content for mobile app in playstore
     class ProductMobileDTO {
         public Integer code;
