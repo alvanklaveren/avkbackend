@@ -38,7 +38,7 @@ public class ForumController {
         int page = jsonObject.getInt("page");
         int pageSize = jsonObject.getInt("pageSize");
 
-        List<MessageDTO> messageDtos = forumUseCase.getByCategoryCode(-1, page, pageSize);
+        List<MessageDTO> messageDtos = forumUseCase.getByCategoryCode(-1, page, pageSize, 0);
 
         return new ResponseEntity<>(messageDtos, HttpStatus.OK);
     }

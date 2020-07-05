@@ -145,7 +145,7 @@ public class ForumUseCase {
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDTO> getByCategoryCode(Integer codeCategory, int page, int pageSize){
+    public List<MessageDTO> getByCategoryCode(Integer codeCategory, int page, int pageSize, int level){
 
         Pageable pageRequest = PageRequest.of(page, pageSize, Sort.by("code").descending());
 
@@ -160,7 +160,7 @@ public class ForumUseCase {
             message.setMessageText(messageText);
         });
 
-        return MessageDTO.toDto(messages, 1);
+        return MessageDTO.toDto(messages, level);
     }
 
     @Transactional(readOnly = true)
