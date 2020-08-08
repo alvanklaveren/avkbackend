@@ -115,7 +115,7 @@ public class GameShopUseCase {
         List<GameConsole> gameConsoles =
                 gameConsoleRepository.findAll(Sort.by("sortorder").ascending().and(Sort.by("description").ascending()));
 
-        return GameConsoleDTO.toDto(gameConsoles, 1);
+        return GameConsoleDTO.toDto(gameConsoles, 2);
     }
 
     @Transactional(readOnly=true)
