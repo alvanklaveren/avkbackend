@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+// THIS COMMENT IS ADDED TO SHOW HOW A FIX ON STABLE BRANCH CAN BE PATCHED ON MASTER BRANCH
 //@SpringBootApplication
 //public class Application {
 //
