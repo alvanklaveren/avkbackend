@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConstantsDTO {
+public class ConstantsDTO extends AbstractDTO{
 
     public Integer code;
     public String id;

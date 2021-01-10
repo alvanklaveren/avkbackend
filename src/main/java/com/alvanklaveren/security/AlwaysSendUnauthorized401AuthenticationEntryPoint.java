@@ -10,8 +10,10 @@ import java.io.IOException;
 
 @Component
 public class AlwaysSendUnauthorized401AuthenticationEntryPoint implements AuthenticationEntryPoint {
+
     @Override
     public final void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

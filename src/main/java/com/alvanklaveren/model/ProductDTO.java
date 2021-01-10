@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ProductDTO {
+public class ProductDTO extends AbstractDTO{
 
     public Integer code;
     public String name;

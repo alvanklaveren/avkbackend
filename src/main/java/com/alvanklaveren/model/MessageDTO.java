@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MessageDTO {
+public class MessageDTO extends AbstractDTO{
 
     public Integer code;
     public String description;

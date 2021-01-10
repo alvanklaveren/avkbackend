@@ -1,12 +1,13 @@
 package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.enums.EClassification;
+import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.mysql.cj.util.StringUtils;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,21 +16,35 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.alvanklaveren.enums.ECodeTable.*;
 
 @Component
+@Slf4j
+@AllArgsConstructor
 public class AdministratorUseCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdministratorUseCase.class);
+    @Autowired private final CompanyRepository companyRepository;
+    @Autowired private final ConstantsRepository constantsRepository;
+    @Autowired private final ForumUserRepository forumUserRepository;
+    @Autowired private final RatingUrlRepository ratingUrlRepository;
+    @Autowired private final TranslationRepository translationRepository;
+    @Autowired private final GameConsoleRepository gameConsoleRepository;
+    @Autowired private final ProductTypeRepository productTypeRepository;
+    @Autowired private final ClassificationRepository classificationRepository;
 
-    @Autowired private CompanyRepository companyRepository;
-    @Autowired private ConstantsRepository constantsRepository;
-    @Autowired private ForumUserRepository forumUserRepository;
-    @Autowired private RatingUrlRepository ratingUrlRepository;
-    @Autowired private TranslationRepository translationRepository;
-    @Autowired private GameConsoleRepository gameConsoleRepository;
-    @Autowired private ProductTypeRepository productTypeRepository;
-    @Autowired private ClassificationRepository classificationRepository;
+    private static final Map<ECodeTable, Class<? extends AbstractDTO>> codeTableMap = new HashMap<>();
+    static {
+        codeTableMap.put(GameConsole, GameConsoleDTO.class);
+        codeTableMap.put(ProductType, ProductTypeDTO.class);
+        codeTableMap.put(Translation, TranslationDTO.class);
+        codeTableMap.put(RatingUrl, RatingUrlDTO.class);
+        codeTableMap.put(Companies, CompanyDTO.class);
+    }
+
 
     @Transactional(readOnly = true)
     public ConstantsDTO getByCode(Integer code){
@@ -374,4 +389,23 @@ public class AdministratorUseCase {
         return true;
     }
 
+    @Transactional
+    public void saveCodeTable(ECodeTable eCodeTable, String codeTableRow){
+
+        AbstractDTO dto = AbstractDTO.mapToDTO(codeTableMap.get(eCodeTable), codeTableRow);
+        if (dto instanceof CompanyDTO) {
+            saveCompany((CompanyDTO) dto);
+        } else if (dto instanceof GameConsoleDTO) {
+            saveGameConsole((GameConsoleDTO) dto);
+        } else if (dto instanceof ProductTypeDTO) {
+            saveProductType((ProductTypeDTO) dto);
+        } else if (dto instanceof RatingUrlDTO) {
+            saveRatingUrl((RatingUrlDTO) dto);
+        } else if (dto instanceof TranslationDTO) {
+            saveTranslation((TranslationDTO) dto);
+        } else {
+            throw new RuntimeException("Failed to save " + dto.getClass().getSimpleName()
+                    + ". Reason: table is not registered as a codetable in AdminstratorUseCase::saveCodeTable");
+        }
+    }
 }

@@ -3,7 +3,7 @@ package com.alvanklaveren.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TranslationDTO {
+public class TranslationDTO extends AbstractDTO{
 
     public Integer code;
     public String original;

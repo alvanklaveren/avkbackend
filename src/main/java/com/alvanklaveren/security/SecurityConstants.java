@@ -7,8 +7,4 @@ public class SecurityConstants {
 
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
-
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_MEMBER = "ROLE_MEMBER";
-    public static final String ROLE_GUEST = "ROLE_GUEST";
 }

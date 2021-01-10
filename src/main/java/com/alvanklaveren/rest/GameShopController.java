@@ -1,11 +1,12 @@
 package com.alvanklaveren.rest;
 
+import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.GameShopUseCase;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,18 +20,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.alvanklaveren.security.SecurityConstants.ROLE_ADMIN;
+import static com.alvanklaveren.enums.EProductSort.EProductSortDTO;
 
 @RestController
 @RequestMapping("/backend/gameshop")
+@AllArgsConstructor
+@Slf4j
 public class GameShopController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GameShopController.class);
-
     @Autowired
-    private GameShopUseCase gameShopUseCase;
-
-    public GameShopController() { }
+    private final GameShopUseCase gameShopUseCase;
 
     @RequestMapping(value = "/getProductList", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<List<ProductDTO>> getProductList(@RequestBody String request) {
@@ -83,7 +82,7 @@ public class GameShopController {
     }
 
     @RequestMapping(value = "/getProductSortList", method = {RequestMethod.GET}, produces="application/json")
-    public ResponseEntity<List<EProductSortDTO>> getProductSortList() {
+    public ResponseEntity<List<EProductSort.EProductSortDTO>> getProductSortList() {
 
         List<EProductSortDTO> eProductSortDTOs = new ArrayList<>();
 
@@ -120,8 +119,7 @@ public class GameShopController {
     @RequestMapping(value = "/getRatingUrls", method = {RequestMethod.GET}, produces="application/json")
     public ResponseEntity<List<RatingUrlDTO>> getRatingUrls() {
 
-        List<RatingUrlDTO> ratingUrlDTOs = new ArrayList<>();
-        ratingUrlDTOs.addAll(gameShopUseCase.getRatingUrls());
+        List<RatingUrlDTO> ratingUrlDTOs = new ArrayList<>(gameShopUseCase.getRatingUrls());
 
         return new ResponseEntity<>(ratingUrlDTOs, HttpStatus.OK);
     }
@@ -134,7 +132,7 @@ public class GameShopController {
         return new ResponseEntity<>(companyDTOs, HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value = "/addCompany", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<CompanyDTO> addCompany(@RequestBody String companyName) {
 
@@ -142,7 +140,7 @@ public class GameShopController {
         return new ResponseEntity<>(companyDTO, HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value = "/save", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
 
@@ -150,7 +148,7 @@ public class GameShopController {
         return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value = "/saveProductRating", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> saveProductRating(@RequestBody String request) {
 
@@ -163,7 +161,7 @@ public class GameShopController {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value = "/delete", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeProduct) {
 
@@ -175,7 +173,7 @@ public class GameShopController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value = "/deleteProductRating", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<String> deleteProductRating(@RequestBody Integer codeProductRating) {
 
@@ -187,7 +185,7 @@ public class GameShopController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value="/uploadImage", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ProductDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeProduct") Integer codeProduct){
 
@@ -196,7 +194,7 @@ public class GameShopController {
         return new ResponseEntity<>(productDTO, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @Secured({ROLE_ADMIN})
+    @Secured({EClassification.ROLE_ADMIN})
     @RequestMapping(value="/uploadImageAlt", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ProductDTO> uploadImageAlt(@RequestBody String request) {
 
@@ -245,8 +243,8 @@ public class GameShopController {
         return new ResponseEntity<>(result.toString(), HttpStatus.OK);
     }
 
-    // helper class to generate content for mobile app in playstore
-    class ProductMobileDTO {
+    // helper class to generate content for mobile app in play store
+    static class ProductMobileDTO {
         public Integer code;
         public String name;
         public String description;

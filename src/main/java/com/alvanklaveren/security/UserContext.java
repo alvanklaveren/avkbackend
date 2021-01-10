@@ -1,5 +1,6 @@
 package com.alvanklaveren.security;
 
+import com.alvanklaveren.enums.EClassification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +18,7 @@ public final class UserContext {
 
     public static final String ANONYMOUS_USER = "anonymousUser";
 
-    private UserContext() {
-    }
+    private UserContext() { }
 
     /**
      * Get the current username. Note that it may not correspond to a username that
@@ -31,27 +31,26 @@ public final class UserContext {
     public static String getUsername() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-
-            Object principal = auth.getPrincipal();
-            if (principal instanceof UserDetails) {
-
-                return ((UserDetails) principal).getUsername();
-            }
-            return principal.toString();
+        if (auth == null) {
+            return ANONYMOUS_USER;
         }
-        return ANONYMOUS_USER;
+
+        Object principal = auth.getPrincipal();
+        return principal instanceof UserDetails ? ((UserDetails) principal).getUsername() : principal.toString();
     }
 
     public static Integer getId() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
 
-        if (auth != null) {
-            if (auth instanceof AuthenticationToken) {
-                return (((AuthenticationToken)auth).getUserCode());
-            }
+            return null;
         }
+
+        if (auth instanceof AuthenticationToken) {
+            return ((AuthenticationToken)auth).getUserCode();
+        }
+
         return null;
     }
 
@@ -61,11 +60,7 @@ public final class UserContext {
     public static UserDetails getUserDetails() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof UserDetails) {
-
-            return ((UserDetails) auth.getPrincipal());
-        }
-        return null;
+        return auth != null && auth.getPrincipal() instanceof UserDetails ? ((UserDetails) auth.getPrincipal()) : null;
     }
 
     /**
@@ -74,11 +69,7 @@ public final class UserContext {
     public static List<String> getRoles() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-
-            return toStringList(auth.getAuthorities());
-        }
-        return emptyList();
+        return auth == null ? emptyList() : toStringList(auth.getAuthorities());
     }
 
     /**
@@ -86,25 +77,15 @@ public final class UserContext {
      *
      * @return true if the passed role is present, false otherwise.
      */
-    public static boolean hasRole(String roleName) {
+    public static boolean hasRole(EClassification eClassification) {
 
-        for (String role : getRoles()) {
-
-            if (role.equalsIgnoreCase(roleName)) {
-
-                return true;
-            }
-        }
-        return false;
+        return getRoles().stream().anyMatch(role -> role.equalsIgnoreCase(eClassification.getRoleName()));
     }
 
     public static List<String> toStringList(Iterable<? extends GrantedAuthority> grantedAuthorities) {
 
-        List<String> result = new ArrayList();
-        for (GrantedAuthority grantedAuthority : grantedAuthorities) {
-
-            result.add(grantedAuthority.getAuthority());
-        }
+        List<String> result = new ArrayList<>();
+        grantedAuthorities.forEach(grantedAuthority -> result.add(grantedAuthority.getAuthority()));
         return result;
     }
 }

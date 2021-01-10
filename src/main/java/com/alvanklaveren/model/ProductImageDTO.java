@@ -4,7 +4,7 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProductImageDTO {
+public class ProductImageDTO extends AbstractDTO{
 
     public Integer code;
     public Blob image;

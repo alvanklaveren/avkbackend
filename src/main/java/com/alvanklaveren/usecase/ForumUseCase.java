@@ -1,10 +1,11 @@
 package com.alvanklaveren.usecase;
 
+import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.alvanklaveren.security.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,19 +26,20 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
-
-import static com.alvanklaveren.security.SecurityConstants.ROLE_ADMIN;
+import java.util.stream.IntStream;
 
 @Component
+@Slf4j
+@AllArgsConstructor
 public class ForumUseCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ForumUseCase.class);
+    @Autowired private final MessageCategoryRepository messageCategoryRepository;
+    @Autowired private final MessageImageRepository messageImageRepository;
+    @Autowired private final ForumUserRepository forumUserRepository;
+    @Autowired private final ConstantsRepository constantsRepository;
+    @Autowired private final MessageRepository messageRepository;
 
-    @Autowired private MessageCategoryRepository messageCategoryRepository;
-    @Autowired private MessageImageRepository messageImageRepository;
-    @Autowired private ForumUserRepository forumUserRepository;
-    @Autowired private ConstantsRepository constantsRepository;
-    @Autowired private MessageRepository messageRepository;
+    private final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!";
 
 
     @Transactional
@@ -52,7 +54,7 @@ public class ForumUseCase {
         } else {
             message = messageRepository.getOne(messageDTO.code);
 
-            if(!isEditable(message)) {
+            if(isNotEditable(message)) {
                 throw new RuntimeException("Saving failed: User is not owner of this message");
             }
 
@@ -110,7 +112,7 @@ public class ForumUseCase {
 
         Message message = messageRepository.getOne(codeMessage);
 
-        if(!isEditable(message)) {
+        if(isNotEditable(message)) {
             throw new RuntimeException("Deletion failed: User is not owner of this message");
         }
 
@@ -177,11 +179,10 @@ public class ForumUseCase {
         List<MessageCategory> messageCategories = messageCategoryRepository.findAll();
 
         // remove the Homepage (admin only) category when not logged in as Admin
-        if (!UserContext.hasRole(ROLE_ADMIN)) {
-            MessageCategory messageCategory =
-                    messageCategories.stream().filter(mc -> mc.getCode() == -1).findFirst().orElse(null);
+        if (!UserContext.hasRole(EClassification.Administrator)) {
 
-            messageCategories.remove(messageCategory);
+            messageCategories.stream().filter(mc -> mc.getCode().equals(-1)).findFirst()
+                    .ifPresent(messageCategories::remove);
         }
 
         return MessageCategoryDTO.toDto(messageCategories, 0);
@@ -197,8 +198,7 @@ public class ForumUseCase {
     @Transactional(readOnly = true)
     public Integer getMessageCount(Integer codeMessageCategory){
 
-        Integer messageCount = messageRepository.countByMessageCategory(codeMessageCategory);
-        return messageCount;
+        return messageRepository.countByMessageCategory(codeMessageCategory);
     }
 
     @Transactional(readOnly=true)
@@ -373,7 +373,7 @@ public class ForumUseCase {
             hotmailMessage.send();
         } catch (MessagingException e) {
             e.printStackTrace();
-            LOG.error(e.getMessage());
+            log.error(e.getMessage());
             return false;
         }
 
@@ -382,36 +382,29 @@ public class ForumUseCase {
 
     private String randomPassword() {
 
-        final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!";
-
         StringBuilder builder = new StringBuilder();
 
-        int length = 8;
-
-        while (length-- != 0) {
-            int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+        IntStream.range(1, 12).forEach(i -> {
+            int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
             builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-        }
+        });
 
         return builder.toString();
     }
 
     @Transactional(readOnly = true)
     public String getConstantsStringValueById(String id){
-        List<Constants> constantsList = constantsRepository.getById(id);
-        if(constantsList.size() == 0){
-            return null;
-        }
 
-        return ConstantsDTO.toDto(constantsList.get(0), 0).stringValue;
+        List<Constants> constantsList = constantsRepository.getById(id);
+        return constantsList.size() == 0 ? null : ConstantsDTO.toDto(constantsList.get(0), 0).stringValue;
     }
 
-    private boolean isEditable(Message message) {
+    private boolean isNotEditable(Message message) {
 
-        if(UserContext.hasRole(ROLE_ADMIN) || message == null || message.getForumUser() == null){
-            return true;
+        if(UserContext.hasRole(EClassification.Administrator) || message == null || message.getForumUser() == null) {
+            return false;
         }
 
-        return message.getForumUser().getCode().equals(UserContext.getId());
+        return !message.getForumUser().getCode().equals(UserContext.getId());
     }
 }

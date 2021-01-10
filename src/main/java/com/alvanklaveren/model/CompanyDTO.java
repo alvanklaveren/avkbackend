@@ -3,7 +3,7 @@ package com.alvanklaveren.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CompanyDTO {
+public class CompanyDTO extends AbstractDTO {
 
     public Integer code;
     public String description;

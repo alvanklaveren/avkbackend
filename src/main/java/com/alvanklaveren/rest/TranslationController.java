@@ -3,9 +3,9 @@ package com.alvanklaveren.rest;
 import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.usecase.TranslationUseCase;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +17,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/backend/translation")
+@AllArgsConstructor
+@Slf4j
 public class TranslationController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TranslationController.class);
-
     @Autowired
-    private TranslationUseCase translationUseCase;
+    private final TranslationUseCase translationUseCase;
 
     @RequestMapping(value = "/translate", method = RequestMethod.POST, produces="application/text")
     public ResponseEntity<String> translate(@RequestBody String request) {
@@ -31,7 +31,7 @@ public class TranslationController {
         String isoA2 = jsonObject.optString("isoA2");
         String original = jsonObject.getString("original");
 
-        ELanguage eLanguage = ELanguage.getByisoA2(isoA2);
+        ELanguage eLanguage = ELanguage.getByIsoA2(isoA2);
         String translatedText = translationUseCase.translate(original, eLanguage);
 
         JSONObject response = new JSONObject();
@@ -47,7 +47,7 @@ public class TranslationController {
             isoA2 = "us";
         }
 
-        ELanguage eLanguage = ELanguage.getByisoA2(isoA2);
+        ELanguage eLanguage = ELanguage.getByIsoA2(isoA2);
         Map<String,String> dictionary = translationUseCase.getDictionary(eLanguage);
 
         return new ResponseEntity<>(dictionary, HttpStatus.OK);

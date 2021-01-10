@@ -1,21 +1,17 @@
 package com.alvanklaveren.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public final class StringLogic {
 
-	private static final Logger LOG = LoggerFactory.getLogger(StringLogic.class);
 
 	static{ new StringLogic(); }
-
-   	private static Logger log = LoggerFactory.getLogger(StringLogic.class);
 
 	private StringLogic(){ }
 	

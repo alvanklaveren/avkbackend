@@ -1,8 +1,14 @@
 package com.alvanklaveren.model;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
+@Getter(AccessLevel.PUBLIC)
+@Setter(AccessLevel.PUBLIC)
 public class GameConsole {
 
     @Id
@@ -19,45 +25,4 @@ public class GameConsole {
     @ManyToOne
     @JoinColumn(name="code_company")
     private Company company;
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getSortorder() {
-        return sortorder;
-    }
-
-    public void setSortorder(int sortorder) {
-        this.sortorder = sortorder;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
 }

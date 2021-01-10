@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ProductRatingDTO {
+public class ProductRatingDTO extends AbstractDTO{
 
     public Integer code;
     public int rating;

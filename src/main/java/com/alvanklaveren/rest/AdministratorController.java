@@ -1,15 +1,13 @@
 package com.alvanklaveren.rest;
 
+import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.AdministratorUseCase;
 import com.alvanklaveren.usecase.ForumUseCase;
-import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,20 +17,21 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static com.alvanklaveren.security.SecurityConstants.ROLE_ADMIN;
+import static com.alvanklaveren.enums.ECodeTable.*;
 
 @RestController
 @RequestMapping("/backend/administrator")
-@Secured({ROLE_ADMIN})
+@AllArgsConstructor
+@Slf4j
+@Secured({EClassification.ROLE_ADMIN})
 public class AdministratorController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdministratorController.class);
-
-    @Autowired private AdministratorUseCase administratorUseCase;
-    @Autowired private ForumUseCase forumUseCase;
+    @Autowired private final AdministratorUseCase administratorUseCase;
+    @Autowired private final ForumUseCase forumUseCase;
 
     @RequestMapping(value = "/getConstant", method = {RequestMethod.POST}, produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
@@ -132,33 +131,8 @@ public class AdministratorController {
 
         JSONObject jsonObject = new JSONObject(request);
 
-        String codeTableRow = jsonObject.get("codeTableRow").toString();
-
         ECodeTable eCodeTable = ECodeTable.getByCode(jsonObject.getInt("codeTable"));
-        switch(eCodeTable){
-            case Companies:
-                CompanyDTO companyDTO = (CompanyDTO) toDTO(CompanyDTO.class, codeTableRow);
-                administratorUseCase.saveCompany(companyDTO);
-                break;
-
-            case GameConsole:
-                GameConsoleDTO gameConsoleDTO = (GameConsoleDTO) toDTO(GameConsoleDTO.class, codeTableRow);
-                administratorUseCase.saveGameConsole(gameConsoleDTO);
-                break;
-
-            case ProductType:
-                ProductTypeDTO productTypeDTO = (ProductTypeDTO) toDTO(ProductTypeDTO.class, codeTableRow);
-                administratorUseCase.saveProductType(productTypeDTO);
-                break;
-
-            case RatingUrl:
-                RatingUrlDTO ratingUrlDTO = (RatingUrlDTO) toDTO(RatingUrlDTO.class, codeTableRow);
-                administratorUseCase.saveRatingUrl(ratingUrlDTO);
-                break;
-            case Translation:
-                TranslationDTO translationDTO = (TranslationDTO) toDTO(TranslationDTO.class, codeTableRow);
-                administratorUseCase.saveTranslation(translationDTO);
-        }
+        administratorUseCase.saveCodeTable(eCodeTable, jsonObject.get("codeTableRow").toString());
 
         JSONObject response = new JSONObject();
         response.put("result", "true");
@@ -180,17 +154,22 @@ public class AdministratorController {
             case Companies:
                 isDeleted = administratorUseCase.deleteCompany(code);
                 break;
+
             case GameConsole:
                 isDeleted = administratorUseCase.deleteGameConsole(code);
                 break;
+
             case ProductType:
                 isDeleted = administratorUseCase.deleteProductType(code);
                 break;
+
             case RatingUrl:
                 isDeleted = administratorUseCase.deleteRatingUrl(code);
                 break;
+
             case Translation:
                 isDeleted = administratorUseCase.deleteTranslation(code);
+                break;
         }
 
         JSONObject response = new JSONObject();
@@ -198,18 +177,4 @@ public class AdministratorController {
 
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
-
-    public Object toDTO(Class clazz, String content) {
-
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectReader reader = mapper.readerFor(clazz);
-        try {
-            MappingIterator mappingIterator = reader.readValues(content);
-            return mappingIterator.next();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 }

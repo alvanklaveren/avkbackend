@@ -5,9 +5,9 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.alvanklaveren.utils.StringLogic;
 import com.mysql.cj.util.StringUtils;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,17 +30,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
+@AllArgsConstructor
 public class GameShopUseCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GameShopUseCase.class);
-
-    @Autowired private ProductRepository productRepository;
-    @Autowired private CompanyRepository companyRepository;
-    @Autowired private ProductRatingRepository productRatingRepository;
-    @Autowired private GameConsoleRepository gameConsoleRepository;
-    @Autowired private ProductTypeRepository productTypeRepository;
-    @Autowired private ProductImageRepository productImageRepository;
-    @Autowired private RatingUrlRepository ratingUrlRepository;
+    @Autowired private final ProductRepository productRepository;
+    @Autowired private final CompanyRepository companyRepository;
+    @Autowired private final ProductRatingRepository productRatingRepository;
+    @Autowired private final GameConsoleRepository gameConsoleRepository;
+    @Autowired private final ProductTypeRepository productTypeRepository;
+    @Autowired private final ProductImageRepository productImageRepository;
+    @Autowired private final RatingUrlRepository ratingUrlRepository;
 
 
     @Transactional(readOnly=true)

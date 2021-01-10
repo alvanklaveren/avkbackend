@@ -1,5 +1,13 @@
 package com.alvanklaveren.enums;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+
+@Getter(AccessLevel.PUBLIC)
+@RequiredArgsConstructor
 public enum ECodeTable {
 
     Unknown(-1, "Unknown"),
@@ -9,29 +17,10 @@ public enum ECodeTable {
     RatingUrl(3, "Rating URLs"),
     Translation(4, "Translation");
 
-    private int id;
-    private String description;
-
-    ECodeTable(int id, String description){
-        this.id = id;
-        this.description = description;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+    private final int id;
+    private final String description;
 
     public static ECodeTable getByCode(int id){
-
-        for(ECodeTable value:values()){
-            if(value.getId() == id){
-                return value;
-            }
-        }
-        return Unknown;
+        return Arrays.stream(values()).filter(value -> value.getId() == id).findFirst().orElse(Unknown);
     }
 }

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MessageImageDTO {
+public class MessageImageDTO extends AbstractDTO{
 
     public Integer code;
     public byte[] image;

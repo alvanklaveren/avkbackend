@@ -14,9 +14,7 @@ import java.io.IOException;
 public class CorsFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
+    public void init(FilterConfig filterConfig) throws ServletException { }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -31,16 +29,14 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Expose-Headers", "Authorization, Content-Type, Content-Length");
 
         if("OPTIONS".equalsIgnoreCase(((HttpServletRequest) servletRequest).getMethod())) {
+
             response.setStatus(HttpServletResponse.SC_OK);
-        }
-        else {
+        } else {
+
             filterChain.doFilter(servletRequest, servletResponse);
         }
-
     }
 
     @Override
-    public void destroy() {
-
-    }
+    public void destroy() { }
 }

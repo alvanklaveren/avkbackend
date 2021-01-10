@@ -1,5 +1,6 @@
 package com.alvanklaveren.security;
 
+import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.ForumUser;
 import com.alvanklaveren.repository.ForumUserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-import static com.alvanklaveren.security.SecurityConstants.*;
-
 @Component
 public class TokenAuthenticationService {
 
@@ -31,10 +30,9 @@ public class TokenAuthenticationService {
         ForumUser forumUser = forumUserRepository.getByUsername(username);
 
         List<String> roles = new ArrayList<>();
-        switch(forumUser.getClassification().getCode()){
-            case 1: roles.add(ROLE_ADMIN); break;
-            case 2: roles.add(ROLE_MEMBER); break;
-            case 3: default: roles.add(ROLE_GUEST); break;
+        EClassification eClassification = EClassification.get(forumUser);
+        if (eClassification != EClassification.Unknown) {
+            roles.add(eClassification.getRoleName());
         }
 
         HashMap<String, Object> claims = new HashMap<>();
@@ -69,21 +67,20 @@ public class TokenAuthenticationService {
         AuthenticationToken authenticationToken = null;
 
         String token = request.getHeader(SecurityConstants.HEADER_STRING);
-        if (token != null) {
-
-            Claims claims = (Jwts.parser().setSigningKey(SecurityConstants.SECRET)
-                    .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, "")).getBody());
-
-            List<String> roles = claims.get("roles", List.class);
-            List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(roles.toArray(new String[roles.size()]));
-
-            if (claims.getSubject() != null) {
-                authenticationToken = new AuthenticationToken(claims.getSubject(), null, authorities,
-                        claims.get("userCode", Integer.class));
-            }
+        if (token == null) {
+            return null;
         }
 
-        return authenticationToken;
+        Claims claims = (Jwts.parser().setSigningKey(SecurityConstants.SECRET)
+                .parseClaimsJws(token.replace(SecurityConstants.TOKEN_PREFIX, "")).getBody());
+
+        @SuppressWarnings("unchecked")
+        List<String> roles = claims.get("roles", List.class);
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(roles.toArray(new String[0]));
+
+        String subject = claims.getSubject();
+        return subject == null ? null :
+                new AuthenticationToken(subject, null, authorities, claims.get("userCode", Integer.class));
     }
 
 }

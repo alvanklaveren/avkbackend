@@ -1,8 +1,8 @@
 package com.alvanklaveren.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -18,9 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 
+@Slf4j
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-	private TokenAuthenticationService tokenAuthenticationService;
+	private final TokenAuthenticationService tokenAuthenticationService;
 
 	public JWTAuthenticationFilter(String url, AuthenticationManager authManager, TokenAuthenticationService tokenAuthenticationService) {
 
@@ -41,27 +42,20 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
-			throws AuthenticationException, IOException, ServletException {
+			throws AuthenticationException, IOException {
 
 		AccountCredentials accountCredentials = new ObjectMapper().readValue(req.getInputStream(), AccountCredentials.class);
 
-		try {
-				return getAuthenticationManager().authenticate(
-					new UsernamePasswordAuthenticationToken(accountCredentials.getUsername(),
-					accountCredentials.getUsername() + accountCredentials.getPassword(), Collections.emptyList()));
-		} catch(BadCredentialsException bce){
-			throw bce;
-		} catch(AuthenticationException ae){
-			throw ae;
-		}
+		return getAuthenticationManager().authenticate(
+			new UsernamePasswordAuthenticationToken(accountCredentials.getUsername(),
+			accountCredentials.getUsername() + accountCredentials.getPassword(), Collections.emptyList()));
 	}
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
-			Authentication auth) throws IOException, ServletException {
+			Authentication auth) throws IOException {
 
 		this.tokenAuthenticationService.addAuthentication(res, auth.getName());
 	}
-
 
 }
