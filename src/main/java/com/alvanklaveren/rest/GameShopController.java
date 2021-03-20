@@ -212,7 +212,6 @@ public class GameShopController {
     public ResponseEntity<List<ProductMobileDTO>> getGameShopMobile(@PathVariable("codeGameConsole") Integer codeGameConsole, @PathVariable("codeProductType") Integer codeProductType, @PathVariable(required = false) String description) {
 
         // example usages of this function:
-        //  http://localhost:5000/backend/gameshop/gameshopmobile/0/0
         //  http://localhost:5000/backend/gameshop/gameshopmobile/2/1
         //  http://localhost:5000/backend/gameshop/gameshopmobile/0/0/Kingdom%Hearts
 
