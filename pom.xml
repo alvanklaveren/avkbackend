@@ -128,7 +128,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
                 <activatedProperties>dev</activatedProperties>
             </properties>
         </profile>
