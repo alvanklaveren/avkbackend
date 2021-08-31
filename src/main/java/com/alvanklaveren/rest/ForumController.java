@@ -72,7 +72,7 @@ public class ForumController {
         return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
-    @Secured({EClassification.ROLE_MEMBER, EClassification.ROLE_MEMBER})
+    @Secured({EClassification.ROLE_MEMBER, EClassification.ROLE_ADMIN})
     @RequestMapping(value = "/save", method = {RequestMethod.POST}, produces="application/json")
     public ResponseEntity<MessageDTO> save(@RequestBody MessageDTO messageDTO) {
 
