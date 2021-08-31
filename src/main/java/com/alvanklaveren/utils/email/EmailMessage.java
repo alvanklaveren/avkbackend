@@ -9,7 +9,6 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.*;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.*;
 import java.util.Properties;
 
@@ -33,14 +32,14 @@ public abstract class EmailMessage {
 		multiPart = new MimeMultipart();
     }
 
-	public void send() throws AddressException, MessagingException{
+	public void send() throws MessagingException {
 
 	    Session session = Session.getInstance(properties, new MailAuthenticator(this) );
 
 		Message msg = new MimeMessage(session);
 		msg.setContent(multiPart);
 		msg.setFrom(new InternetAddress(from));
-		msg.setRecipients(RecipientType.TO, InternetAddress.parse(to));
+		msg.setRecipients(MimeMessage.RecipientType.TO, InternetAddress.parse(to));
 		msg.setSubject(subject);
 		msg.setText(body);
 

@@ -16,7 +16,7 @@ public class HotmailMessage extends EmailMessage {
 	    Properties props = getProperties();
 	    props.put( "mail.smtp.auth", 			"true" );
 	    props.put( "mail.smtp.starttls.enable", "true" );
-	    props.put( "mail.smtp.host", 			"smtp.live.com" );
+	    props.put( "mail.smtp.host", 			"smtp.office365.com" );
 	    props.put( "mail.smtp.port", 			"587" );
 	}
 
