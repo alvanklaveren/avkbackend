@@ -225,6 +225,8 @@ public class GameShopUseCase {
         product.setName(productDTO.name);
         product.setDescription(productDTO.description);
         product.setYear(productDTO.year);
+        product.setProductStatus(productDTO.productStatus);
+        product.setPrice(productDTO.price);
         product.setVersion(productDTO.version);
 
         GameConsole gameConsole = gameConsoleRepository.getByCode(productDTO.gameConsole.code);

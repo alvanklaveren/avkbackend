@@ -10,6 +10,8 @@ public class ProductDTO extends AbstractDTO{
     public String name;
     public String description;
     public int year;
+    public int productStatus;
+    public double price;
     public int version;
 
     public GameConsoleDTO gameConsole;
@@ -32,6 +34,8 @@ public class ProductDTO extends AbstractDTO{
         dto.name = product.getName();
         dto.description = product.getDescription();
         dto.year = product.getYear();
+        dto.productStatus = product.getProductStatus();
+        dto.price = product.getPrice();
         dto.version = product.getVersion();
 
         if(--level >= 0) {

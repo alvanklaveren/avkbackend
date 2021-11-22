@@ -2,6 +2,7 @@ package com.alvanklaveren.rest;
 
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.enums.EProductSort;
+import com.alvanklaveren.enums.EProductStatus;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.GameShopUseCase;
 import lombok.AllArgsConstructor;
@@ -79,6 +80,21 @@ public class GameShopController {
     public @ResponseBody byte[] getProductMainImage(@RequestParam int codeProduct) {
 
         return gameShopUseCase.getProductMainImage(codeProduct);
+    }
+
+    @RequestMapping(value = "/getProductStatusList", method = {RequestMethod.GET}, produces="application/json")
+    public ResponseEntity<List<EProductStatus.EProductStatusDTO>> getProductStatusList() {
+
+        List<EProductStatus.EProductStatusDTO> eProductStatusDTOs = new ArrayList<>();
+
+        Arrays.stream(EProductStatus.values()).forEach(ps -> {
+            EProductStatus.EProductStatusDTO eProductStatusDTO = new EProductStatus.EProductStatusDTO();
+            eProductStatusDTO.id = ps.getId();
+            eProductStatusDTO.description = ps.getDescription();
+            eProductStatusDTOs.add(eProductStatusDTO);
+        });
+
+        return new ResponseEntity<>(eProductStatusDTOs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getProductSortList", method = {RequestMethod.GET}, produces="application/json")

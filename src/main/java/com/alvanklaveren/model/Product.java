@@ -19,6 +19,8 @@ public class Product {
     private String name;
     private String description;
     private int year;
+    private int productStatus;
+    private double price;
 
     @Version
     private int version;
