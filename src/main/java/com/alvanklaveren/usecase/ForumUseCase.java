@@ -2,6 +2,7 @@ package com.alvanklaveren.usecase;
 
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
+import com.alvanklaveren.projections.MessageListView;
 import com.alvanklaveren.repository.*;
 import com.alvanklaveren.security.UserContext;
 import lombok.AllArgsConstructor;
@@ -166,11 +167,10 @@ public class ForumUseCase {
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDTO> getMessagesByCategory(Integer codeMessageCategory){
+    public List<MessageListView> getMessagesByCategory(Integer codeMessageCategory){
 
-        List<Message> messages = messageRepository.findByMessageCategory_Code(codeMessageCategory, Sort.by("messageDate").descending());
-
-        return MessageDTO.toDto(messages, 1);
+        return messageRepository.findByMessageCategory_Code(codeMessageCategory,
+                Sort.by("messageDate").descending());
     }
 
     @Transactional(readOnly = true)

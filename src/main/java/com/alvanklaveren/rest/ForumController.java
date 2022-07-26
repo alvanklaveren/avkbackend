@@ -5,6 +5,7 @@ import com.alvanklaveren.model.ForumUserDTO;
 import com.alvanklaveren.model.MessageCategoryDTO;
 import com.alvanklaveren.model.MessageDTO;
 import com.alvanklaveren.model.MessageImageDTO;
+import com.alvanklaveren.projections.MessageListView;
 import com.alvanklaveren.usecase.ForumUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -135,11 +136,11 @@ public class ForumController {
     }
 
     @RequestMapping(value = "/getMessagesByCategory", method = {RequestMethod.POST}, produces = "application/json")
-    public ResponseEntity<List<MessageDTO>> getMessagesByCategory(@RequestBody Integer codeMessageCategory) {
+    public ResponseEntity<List<MessageListView>> getMessagesByCategory(@RequestBody Integer codeMessageCategory) {
 
-        List<MessageDTO> messageDTOs = forumUseCase.getMessagesByCategory(codeMessageCategory);
+        List<MessageListView> messageListViews = forumUseCase.getMessagesByCategory(codeMessageCategory);
 
-        return new ResponseEntity<>(messageDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(messageListViews, HttpStatus.OK);
     }
 
     @Secured({EClassification.ROLE_ADMIN, EClassification.ROLE_MEMBER})
