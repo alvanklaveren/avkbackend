@@ -30,39 +30,39 @@ public class ForumController {
     @Autowired
     private final ForumUseCase forumUseCase;
 
-    @RequestMapping(value = "/getHomePageMessages", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getHomePageMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
         int page = jsonObject.getInt("page");
         int pageSize = jsonObject.getInt("pageSize");
 
-        List<MessageDTO> messageDtos = forumUseCase.getByCategoryCode(-1, page, pageSize, 0);
+        List<MessageDTO> messageDTOs = forumUseCase.getByCategoryCode(-1, page, pageSize, 0);
 
-        return new ResponseEntity<>(messageDtos, HttpStatus.OK);
+        return ResponseEntity.ok(messageDTOs);
     }
 
-    @RequestMapping(value = "/getMessage", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getMessage", produces = "application/json")
     public ResponseEntity<MessageDTO> getMessage(@RequestBody Integer codeMessage) {
 
         MessageDTO messageDTO = forumUseCase.getMessage(codeMessage);
-        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+        return ResponseEntity.ok(messageDTO);
     }
 
-    @RequestMapping(value = "/getReplyMessages", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getReplyMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getReplyMessages(@RequestBody Integer codeMessage) {
 
         List<MessageDTO> messageDTOs = forumUseCase.getReplyMessages(codeMessage);
-        return new ResponseEntity<>(messageDTOs, HttpStatus.OK);
+        return ResponseEntity.ok(messageDTOs);
     }
 
-    @RequestMapping(value = "/getAvatar", method = {RequestMethod.GET}, produces= MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/getAvatar", produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getAvatar(@RequestParam int codeForumUser) {
 
         return forumUseCase.getAvatar(codeForumUser);
     }
 
-    @RequestMapping(value = "/prepareMessage", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/prepareMessage", produces = "application/json")
     public ResponseEntity<String> prepareMessage(@RequestBody String messageText) {
 
         String preparedMessageText = forumUseCase.prepareMessage(messageText);
@@ -70,90 +70,87 @@ public class ForumController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("result", preparedMessageText);
 
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(jsonObject.toString());
     }
 
     @Secured({EClassification.ROLE_MEMBER, EClassification.ROLE_ADMIN})
-    @RequestMapping(value = "/save", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/save", produces="application/json")
     public ResponseEntity<MessageDTO> save(@RequestBody MessageDTO messageDTO) {
 
         messageDTO = forumUseCase.save(messageDTO);
-        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+        return ResponseEntity.ok(messageDTO);
     }
 
     @Secured({EClassification.ROLE_ADMIN})
-    @RequestMapping(value = "/saveMessageCategory", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/saveMessageCategory", produces="application/json")
     public ResponseEntity<MessageCategoryDTO> saveMessageCategory(@RequestBody MessageCategoryDTO messageCategoryDTO) {
 
         messageCategoryDTO = forumUseCase.saveMessageCategory(messageCategoryDTO);
-        return new ResponseEntity<>(messageCategoryDTO, HttpStatus.OK);
+        return ResponseEntity.ok(messageCategoryDTO);
     }
 
     @Secured({EClassification.ROLE_ADMIN, EClassification.ROLE_MEMBER})
-    @RequestMapping(value = "/delete", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/delete", produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeMessage) {
 
         forumUseCase.delete(codeMessage);
 
         JSONObject response = new JSONObject();
-        response.put("result", "true");
+        response.put("result", Boolean.TRUE.toString());
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(response.toString());
     }
 
     @Secured({EClassification.ROLE_ADMIN})
-    @RequestMapping(value = "/deleteMessageCategory", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/deleteMessageCategory", produces="application/json")
     public ResponseEntity<String> deleteMessageCategory(@RequestBody Integer codeMessageCategory) {
 
         forumUseCase.deleteMessageCategory(codeMessageCategory);
 
         JSONObject response = new JSONObject();
-        response.put("result", "true");
+        response.put("result", Boolean.TRUE.toString());
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(response.toString());
     }
 
-    @RequestMapping(value = "/getMessageCategories", method = {RequestMethod.GET}, produces = "application/json")
+    @GetMapping(value = "/getMessageCategories", produces = "application/json")
     public ResponseEntity<List<MessageCategoryDTO>> getMessageCategories() {
 
         List<MessageCategoryDTO> categoryDTOs = forumUseCase.getMessageCategories();
-        return new ResponseEntity<>(categoryDTOs, HttpStatus.OK);
+        return ResponseEntity.ok(categoryDTOs);
     }
 
-    @RequestMapping(value = "/getMessageCategory", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getMessageCategory", produces = "application/json")
     public ResponseEntity<MessageCategoryDTO> getMessageCategory(@RequestBody Integer codeMessageCategory) {
 
         MessageCategoryDTO categoryDTO = forumUseCase.getMessageCategory(codeMessageCategory);
-        return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
+        return ResponseEntity.ok(categoryDTO);
     }
 
-    @RequestMapping(value = "/getMessageCount", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getMessageCount", produces = "application/json")
     public ResponseEntity<Integer> getMessageCount(@RequestBody Integer codeMessageCategory) {
 
         Integer messageCount = forumUseCase.getMessageCount(codeMessageCategory);
-
-        return new ResponseEntity<>(messageCount, HttpStatus.OK);
+        return ResponseEntity.ok(messageCount);
     }
 
-    @RequestMapping(value = "/getMessagesByCategory", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getMessagesByCategory", produces = "application/json")
     public ResponseEntity<List<MessageListView>> getMessagesByCategory(@RequestBody Integer codeMessageCategory) {
 
         List<MessageListView> messageListViews = forumUseCase.getMessagesByCategory(codeMessageCategory);
-
-        return new ResponseEntity<>(messageListViews, HttpStatus.OK);
+        return ResponseEntity.ok(messageListViews);
     }
 
     @Secured({EClassification.ROLE_ADMIN, EClassification.ROLE_MEMBER})
-    @RequestMapping(value="/uploadImage", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value="/uploadImage", produces = "application/json")
     public ResponseEntity<MessageImageDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeMessage") Integer codeMessage){
 
         MessageImageDTO messageImageDTO = forumUseCase.uploadImage(codeMessage, file);
-
-        return new ResponseEntity<>(messageImageDTO, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(messageImageDTO);
     }
 
     @Secured({EClassification.ROLE_ADMIN, EClassification.ROLE_MEMBER})
-    @RequestMapping(value="/uploadImageAlt", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value="/uploadImageAlt", produces = "application/json")
     public ResponseEntity<MessageImageDTO> uploadImageAlt(@RequestBody String request){
 
         JSONObject jsonObject = new JSONObject(request);
@@ -161,25 +158,24 @@ public class ForumController {
         String fileContent = jsonObject.getString("fileContent");
 
         MessageImageDTO messageImageDTO = forumUseCase.uploadImageAlt(codeMessage, fileContent);
-
-        return new ResponseEntity<>(messageImageDTO, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(messageImageDTO);
     }
 
-    @RequestMapping(value="/getImages", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value="/getImages", produces = "application/json")
     public ResponseEntity<List<MessageImageDTO>> getImages(){
 
         List<MessageImageDTO> messageImageDTOs = forumUseCase.getImages();
 
-        return new ResponseEntity<>(messageImageDTOs, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(messageImageDTOs);
     }
 
-    @RequestMapping(value="/getMessageImage", method = {RequestMethod.GET}, produces=MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value="/getMessageImage", produces=MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getMessageImage(@RequestParam Integer codeMessageImage){
 
         return forumUseCase.getImage(codeMessageImage);
     }
 
-    @RequestMapping(value = "/emailNewPassword", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/emailNewPassword", produces = "application/json")
     public ResponseEntity<String> emailNewPassword(@RequestBody String username) {
 
         boolean emailed = forumUseCase.emailNewPassword(username);
@@ -187,11 +183,11 @@ public class ForumController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("result", emailed);
 
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(jsonObject.toString());
     }
 
-    @RequestMapping(value="/getForumUser", method = {RequestMethod.POST}, produces="application/json")
-    public @ResponseBody ResponseEntity<ForumUserDTO> getForumUser(@RequestBody String request){
+    @PostMapping(value="/getForumUser", produces="application/json")
+    public ResponseEntity<ForumUserDTO> getForumUser(@RequestBody String request){
 
         JSONObject jsonObject = new JSONObject(request);
         Integer code = jsonObject.getInt("code");
@@ -201,7 +197,7 @@ public class ForumController {
         // never reveal password info outside of backend
         forumUserDTO.password = "";
 
-        return new ResponseEntity<>(forumUserDTO, HttpStatus.OK);
+        return ResponseEntity.ok(forumUserDTO);
     }
 
 }

@@ -24,7 +24,7 @@ public class TranslationController {
     @Autowired
     private final TranslationUseCase translationUseCase;
 
-    @RequestMapping(value = "/translate", method = RequestMethod.POST, produces="application/text")
+    @PostMapping(value = "/translate", produces="application/text")
     public ResponseEntity<String> translate(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -37,27 +37,25 @@ public class TranslationController {
         JSONObject response = new JSONObject();
         jsonObject.put("result", translatedText);
 
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(jsonObject.toString());
     }
 
-    @RequestMapping(value = "/dictionary/{isoA2}", method = RequestMethod.GET, produces="application/json")
+    @GetMapping(value = "/dictionary/{isoA2}", produces="application/json")
     public ResponseEntity<Map<String,String>> getDictionary(@PathVariable("isoA2") String isoA2){
 
-        if(isoA2 == null || StringUtils.isEmpty(isoA2)){
-            isoA2 = "us";
-        }
+        isoA2 = isoA2 == null || isoA2.trim().isEmpty() ? "us" : isoA2;
 
         ELanguage eLanguage = ELanguage.getByIsoA2(isoA2);
         Map<String,String> dictionary = translationUseCase.getDictionary(eLanguage);
 
-        return new ResponseEntity<>(dictionary, HttpStatus.OK);
+        return ResponseEntity.ok(dictionary);
     }
 
-    @RequestMapping(value = "/getTranslations", method = RequestMethod.GET, produces="application/json")
+    @GetMapping(value = "/getTranslations", produces="application/json")
     public ResponseEntity<List<TranslationDTO>> getTranslations(){
 
         List<TranslationDTO> translations = translationUseCase.getTranslations();
-        return new ResponseEntity<>(translations, HttpStatus.OK);
+        return ResponseEntity.ok(translations);
     }
 
 }

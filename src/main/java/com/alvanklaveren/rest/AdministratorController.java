@@ -33,38 +33,35 @@ public class AdministratorController {
     @Autowired private final AdministratorUseCase administratorUseCase;
     @Autowired private final ForumUseCase forumUseCase;
 
-    @RequestMapping(value = "/getConstant", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getConstant", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
 
         ConstantsDTO constantsDTO = administratorUseCase.getByCode(codeConstants);
-
-        return new ResponseEntity<>(constantsDTO, HttpStatus.OK);
+        return ResponseEntity.ok(constantsDTO);
     }
 
-    @RequestMapping(value = "/getConstantById", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getConstantById", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstantById(@RequestBody String codeConstants) {
 
         ConstantsDTO constantsDTO = administratorUseCase.getById(codeConstants);
-
-        return new ResponseEntity<>(constantsDTO, HttpStatus.OK);
+        return ResponseEntity.ok(constantsDTO);
     }
 
-    @RequestMapping(value = "/saveConstant", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/saveConstant", produces="application/json")
     public ResponseEntity<ConstantsDTO> saveConstant(@RequestBody ConstantsDTO constantsDTO) {
 
         constantsDTO = administratorUseCase.save(constantsDTO);
-        return new ResponseEntity<>(constantsDTO, HttpStatus.OK);
+        return ResponseEntity.ok(constantsDTO);
     }
 
-    @RequestMapping(value="/uploadConstantsImage", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value="/uploadConstantsImage", produces = "application/json")
     public ResponseEntity<ConstantsDTO> uploadConstantImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeConstants") Integer codeConstants){
 
         ConstantsDTO constantsDTO = administratorUseCase.uploadImage(codeConstants, file);
-
-        return new ResponseEntity<>(constantsDTO, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(constantsDTO);
     }
 
-    @RequestMapping(value="/uploadConstantsImageAlt", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value="/uploadConstantsImageAlt", produces = "application/json")
     public ResponseEntity<ConstantsDTO> uploadConstantsImageAlt(@RequestBody String request){
 
         JSONObject jsonObject = new JSONObject(request);
@@ -72,35 +69,34 @@ public class AdministratorController {
         String fileContent = jsonObject.getString("fileContent");
 
         ConstantsDTO constantsDTO = administratorUseCase.uploadImageAlt(codeConstants, fileContent);
-
-        return new ResponseEntity<>(constantsDTO, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(constantsDTO);
     }
 
-    @RequestMapping(value = "/getConstantsImage", method = {RequestMethod.GET}, produces= MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/getConstantsImage", produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getConstantsImage(@RequestParam Integer codeConstants) {
 
         return administratorUseCase.getConstantsImage(codeConstants);
     }
 
-    @RequestMapping(value = "/getUsers", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getUsers", produces = "application/json")
     public ResponseEntity<List<ForumUserDTO>> getUsers() {
 
         List<ForumUserDTO> userDTOs = administratorUseCase.getUsers();
 
-        // remove the passwords... its not safe to send them to the client(browser) !!
+        // remove the passwords... it's not safe to send them to the client(browser) !!
         userDTOs.forEach(dto -> dto.password = "");
 
-        return new ResponseEntity<>(userDTOs, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(userDTOs);
     }
 
-    @RequestMapping(value = "/getClassifications", method = {RequestMethod.POST}, produces = "application/json")
+    @PostMapping(value = "/getClassifications", produces = "application/json")
     public ResponseEntity<List<ClassificationDTO>> getClassifications() {
 
         List<ClassificationDTO> classificationDTOs = administratorUseCase.getClassifications();
-        return new ResponseEntity<>(classificationDTOs, new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.ok(classificationDTOs);
     }
 
-    @RequestMapping(value = "/saveUser", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/saveUser", produces="application/json")
     public ResponseEntity<ForumUserDTO> saveUser(@RequestBody ForumUserDTO forumUserDTO) {
 
         boolean isNewUser = (forumUserDTO.code == null || forumUserDTO.code <= 0);
@@ -112,21 +108,21 @@ public class AdministratorController {
             forumUseCase.emailNewPassword(forumUserDTO.username);
         }
 
-        return new ResponseEntity<>(forumUserDTO, HttpStatus.OK);
+        return ResponseEntity.ok(forumUserDTO);
     }
 
-    @RequestMapping(value = "/deleteUser", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/deleteUser", produces="application/json")
     public ResponseEntity<String> deleteUser(@RequestBody Integer codeForumUser) {
 
-        boolean isDeleted = administratorUseCase.deleteUser(codeForumUser);
+        Boolean isDeleted = administratorUseCase.deleteUser(codeForumUser);
 
         JSONObject response = new JSONObject();
-        response.put("result", isDeleted ? "true" : "false");
+        response.put("result", isDeleted.toString());
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(response.toString());
     }
 
-    @RequestMapping(value = "/saveCodeTableRow", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/saveCodeTableRow", produces="application/json")
     public ResponseEntity<String> saveCodeTable(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
@@ -135,21 +131,22 @@ public class AdministratorController {
         administratorUseCase.saveCodeTable(eCodeTable, jsonObject.get("codeTableRow").toString());
 
         JSONObject response = new JSONObject();
-        response.put("result", "true");
+        response.put("result", Boolean.TRUE.toString());
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(response.toString());
     }
 
-    @RequestMapping(value = "/deleteCodeTableRow", method = {RequestMethod.POST}, produces="application/json")
+    @PostMapping(value = "/deleteCodeTableRow", produces="application/json")
     public ResponseEntity<String> deleteCodeTableRow(@RequestBody String request) {
 
         JSONObject jsonObject = new JSONObject(request);
 
-        boolean isDeleted = false;
+        Boolean isDeleted = false;
 
-        Integer code = jsonObject.getInt("code");
+        int code = jsonObject.getInt("code");
+        int codeTable = jsonObject.getInt("codeTable");
 
-        ECodeTable eCodeTable = ECodeTable.getByCode(jsonObject.getInt("codeTable"));
+        ECodeTable eCodeTable = ECodeTable.getByCode(codeTable);
         switch(eCodeTable){
             case Companies:
                 isDeleted = administratorUseCase.deleteCompany(code);
@@ -173,8 +170,8 @@ public class AdministratorController {
         }
 
         JSONObject response = new JSONObject();
-        response.put("result", isDeleted ? "true" : "false");
+        response.put("result", isDeleted.toString());
 
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        return ResponseEntity.ok(response.toString());
     }
 }

@@ -26,7 +26,7 @@ public class TranslationUseCase {
     public String translate(String original, ELanguage eLanguage){
 
         Translation translation = translationRepository.getByOriginal(original);
-        return (translation == null) ? original : eLanguage.translate(translation);
+        return translation == null ? original : eLanguage.translate(translation);
     }
 
     @Transactional(readOnly=true)
@@ -34,10 +34,10 @@ public class TranslationUseCase {
 
         List<Translation> translations = translationRepository.findAll();
 
-        Map<String,String> translationMap = new HashMap<>();
-        for(Translation translation:translations){
+        Map<String, String> translationMap = new HashMap<>();
+        translations.forEach(translation -> {
             translationMap.put(translation.getOriginal(), eLanguage.translate(translation));
-        }
+        });
 
         return translationMap;
     }

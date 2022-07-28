@@ -1,9 +1,11 @@
 package com.alvanklaveren.utils;
 
 import lombok.extern.slf4j.Slf4j;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,35 +47,33 @@ public final class StringLogic {
 	}
 	
 	public String urlEncode(String message){
-		String encodedMessage = ""; 
-		
+		String encodedMessage = "";
+
 		try {
-			encodedMessage = URLEncoder.encode( message, "UTF-8" );
+			encodedMessage = URLEncoder.encode( message, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			log.error("unable to encode message");
+			throw new RuntimeException(e);
 		}
-		
+
 		return encodedMessage; 
 	}
 
 	public String urlDecode(String message){
-		String decodedMessage = ""; 
-		
+		String decodedMessage = "";
+
 		try {
-			decodedMessage = URLDecoder.decode( message, "UTF-8" );
+			decodedMessage = URLDecoder.decode( message, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			log.error("unable to decode message");
+			throw new RuntimeException(e);
 		}
-		
+
 		return decodedMessage; 
 	}
 
 	/*
-	 *  This function does the setEscapeModelStrings( true ) for text that is in HTML. However, because
-	 *  I introduced a possibility to present messages in bold, italic etc, we should enforce this by deciding ourselves
-	 *  what is allowed and what is not
+	 *  This function does the setEscapeModelStrings( true ) for text that is in HTML. However, because I
+	 *  introduced a possibility to present messages in bold, italic, and more, we should enforce this by
+	 *  deciding ourselves what is allowed and what is not
 	 */
 	public static String prepareMessage( String messageText ){
 		String preparedText = messageText;

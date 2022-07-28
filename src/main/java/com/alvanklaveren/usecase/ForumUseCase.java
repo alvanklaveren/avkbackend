@@ -50,13 +50,18 @@ public class ForumUseCase {
 
         Message message;
         if(isNewMessage) {
+
             message = new Message();
             message.setMessageDate(Date.from(Instant.now()));
         } else {
-            message = messageRepository.getOne(messageDTO.code);
 
-            if(isNotEditable(message)) {
+            message = messageRepository.findById(messageDTO.code).orElse(null);
+            if(!isEditable(message)) {
                 throw new RuntimeException("Saving failed: User is not owner of this message");
+            }
+
+            if(message == null) {
+                message = new Message();
             }
 
             message.setMessageDate(messageDTO.messageDate);
@@ -71,16 +76,23 @@ public class ForumUseCase {
 
         ForumUser forumUser;
         if(isNewMessage) {
-            // TODO: SPRING SECURITY: Implement and use UserContext to save forumuser.
-            forumUser = forumUserRepository.getOne(1);
+            // TODO: SPRING SECURITY: Implement and use UserContext to save forum user.
+            forumUser = forumUserRepository.findById(1)
+                    .orElseThrow(() -> new RuntimeException("Cannot save message. Reason: ForumUser is missing."));
         } else {
-            forumUser = forumUserRepository.getOne(messageDTO.forumUser.code);
+            forumUser = forumUserRepository.findById(messageDTO.forumUser.code)
+                    .orElseThrow(() -> new RuntimeException("Cannot save message. Reason: ForumUser is missing."));
         }
+
         message.setForumUser(forumUser);
 
         if(messageDTO.message != null && messageDTO.message.code != null) {
-            Message linkedMessage = messageRepository.getOne(messageDTO.message.code);
-            message.setMessage(linkedMessage);
+
+            Message linkedMessage = messageRepository.findById(messageDTO.message.code).orElse(null);
+            if(linkedMessage != null) {
+
+                message.setMessage(linkedMessage);
+            }
         }
 
         message = messageRepository.saveAndFlush(message);
@@ -95,9 +107,14 @@ public class ForumUseCase {
 
         MessageCategory messageCategory;
         if(isNewCategory) {
+
             messageCategory = new MessageCategory();
         } else {
-            messageCategory = messageCategoryRepository.getOne(messageCategoryDTO.code);
+
+            messageCategory = messageCategoryRepository.findById(messageCategoryDTO.code).orElseThrow(() ->
+                    new RuntimeException("Cannot save Message Category. Reason:Cannot fetch Message Category with id: "
+                            + messageCategoryDTO.code));
+
             messageCategory.setVersion(messageCategoryDTO.version);
         }
 
@@ -111,10 +128,14 @@ public class ForumUseCase {
     @Transactional
     public void delete(Integer codeMessage) {
 
-        Message message = messageRepository.getOne(codeMessage);
+        Message message = messageRepository.findById(codeMessage).orElse(null);
 
-        if(isNotEditable(message)) {
+        if(!isEditable(message)) {
             throw new RuntimeException("Deletion failed: User is not owner of this message");
+        }
+
+        if(message == null) {
+            return;
         }
 
         List<Message> replyMessages = messageRepository.findByMessage_Code(message.getCode());
@@ -129,7 +150,6 @@ public class ForumUseCase {
     public void deleteMessageCategory(Integer codeMessageCategory) {
 
         MessageCategory messageCategory = messageCategoryRepository.getOne(codeMessageCategory);
-
         messageCategoryRepository.delete(messageCategory);
     }
 
@@ -157,9 +177,7 @@ public class ForumUseCase {
         messages.forEach(message -> {
             String messageText = message.getMessageText();
 
-            messageText = StringLogic.prepareMessage(messageText);
-            messageText = setRawImage(messageText);
-
+            messageText = prepareMessage(messageText);
             message.setMessageText(messageText);
         });
 
@@ -181,7 +199,9 @@ public class ForumUseCase {
         // remove the Homepage (admin only) category when not logged in as Admin
         if (!UserContext.hasRole(EClassification.Administrator)) {
 
-            messageCategories.stream().filter(mc -> mc.getCode().equals(-1)).findFirst()
+            messageCategories.stream()
+                    .filter(messageCategory -> messageCategory.getCode().equals(-1))
+                    .findFirst()
                     .ifPresent(messageCategories::remove);
         }
 
@@ -191,7 +211,7 @@ public class ForumUseCase {
     @Transactional(readOnly = true)
     public MessageCategoryDTO getMessageCategory(Integer codeMessageCategory){
 
-        MessageCategory messageCategory = messageCategoryRepository.getOne(codeMessageCategory);
+        MessageCategory messageCategory = messageCategoryRepository.findById(codeMessageCategory).orElse(null);
         return MessageCategoryDTO.toDto(messageCategory, 0);
     }
 
@@ -224,37 +244,37 @@ public class ForumUseCase {
     public String prepareMessage(String messageText) {
 
         String prepared = StringLogic.prepareMessage(messageText);
-        prepared = setRawImage(prepared);
+        prepared = replaceRawImage(prepared);
 
         return prepared;
     }
 
-    private String setRawImage(String messageText) {
+    private String replaceRawImage(String messageText) {
 
         String modifiedMessageText = messageText;
         String imageCoded = StringLogic.findFirst(modifiedMessageText, "[i:", "]");
         while (imageCoded.length() > 0) {
 
-            String imgHTML = "[image not found]";
+            StringBuilder imgHTML = new StringBuilder("[image not found]");
             try {
                 int codeImage = Integer.parseInt(imageCoded.replace("[i:", "").replaceAll("]", ""));
                 byte[] rawImage = getImage(codeImage);
                 byte[] rawImageBase64 = Base64.getEncoder().encode(rawImage);
 
                 if (rawImage != null) {
-                    imgHTML = "<img src=\"data:image/jpg;base64,";
+                    imgHTML = new StringBuilder("<img src=\"data:image/jpg;base64,");
 
                     for(byte b : rawImageBase64) {
-                        imgHTML += (char) b;
+                        imgHTML.append((char) b);
                     }
 
-                    imgHTML += "\" style=\"width:auto; max-width:100%\"></img>";
+                    imgHTML.append("\" style=\"width:auto; max-width:100%\"></img>");
                 }
             } catch(Exception e) {
                 e.printStackTrace();
             }
 
-            modifiedMessageText = modifiedMessageText.replace(imageCoded, imgHTML);
+            modifiedMessageText = modifiedMessageText.replace(imageCoded, imgHTML.toString());
 
             imageCoded = StringLogic.findFirst(modifiedMessageText, "[i:", "]");
         }
@@ -284,10 +304,12 @@ public class ForumUseCase {
     @Transactional
     public MessageImageDTO uploadImage(Integer codeMessage, MultipartFile file){
 
-        Message message = null;
-        if(codeMessage > 0) {
-            message = messageRepository.getOne(codeMessage);
+        if(codeMessage == null || codeMessage <= 0) {
+            throw new RuntimeException("Cannot upload image because message not found with id <= 0");
         }
+
+        Message message = messageRepository.findById(codeMessage).orElseThrow(() ->
+                new RuntimeException("Cannot upload image because message not found with id: " + codeMessage));
 
         MessageImage messageImage = new MessageImage();
         messageImage.setMessage(message);
@@ -338,7 +360,8 @@ public class ForumUseCase {
             throw new RuntimeException("Fetching images failed: No active user found.");
         }
 
-        ForumUser forumUser = forumUserRepository.getOne(UserContext.getId());
+        ForumUser forumUser = forumUserRepository.findById(UserContext.getId())
+                .orElseThrow(() -> new RuntimeException("Cannot fetch images. Reason: forum user not found with id: " + UserContext.getId()));
 
         List<MessageImage> messageImages = messageImageRepository.findAll(forumUser.getCode());
         return MessageImageDTO.toDto(messageImages, 1);
@@ -347,7 +370,7 @@ public class ForumUseCase {
     @Transactional(readOnly = true)
     public ForumUserDTO getForumUser(Integer code) {
 
-        ForumUser forumUser = forumUserRepository.getOne(code);
+        ForumUser forumUser = forumUserRepository.findById(code).orElse(null);
         return ForumUserDTO.toDto(forumUser, 1);
     }
 
@@ -399,12 +422,12 @@ public class ForumUseCase {
         return constantsList.size() == 0 ? null : ConstantsDTO.toDto(constantsList.get(0), 0).stringValue;
     }
 
-    private boolean isNotEditable(Message message) {
+    private boolean isEditable(Message message) {
 
         if(UserContext.hasRole(EClassification.Administrator) || message == null || message.getForumUser() == null) {
-            return false;
+            return true;
         }
 
-        return !message.getForumUser().getCode().equals(UserContext.getId());
+        return message.getForumUser().getCode().equals(UserContext.getId());
     }
 }

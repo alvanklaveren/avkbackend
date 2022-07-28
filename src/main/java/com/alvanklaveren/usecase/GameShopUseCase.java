@@ -57,11 +57,12 @@ public class GameShopUseCase {
             products = productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
         }
 
-        products.forEach(product ->{
-            product.setDescription(StringLogic.prepareMessage(product.getDescription()));
+        List<ProductDTO> productDTOs = ProductDTO.toDto(products, 3);
+        productDTOs.forEach(productDTO -> {
+            productDTO.description = StringLogic.prepareMessage(productDTO.description);
         });
 
-        return ProductDTO.toDto(products, 3);
+        return productDTOs;
     }
 
     @Transactional(readOnly=true)
@@ -82,11 +83,12 @@ public class GameShopUseCase {
             products = productRepository.search(productName, altProductName, altProductName + "-%");
         }
 
-        products.forEach(product ->{
-            product.setDescription(StringLogic.prepareMessage(product.getDescription()));
+        List<ProductDTO> productDTOs = ProductDTO.toDto(products, 3);
+        productDTOs.forEach(productDTO -> {
+            productDTO.description = StringLogic.prepareMessage(productDTO.description);
         });
 
-        return ProductDTO.toDto(products, 3);
+        return productDTOs;
     }
 
     /**
@@ -113,7 +115,7 @@ public class GameShopUseCase {
     public List<GameConsoleDTO> getGameConsoles(){
 
         List<GameConsole> gameConsoles =
-                gameConsoleRepository.findAll(Sort.by("sortorder").ascending().and(Sort.by("description").ascending()));
+                gameConsoleRepository.findAll(Sort.by("sortorder", "description").ascending());
 
         return GameConsoleDTO.toDto(gameConsoles, 2);
     }
@@ -173,14 +175,19 @@ public class GameShopUseCase {
     @Transactional
     public void delete(Integer codeProduct) {
 
-        Product product = productRepository.getOne(codeProduct);
+        Product product = productRepository.findById(codeProduct).orElseThrow(() ->
+                new RuntimeException("Product with code: " + codeProduct + "does not exists or is already deleted."));
 
-        List<ProductRating> productRatings = productRatingRepository.getByProduct_Code(codeProduct, Sort.by("code"));
+        List<ProductRating> productRatings =
+                productRatingRepository.getByProduct_Code(codeProduct, Sort.by("code"));
+
         if(productRatings != null && productRatings.size() > 0) {
             productRatingRepository.deleteAll(productRatings);
         }
 
-        List<ProductImage> productImages = productImageRepository.getByProduct_Code(codeProduct, Sort.by("code"));
+        List<ProductImage> productImages =
+                productImageRepository.getByProduct_Code(codeProduct, Sort.by("code"));
+
         if(productImages != null && productImages.size() > 0) {
             productImageRepository.deleteAll(productImages);
         }
@@ -198,14 +205,14 @@ public class GameShopUseCase {
     @Transactional
     public CompanyDTO addCompany(String description) {
 
-        if(StringUtils.isNullOrEmpty(description)){
+        if(StringUtils.isNullOrEmpty(description)) {
             return null;
         }
 
         String searchDescription = description.trim().toLowerCase().replace(" ", "%");
         List<Company> companies = companyRepository.findByDescription(searchDescription);
 
-        if (companies.size() > 0){
+        if (companies.size() > 0) {
             return CompanyDTO.toDto(companies.get(0), 0);
         }
 
@@ -276,12 +283,12 @@ public class GameShopUseCase {
 
         productImageRepository.save(productImage);
 
-        product = productRepository.getOne(codeProduct);
+        product = productRepository.findById(codeProduct).orElse(null);
 
         return ProductDTO.toDto(product, 3);
     }
 
-    /** for some reason, sending a multipartfile is not working.. god knows why.
+    /** for some reason, sending a multipart file is not working, god knows why.
      *  but it started to go wrong when I added jwt auth filters in spring.
      *  the below will work (sends a base64 formatted string and decodes on backend)
      */
@@ -305,7 +312,7 @@ public class GameShopUseCase {
 
         productImageRepository.save(productImage);
 
-        product = productRepository.getOne(codeProduct);
+        product = productRepository.findById(codeProduct).orElse(null);
 
         return ProductDTO.toDto(product, 3);
     }
@@ -317,15 +324,20 @@ public class GameShopUseCase {
 
         List<Product> products;
         if(StringUtils.isNullOrEmpty(description)) {
-            if(codeGameConsole == 0 && codeProductType == 0) {
-                // this fetches EVERYTHING.. so limit it to 24
+
+            if(codeGameConsole.equals(0) && codeProductType.equals(0)) {
+
+                // this fetches EVERYTHING, so limit it to 24
                 Pageable pageRequest = PageRequest.of(0,24, Sort.by("code").descending());
                 products = productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType, pageRequest);
             } else {
+
                 products = productRepository.getByGameConsole_CodeAndProductType_Code(codeGameConsole, codeProductType);
             }
+
             productDTOs = ProductDTO.toDto(products, 3);
         } else {
+
             productDTOs = search(description, 0, 0);
         }
 
@@ -335,11 +347,12 @@ public class GameShopUseCase {
     @Transactional(readOnly=true)
     public ProductDTO getProduct(Integer codeProduct) {
 
-        Product product = productRepository.getOne(codeProduct);
+        Product product = productRepository.findById(codeProduct).orElse(null);
         return ProductDTO.toDto(product, 1);
     }
 
-        private BufferedImage scale(BufferedImage source, double ratio) {
+    private BufferedImage scale(BufferedImage source, double ratio) {
+
         int w = (int) (source.getWidth() * ratio);
         int h = (int) (source.getHeight() * ratio);
         BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -353,6 +366,7 @@ public class GameShopUseCase {
     }
 
     private BufferedImage createImageFromBytes(byte[] imageData) {
+
         ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
         try {
             return ImageIO.read(bais);
@@ -362,6 +376,7 @@ public class GameShopUseCase {
     }
 
     private byte[] toBytes(BufferedImage img){
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(img, "jpg", baos);

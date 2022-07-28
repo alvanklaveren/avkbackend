@@ -47,13 +47,15 @@ public class AdministratorUseCase {
 
 
     @Transactional(readOnly = true)
-    public ConstantsDTO getByCode(Integer code){
+    public ConstantsDTO getByCode(Integer code) {
+
         Constants constants = constantsRepository.getByCode(code);
         return ConstantsDTO.toDto(constants, 0);
     }
 
     @Transactional(readOnly = true)
-    public ConstantsDTO getById(String id){
+    public ConstantsDTO getById(String id) {
+
         List<Constants> constantsList = constantsRepository.getById(id);
         if(constantsList.size() == 0){
             return null;
@@ -63,7 +65,7 @@ public class AdministratorUseCase {
     }
 
     @Transactional
-    public ConstantsDTO save(ConstantsDTO constantsDTO){
+    public ConstantsDTO save(ConstantsDTO constantsDTO) {
 
         Constants constants = constantsRepository.getByCode(constantsDTO.code);
         constants.setStringValue(constantsDTO.stringValue);
@@ -140,23 +142,25 @@ public class AdministratorUseCase {
     }
 
     @Transactional(readOnly=true)
-    public List<ForumUserDTO> getUsers(){
+    public List<ForumUserDTO> getUsers() {
+
         List<ForumUser> forumUsers = forumUserRepository.findAll();
         return ForumUserDTO.toDto(forumUsers, 1);
     }
 
     @Transactional(readOnly=true)
-    public List<ClassificationDTO> getClassifications(){
+    public List<ClassificationDTO> getClassifications() {
+
         List<Classification> classifications = classificationRepository.findAll();
         return ClassificationDTO.toDto(classifications, 1);
     }
 
     @Transactional
-    public ForumUserDTO saveUser(ForumUserDTO forumUserDTO){
+    public ForumUserDTO saveUser(ForumUserDTO forumUserDTO) {
 
         if(StringUtils.isNullOrEmpty(forumUserDTO.emailAddress)) {
             // without an email address, user cannot receive a (new) password
-            throw new RuntimeException("Email address missing.");
+            throw new RuntimeException("Email address is missing.");
         }
 
         ForumUser forumUser;
@@ -165,6 +169,7 @@ public class AdministratorUseCase {
         boolean isNewUser = (forumUserDTO.code == null || forumUserDTO.code <= 0);
 
         if (isNewUser) {
+
             forumUser = new ForumUser();
             EClassification eClassification = EClassification.get(forumUserDTO);
             switch(eClassification){
@@ -178,6 +183,7 @@ public class AdministratorUseCase {
 
             classification = classificationRepository.getByCode(eClassification.getCode());
         } else {
+
             forumUser = forumUserRepository.getByCode(forumUserDTO.code);
             classification = classificationRepository.getByCode(forumUserDTO.classification.code);
         }
@@ -292,9 +298,8 @@ public class AdministratorUseCase {
         gameConsole.setVersion(gameConsoleDTO.version);
 
         // default company = { code:6, description:'-' }
-        int codeCompany = (gameConsoleDTO.company != null)
-                        ? gameConsoleDTO.company.code : isNewCompany ? 6
-                        : gameConsole.getCompany().getCode();
+        int codeCompany = gameConsoleDTO.company != null
+                        ? gameConsoleDTO.company.code : (isNewCompany ? 6 : gameConsole.getCompany().getCode());
 
         Company company = companyRepository.getByCode(codeCompany);
         gameConsole.setCompany(company);
@@ -312,7 +317,7 @@ public class AdministratorUseCase {
             forumUserRepository.delete(forumUser);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return false;
         }
 
@@ -327,7 +332,7 @@ public class AdministratorUseCase {
             companyRepository.delete(company);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -341,7 +346,7 @@ public class AdministratorUseCase {
             gameConsoleRepository.delete(gameConsole);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -355,7 +360,7 @@ public class AdministratorUseCase {
             productTypeRepository.delete(productType);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -369,7 +374,7 @@ public class AdministratorUseCase {
             ratingUrlRepository.delete(ratingUrl);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -383,7 +388,7 @@ public class AdministratorUseCase {
             translationRepository.delete(translation);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -405,7 +410,7 @@ public class AdministratorUseCase {
             saveTranslation((TranslationDTO) dto);
         } else {
             throw new RuntimeException("Failed to save " + dto.getClass().getSimpleName()
-                    + ". Reason: table is not registered as a codetable in AdminstratorUseCase::saveCodeTable");
+                    + ". Reason: table is not registered as a codetable in AdministratorUseCase::saveCodeTable");
         }
     }
 }
