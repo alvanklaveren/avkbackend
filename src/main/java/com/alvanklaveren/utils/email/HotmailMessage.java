@@ -18,6 +18,7 @@ public class HotmailMessage extends EmailMessage {
 	    props.put( "mail.smtp.starttls.enable", "true" );
 	    props.put( "mail.smtp.host", 			"smtp.office365.com" );
 	    props.put( "mail.smtp.port", 			"587" );
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 	}
 
 }
