@@ -1,4 +1,4 @@
-package com.alvanklaveren.usecase;
+package com.alvanklaveren.usecase.forum;
 
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
@@ -11,15 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.alvanklaveren.utils.StringLogic;
-import com.alvanklaveren.utils.email.HotmailMessage;
 
-import javax.mail.MessagingException;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.Date;
@@ -27,20 +23,16 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Component
 @Slf4j
 @AllArgsConstructor
-public class ForumUseCase {
+public class ForumMessageUseCase {
 
     @Autowired private final MessageCategoryRepository messageCategoryRepository;
     @Autowired private final MessageImageRepository messageImageRepository;
     @Autowired private final ForumUserRepository forumUserRepository;
-    @Autowired private final ConstantsRepository constantsRepository;
     @Autowired private final MessageRepository messageRepository;
-
-    private final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!";
 
 
     @Transactional
@@ -71,15 +63,18 @@ public class ForumUseCase {
         message.setDescription(messageDTO.description);
         message.setMessageText(messageDTO.messageText);
 
-        MessageCategory messageCategory = messageCategoryRepository.getOne(messageDTO.messageCategory.code);
+        MessageCategory messageCategory = messageCategoryRepository.findById(messageDTO.messageCategory.code)
+                .orElseThrow(() -> new RuntimeException("Failed to save message. Reason: messageCategory is null!"));
         message.setMessageCategory(messageCategory);
 
         ForumUser forumUser;
         if(isNewMessage) {
-            // TODO: SPRING SECURITY: Implement and use UserContext to save forum user.
-            forumUser = forumUserRepository.findById(1)
+
+            Integer userCode = UserContext.getId() == null ? 0 : UserContext.getId();
+            forumUser = forumUserRepository.findById(userCode)
                     .orElseThrow(() -> new RuntimeException("Cannot save message. Reason: ForumUser is missing."));
         } else {
+
             forumUser = forumUserRepository.findById(messageDTO.forumUser.code)
                     .orElseThrow(() -> new RuntimeException("Cannot save message. Reason: ForumUser is missing."));
         }
@@ -221,26 +216,6 @@ public class ForumUseCase {
         return messageRepository.countByMessageCategory(codeMessageCategory);
     }
 
-    @Transactional(readOnly=true)
-    public byte[] getAvatar(int codeForumUser) {
-
-        byte[] image = {};
-
-        ForumUser forumUser = forumUserRepository.getOne(codeForumUser);
-
-        Blob blob = forumUser.getAvatar();
-        if(blob == null) { return image; }
-
-        try {
-            int blobLength = (int) blob.length();
-            image = blob.getBytes(1, blobLength);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return image;
-    }
-
     public String prepareMessage(String messageText) {
 
         String prepared = StringLogic.prepareMessage(messageText);
@@ -365,61 +340,6 @@ public class ForumUseCase {
 
         List<MessageImage> messageImages = messageImageRepository.findAll(forumUser.getCode());
         return MessageImageDTO.toDto(messageImages, 1);
-    }
-
-    @Transactional(readOnly = true)
-    public ForumUserDTO getForumUser(Integer code) {
-
-        ForumUser forumUser = forumUserRepository.findById(code).orElse(null);
-        return ForumUserDTO.toDto(forumUser, 1);
-    }
-
-    @Transactional
-    public boolean emailNewPassword(String username){
-
-        ForumUser forumUser = forumUserRepository.getByUsername(username);
-
-        String newPassword = randomPassword();
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        forumUser.setPassword(passwordEncoder.encode(username + newPassword));
-        forumUser = forumUserRepository.save(forumUser);
-
-        String to = forumUser.getEmailAddress();
-        String from = getConstantsStringValueById("email_address");
-        String fromPassword = getConstantsStringValueById("email_password");
-
-        HotmailMessage hotmailMessage = new HotmailMessage(to, from, fromPassword);
-        hotmailMessage.setSubject("Your password at alvanklaveren.com has been reset");
-        hotmailMessage.setBody("Username: " + username + "\nPassword: " + newPassword);
-
-        try {
-            hotmailMessage.send();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            return false;
-        }
-
-        return true;
-    }
-
-    private String randomPassword() {
-
-        StringBuilder builder = new StringBuilder();
-
-        IntStream.range(1, 12).forEach(i -> {
-            int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
-            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-        });
-
-        return builder.toString();
-    }
-
-    @Transactional(readOnly = true)
-    public String getConstantsStringValueById(String id){
-
-        List<Constants> constantsList = constantsRepository.getById(id);
-        return constantsList.size() == 0 ? null : ConstantsDTO.toDto(constantsList.get(0), 0).stringValue;
     }
 
     private boolean isEditable(Message message) {

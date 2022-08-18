@@ -1,4 +1,4 @@
-package com.alvanklaveren.usecase;
+package com.alvanklaveren.usecase.translation;
 
 import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.Translation;

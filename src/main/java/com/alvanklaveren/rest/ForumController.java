@@ -6,13 +6,12 @@ import com.alvanklaveren.model.MessageCategoryDTO;
 import com.alvanklaveren.model.MessageDTO;
 import com.alvanklaveren.model.MessageImageDTO;
 import com.alvanklaveren.projections.MessageListView;
-import com.alvanklaveren.usecase.ForumUseCase;
+import com.alvanklaveren.usecase.forum.ForumMessageUseCase;
+import com.alvanklaveren.usecase.forum.ForumUserUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -28,7 +27,10 @@ import java.util.List;
 public class ForumController {
 
     @Autowired
-    private final ForumUseCase forumUseCase;
+    private final ForumMessageUseCase forumUseCase;
+
+    @Autowired
+    private final ForumUserUseCase forumUserUseCase;
 
     @PostMapping(value = "/getHomePageMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages(@RequestBody String request) {
@@ -59,7 +61,7 @@ public class ForumController {
     @GetMapping(value = "/getAvatar", produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getAvatar(@RequestParam int codeForumUser) {
 
-        return forumUseCase.getAvatar(codeForumUser);
+        return forumUserUseCase.getAvatar(codeForumUser);
     }
 
     @PostMapping(value = "/prepareMessage", produces = "application/json")
@@ -178,7 +180,7 @@ public class ForumController {
     @PostMapping(value = "/emailNewPassword", produces = "application/json")
     public ResponseEntity<String> emailNewPassword(@RequestBody String username) {
 
-        boolean emailed = forumUseCase.emailNewPassword(username);
+        boolean emailed = forumUserUseCase.emailNewPassword(username);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("result", emailed);
@@ -192,7 +194,7 @@ public class ForumController {
         JSONObject jsonObject = new JSONObject(request);
         Integer code = jsonObject.getInt("code");
 
-        ForumUserDTO forumUserDTO = forumUseCase.getForumUser(code);
+        ForumUserDTO forumUserDTO = forumUserUseCase.getForumUser(code);
 
         // never reveal password info outside of backend
         forumUserDTO.password = "";

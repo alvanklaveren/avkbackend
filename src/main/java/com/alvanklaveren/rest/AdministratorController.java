@@ -5,8 +5,8 @@ import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.administrator.AdministratorConstantsUseCase;
 import com.alvanklaveren.usecase.administrator.AdministratorCodeTablesUseCase;
-import com.alvanklaveren.usecase.ForumUseCase;
 import com.alvanklaveren.usecase.administrator.AdministratorUserUseCase;
+import com.alvanklaveren.usecase.forum.ForumUserUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -29,7 +29,7 @@ public class AdministratorController {
     @Autowired private final AdministratorConstantsUseCase administratorConstantsUseCase;
     @Autowired private final AdministratorUserUseCase administratorUserUseCase;
     @Autowired private final AdministratorCodeTablesUseCase administratorUseCase;
-    @Autowired private final ForumUseCase forumUseCase;
+    @Autowired private final ForumUserUseCase forumUserUseCase;
 
     @PostMapping(value = "/getConstant", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
@@ -103,7 +103,7 @@ public class AdministratorController {
 
         // a new user needs to be emailed a new password
         if(isNewUser) {
-            forumUseCase.emailNewPassword(forumUserDTO.username);
+            forumUserUseCase.emailNewPassword(forumUserDTO.username);
         }
 
         return ResponseEntity.ok(forumUserDTO);

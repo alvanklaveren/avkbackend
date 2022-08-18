@@ -1,4 +1,4 @@
-package com.alvanklaveren.usecase;
+package com.alvanklaveren.usecase.gameshop;
 
 import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.model.*;
@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class GameShopUseCase {
 
-    @Autowired private final ProductRepository productRepository;
-    @Autowired private final CompanyRepository companyRepository;
     @Autowired private final ProductRatingRepository productRatingRepository;
+    @Autowired private final ProductImageRepository productImageRepository;
     @Autowired private final GameConsoleRepository gameConsoleRepository;
     @Autowired private final ProductTypeRepository productTypeRepository;
-    @Autowired private final ProductImageRepository productImageRepository;
     @Autowired private final RatingUrlRepository ratingUrlRepository;
+    @Autowired private final ProductRepository productRepository;
+    @Autowired private final CompanyRepository companyRepository;
 
 
     @Transactional(readOnly=true)
