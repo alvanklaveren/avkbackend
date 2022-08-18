@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
@@ -26,6 +27,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "and (p.productType.code = :codeProductType or 0 = :codeProductType) " +
             "order by pr.rating asc")
     List<Product> getByGameConsole_CodeAndProductType_CodeByRating(Integer codeGameConsole, Integer codeProductType, Pageable pageable);
+
+    Optional<Product> findByCode(Integer productCode);
 
     @Query("select p from Product p " +
             "where lower(replace(p.name, ' ', '')) like :productName " +

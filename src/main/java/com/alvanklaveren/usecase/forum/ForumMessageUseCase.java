@@ -144,14 +144,15 @@ public class ForumMessageUseCase {
     @Transactional
     public void deleteMessageCategory(Integer codeMessageCategory) {
 
-        MessageCategory messageCategory = messageCategoryRepository.getOne(codeMessageCategory);
-        messageCategoryRepository.delete(messageCategory);
+        messageCategoryRepository.findByCode(codeMessageCategory).ifPresent(messageCategoryRepository::delete);
     }
 
     @Transactional(readOnly = true)
     public MessageDTO getMessage(Integer codeMessage) {
 
-        Message message = messageRepository.getOne(codeMessage);
+        Message message = messageRepository.findByCode(codeMessage)
+                .orElseThrow(() -> new RuntimeException("Could not find message with code: " + codeMessage));
+
         return MessageDTO.toDto(message, 1);
     }
 
@@ -309,7 +310,8 @@ public class ForumMessageUseCase {
 
         Message message = null;
         if(codeMessage > 0) {
-            message = messageRepository.getOne(codeMessage);
+            message = messageRepository.findByCode(codeMessage)
+                    .orElseThrow(() -> new RuntimeException("Could not find message with code: " + codeMessage));
         }
 
         MessageImage messageImage = new MessageImage();

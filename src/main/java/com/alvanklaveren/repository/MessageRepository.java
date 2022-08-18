@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Integer> {
 
@@ -25,5 +26,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     List<MessageListView> findByMessageCategory_Code(Integer codeMessageCategory, Sort sort);
 
     List<Message> findByMessage_Code(Integer codeMessage);
+
+    Optional<Message> findByCode(Integer codeMessage);
 
 }

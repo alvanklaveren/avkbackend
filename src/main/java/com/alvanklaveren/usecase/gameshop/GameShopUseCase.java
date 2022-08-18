@@ -198,8 +198,7 @@ public class GameShopUseCase {
     @Transactional
     public void deleteProductRating(Integer codeProductRating) {
 
-        ProductRating productRating = productRatingRepository.getOne(codeProductRating);
-        productRatingRepository.delete(productRating);
+        productRatingRepository.findByCode(codeProductRating).ifPresent(productRatingRepository::delete);
     }
 
     @Transactional
@@ -226,7 +225,9 @@ public class GameShopUseCase {
     @Transactional
     public ProductDTO save(ProductDTO productDTO){
 
-        Product product = (productDTO.code == null) ? new Product() : productRepository.getOne(productDTO.code);
+        Product product = (productDTO.code == null) ? new Product() :
+                productRepository.findByCode(productDTO.code)
+                        .orElseThrow(() -> new RuntimeException("Could not find product with code: " + productDTO.code));
 
         product.setCode(productDTO.code);
         product.setName(productDTO.name);
@@ -252,8 +253,11 @@ public class GameShopUseCase {
     @Transactional
     public ProductRatingDTO saveProductRating(Integer codeProduct, Integer codeRatingUrl, Integer rating) {
 
-        Product product = productRepository.getOne(codeProduct);
-        RatingUrl ratingUrl = ratingUrlRepository.getOne(codeRatingUrl);
+        Product product = productRepository.findByCode(codeProduct)
+                .orElseThrow(() -> new RuntimeException("Could not find product with code: " + codeProduct));
+
+        RatingUrl ratingUrl = ratingUrlRepository.findByCode(codeRatingUrl)
+                .orElseThrow(() -> new RuntimeException("Could not find ratingURL with code: " + codeRatingUrl));
 
         ProductRating productRating = new ProductRating();
         productRating.setProduct(product);
@@ -268,7 +272,8 @@ public class GameShopUseCase {
     @Transactional
     public ProductDTO uploadImage(Integer codeProduct, MultipartFile file){
 
-        Product product = productRepository.getOne(codeProduct);
+        Product product = productRepository.findByCode(codeProduct)
+                .orElseThrow(() -> new RuntimeException("Could not find product with code: " + codeProduct));
 
         ProductImage productImage = new ProductImage();
         productImage.setProduct(product);
@@ -297,7 +302,8 @@ public class GameShopUseCase {
 
         byte[] imageByte = Base64.decodeBase64(fileContent.getBytes());
 
-        Product product = productRepository.getOne(codeProduct);
+        Product product = productRepository.findByCode(codeProduct)
+                .orElseThrow(() -> new RuntimeException("Could not find product with code: " + codeProduct));
 
         ProductImage productImage = new ProductImage();
         productImage.setProduct(product);

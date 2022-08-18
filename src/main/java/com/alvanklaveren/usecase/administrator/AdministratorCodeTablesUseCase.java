@@ -104,7 +104,9 @@ public class AdministratorCodeTablesUseCase {
         if(translationDTO.code == null || translationDTO.code <= 0) {
             translation = new Translation();
         } else {
-            translation = translationRepository.getOne(translationDTO.code);
+            translation = translationRepository.findByCode(translationDTO.code)
+                    .orElseThrow(() -> new RuntimeException("Could not find translation with code: " + translationDTO.code));
+
             translation.setVersion(translationDTO.version);
         }
 
@@ -205,9 +207,13 @@ public class AdministratorCodeTablesUseCase {
     public boolean deleteTranslation(Integer code) {
 
         try {
-            Translation translation = translationRepository.getOne(code);
+
+            Translation translation = translationRepository.findByCode(code)
+                    .orElseThrow(() -> new RuntimeException("Could not find and delete translation with code: " + code));
+
             translationRepository.delete(translation);
         } catch(Exception e) {
+
             // delete fails when user either does not exist or user is already connected to forum messages.
             log.error(e.getLocalizedMessage());
             return false;

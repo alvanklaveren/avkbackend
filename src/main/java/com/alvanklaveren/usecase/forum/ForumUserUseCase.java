@@ -36,7 +36,8 @@ public class ForumUserUseCase {
 
         byte[] image = {};
 
-        ForumUser forumUser = forumUserRepository.getOne(codeForumUser);
+        ForumUser forumUser = forumUserRepository.findByCode(codeForumUser)
+                .orElseThrow(() -> new RuntimeException("Could not find forum user with code: " + codeForumUser));
 
         Blob blob = forumUser.getAvatar();
         if(blob == null) { return image; }
