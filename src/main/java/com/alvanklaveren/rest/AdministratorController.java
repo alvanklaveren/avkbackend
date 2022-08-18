@@ -3,25 +3,21 @@ package com.alvanklaveren.rest;
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
-import com.alvanklaveren.usecase.AdministratorUseCase;
+import com.alvanklaveren.usecase.administrator.AdministratorConstantsUseCase;
+import com.alvanklaveren.usecase.administrator.AdministratorCodeTablesUseCase;
 import com.alvanklaveren.usecase.ForumUseCase;
+import com.alvanklaveren.usecase.administrator.AdministratorUserUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.alvanklaveren.enums.ECodeTable.*;
 
 @RestController
 @RequestMapping("/backend/administrator")
@@ -30,34 +26,36 @@ import static com.alvanklaveren.enums.ECodeTable.*;
 @Secured({EClassification.ROLE_ADMIN})
 public class AdministratorController {
 
-    @Autowired private final AdministratorUseCase administratorUseCase;
+    @Autowired private final AdministratorConstantsUseCase administratorConstantsUseCase;
+    @Autowired private final AdministratorUserUseCase administratorUserUseCase;
+    @Autowired private final AdministratorCodeTablesUseCase administratorUseCase;
     @Autowired private final ForumUseCase forumUseCase;
 
     @PostMapping(value = "/getConstant", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
 
-        ConstantsDTO constantsDTO = administratorUseCase.getByCode(codeConstants);
+        ConstantsDTO constantsDTO = administratorConstantsUseCase.getByCode(codeConstants);
         return ResponseEntity.ok(constantsDTO);
     }
 
     @PostMapping(value = "/getConstantById", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstantById(@RequestBody String codeConstants) {
 
-        ConstantsDTO constantsDTO = administratorUseCase.getById(codeConstants);
+        ConstantsDTO constantsDTO = administratorConstantsUseCase.getById(codeConstants);
         return ResponseEntity.ok(constantsDTO);
     }
 
     @PostMapping(value = "/saveConstant", produces="application/json")
     public ResponseEntity<ConstantsDTO> saveConstant(@RequestBody ConstantsDTO constantsDTO) {
 
-        constantsDTO = administratorUseCase.save(constantsDTO);
+        constantsDTO = administratorConstantsUseCase.save(constantsDTO);
         return ResponseEntity.ok(constantsDTO);
     }
 
     @PostMapping(value="/uploadConstantsImage", produces = "application/json")
     public ResponseEntity<ConstantsDTO> uploadConstantImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeConstants") Integer codeConstants){
 
-        ConstantsDTO constantsDTO = administratorUseCase.uploadImage(codeConstants, file);
+        ConstantsDTO constantsDTO = administratorConstantsUseCase.uploadImage(codeConstants, file);
         return ResponseEntity.ok(constantsDTO);
     }
 
@@ -68,20 +66,20 @@ public class AdministratorController {
         Integer codeConstants = jsonObject.getInt("codeConstants");
         String fileContent = jsonObject.getString("fileContent");
 
-        ConstantsDTO constantsDTO = administratorUseCase.uploadImageAlt(codeConstants, fileContent);
+        ConstantsDTO constantsDTO = administratorConstantsUseCase.uploadImageAlt(codeConstants, fileContent);
         return ResponseEntity.ok(constantsDTO);
     }
 
     @GetMapping(value = "/getConstantsImage", produces= MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getConstantsImage(@RequestParam Integer codeConstants) {
 
-        return administratorUseCase.getConstantsImage(codeConstants);
+        return administratorConstantsUseCase.getConstantsImage(codeConstants);
     }
 
     @PostMapping(value = "/getUsers", produces = "application/json")
     public ResponseEntity<List<ForumUserDTO>> getUsers() {
 
-        List<ForumUserDTO> userDTOs = administratorUseCase.getUsers();
+        List<ForumUserDTO> userDTOs = administratorUserUseCase.getUsers();
 
         // remove the passwords... it's not safe to send them to the client(browser) !!
         userDTOs.forEach(dto -> dto.password = "");
@@ -92,7 +90,7 @@ public class AdministratorController {
     @PostMapping(value = "/getClassifications", produces = "application/json")
     public ResponseEntity<List<ClassificationDTO>> getClassifications() {
 
-        List<ClassificationDTO> classificationDTOs = administratorUseCase.getClassifications();
+        List<ClassificationDTO> classificationDTOs = administratorUserUseCase.getClassifications();
         return ResponseEntity.ok(classificationDTOs);
     }
 
@@ -101,7 +99,7 @@ public class AdministratorController {
 
         boolean isNewUser = (forumUserDTO.code == null || forumUserDTO.code <= 0);
 
-        forumUserDTO = administratorUseCase.saveUser(forumUserDTO);
+        forumUserDTO = administratorUserUseCase.saveUser(forumUserDTO);
 
         // a new user needs to be emailed a new password
         if(isNewUser) {
@@ -114,7 +112,7 @@ public class AdministratorController {
     @PostMapping(value = "/deleteUser", produces="application/json")
     public ResponseEntity<String> deleteUser(@RequestBody Integer codeForumUser) {
 
-        Boolean isDeleted = administratorUseCase.deleteUser(codeForumUser);
+        Boolean isDeleted = administratorUserUseCase.deleteUser(codeForumUser);
 
         JSONObject response = new JSONObject();
         response.put("result", isDeleted.toString());
