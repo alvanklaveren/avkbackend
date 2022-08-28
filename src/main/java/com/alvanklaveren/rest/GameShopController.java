@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -29,7 +30,7 @@ import static com.alvanklaveren.enums.EProductSort.EProductSortDTO;
 public class GameShopController {
 
     @Autowired
-    private final GameShopUseCase gameShopUseCase;
+    private final @Qualifier("GameShopUseCase") GameShopUseCase gameShopUseCase;
 
     @PostMapping(value = "/getProductList", produces="application/json")
     public ResponseEntity<List<ProductDTO>> getProductList(@RequestBody String request) {
@@ -93,7 +94,7 @@ public class GameShopController {
                     eProductStatusDTO.description = eProductStatus.getDescription();
                     return eProductStatusDTO;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return ResponseEntity.ok(eProductStatusDTOs);
     }
@@ -244,7 +245,7 @@ public class GameShopController {
                     byte[] productImage = gameShopUseCase.getProductMainImage(productDTO.code);
                     return new ProductMobileDTO(productDTO, productImage);
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return ResponseEntity.ok(productMobileDTOs);
     }

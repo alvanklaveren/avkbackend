@@ -36,7 +36,7 @@ public final class UserContext {
         }
 
         Object principal = auth.getPrincipal();
-        return principal instanceof UserDetails ? ((UserDetails) principal).getUsername() : principal.toString();
+        return principal instanceof UserDetails userDetails ? userDetails.getUsername() : principal.toString();
     }
 
     public static Integer getId() {
@@ -47,8 +47,8 @@ public final class UserContext {
             return null;
         }
 
-        if (auth instanceof AuthenticationToken) {
-            return ((AuthenticationToken)auth).getUserCode();
+        if (auth instanceof AuthenticationToken authenticationToken) {
+            return authenticationToken.getUserCode();
         }
 
         return null;
@@ -60,7 +60,7 @@ public final class UserContext {
     public static UserDetails getUserDetails() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getPrincipal() instanceof UserDetails ? ((UserDetails) auth.getPrincipal()) : null;
+        return auth != null && auth.getPrincipal() instanceof UserDetails userDetails ? userDetails : null;
     }
 
     /**

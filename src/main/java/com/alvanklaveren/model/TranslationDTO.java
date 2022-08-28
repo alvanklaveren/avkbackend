@@ -12,7 +12,7 @@ public class TranslationDTO extends AbstractDTO{
     public int version;
 
     public static List<TranslationDTO> toDto(List<Translation> translations, int level){
-        return translations.stream().map(t -> TranslationDTO.toDto(t, level)).collect(Collectors.toList());
+        return translations.stream().map(t -> TranslationDTO.toDto(t, level)).toList();
     }
 
     public static TranslationDTO toDto(Translation translation, int level) {

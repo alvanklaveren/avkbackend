@@ -18,7 +18,7 @@ public class ProductTypeDTO extends AbstractDTO{
     }
 
     public static List<ProductTypeDTO> toDto(List<ProductType> productTypes, int level){
-        return productTypes.stream().map(p -> ProductTypeDTO.toDto(p, level)).collect(Collectors.toList());
+        return productTypes.stream().map(p -> ProductTypeDTO.toDto(p, level)).toList();
     }
 
     public static ProductTypeDTO toDto(ProductType productType, int level) {

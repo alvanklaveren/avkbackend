@@ -10,7 +10,7 @@ public class CompanyDTO extends AbstractDTO {
     public int version;
 
     public static List<CompanyDTO> toDto(List<Company> companies, int level){
-        return companies.stream().map(c -> CompanyDTO.toDto(c, level)).collect(Collectors.toList());
+        return companies.stream().map(c -> CompanyDTO.toDto(c, level)).toList();
     }
 
     public static CompanyDTO toDto(Company company, int level) {

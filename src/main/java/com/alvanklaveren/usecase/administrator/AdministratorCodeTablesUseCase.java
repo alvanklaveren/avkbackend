@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static com.alvanklaveren.enums.ECodeTable.*;
 
-@Component
+@Component("AdministratorCodeTablesUseCase")
 @Slf4j
 @AllArgsConstructor
 public class AdministratorCodeTablesUseCase {
@@ -224,19 +224,19 @@ public class AdministratorCodeTablesUseCase {
     @Transactional
     public void saveCodeTable(ECodeTable eCodeTable, String codeTableRow){
 
-        AbstractDTO dto = AbstractDTO.mapToDTO(codeTableMap.get(eCodeTable), codeTableRow);
-        if (dto instanceof CompanyDTO) {
-            saveCompany((CompanyDTO) dto);
-        } else if (dto instanceof GameConsoleDTO) {
-            saveGameConsole((GameConsoleDTO) dto);
-        } else if (dto instanceof ProductTypeDTO) {
-            saveProductType((ProductTypeDTO) dto);
-        } else if (dto instanceof RatingUrlDTO) {
-            saveRatingUrl((RatingUrlDTO) dto);
-        } else if (dto instanceof TranslationDTO) {
-            saveTranslation((TranslationDTO) dto);
+        AbstractDTO abstractDTO = AbstractDTO.mapToDTO(codeTableMap.get(eCodeTable), codeTableRow);
+        if (abstractDTO instanceof CompanyDTO dto) {
+            saveCompany(dto);
+        } else if (abstractDTO instanceof GameConsoleDTO dto) {
+            saveGameConsole(dto);
+        } else if (abstractDTO instanceof ProductTypeDTO dto) {
+            saveProductType(dto);
+        } else if (abstractDTO instanceof RatingUrlDTO dto) {
+            saveRatingUrl(dto);
+        } else if (abstractDTO instanceof TranslationDTO dto) {
+            saveTranslation(dto);
         } else {
-            throw new RuntimeException("Failed to save " + dto.getClass().getSimpleName()
+            throw new RuntimeException("Failed to save " + abstractDTO.getClass().getSimpleName()
                     + ". Reason: table is not registered as a codetable in AdministratorUseCase::saveCodeTable");
         }
     }

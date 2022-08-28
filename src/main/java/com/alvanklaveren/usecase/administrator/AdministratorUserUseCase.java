@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@Component("AdministratorUserUseCase")
 @Slf4j
 @AllArgsConstructor
 public class AdministratorUserUseCase {
@@ -85,15 +85,10 @@ public class AdministratorUserUseCase {
 
         ForumUser forumUser = new ForumUser();
 
-        switch(eClassification) {
-            case Administrator: case Unknown:
-                // for security reasons, never allow a new user to immediately get administrator privileges.
-                // the same goes for Unknown. In both cases, default to GUEST
-                eClassification = EClassification.Guest;
-                break;
-            default:
-        }
-        Classification classification = classificationRepository.getByCode(eClassification.getCode());
+        Classification classification = switch(eClassification) {
+            case Administrator, Unknown -> classificationRepository.getByCode(EClassification.Guest.getCode());
+            default -> classificationRepository.getByCode(eClassification.getCode());
+        };
 
         forumUser.setClassification(classification);
 

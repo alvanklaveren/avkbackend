@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -26,10 +27,10 @@ import java.util.List;
 @Secured({EClassification.ROLE_ADMIN})
 public class AdministratorController {
 
-    @Autowired private final AdministratorConstantsUseCase administratorConstantsUseCase;
-    @Autowired private final AdministratorUserUseCase administratorUserUseCase;
-    @Autowired private final AdministratorCodeTablesUseCase administratorUseCase;
-    @Autowired private final ForumUserUseCase forumUserUseCase;
+    @Autowired private final @Qualifier("AdministratorConstantsUseCase") AdministratorConstantsUseCase administratorConstantsUseCase;
+    @Autowired private final @Qualifier("AdministratorUserUseCase") AdministratorUserUseCase administratorUserUseCase;
+    @Autowired private final @Qualifier("AdministratorCodeTablesUseCase") AdministratorCodeTablesUseCase administratorUseCase;
+    @Autowired private final @Qualifier("ForumUserUseCase") ForumUserUseCase forumUserUseCase;
 
     @PostMapping(value = "/getConstant", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
@@ -53,7 +54,8 @@ public class AdministratorController {
     }
 
     @PostMapping(value="/uploadConstantsImage", produces = "application/json")
-    public ResponseEntity<ConstantsDTO> uploadConstantImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeConstants") Integer codeConstants){
+    public ResponseEntity<ConstantsDTO> uploadConstantImage(@RequestParam("imageFile") MultipartFile file,
+                                                            @RequestParam("codeConstants") Integer codeConstants) {
 
         ConstantsDTO constantsDTO = administratorConstantsUseCase.uploadImage(codeConstants, file);
         return ResponseEntity.ok(constantsDTO);
@@ -145,27 +147,14 @@ public class AdministratorController {
         int codeTable = jsonObject.getInt("codeTable");
 
         ECodeTable eCodeTable = ECodeTable.getByCode(codeTable);
-        switch(eCodeTable){
-            case Companies:
-                isDeleted = administratorUseCase.deleteCompany(code);
-                break;
-
-            case GameConsole:
-                isDeleted = administratorUseCase.deleteGameConsole(code);
-                break;
-
-            case ProductType:
-                isDeleted = administratorUseCase.deleteProductType(code);
-                break;
-
-            case RatingUrl:
-                isDeleted = administratorUseCase.deleteRatingUrl(code);
-                break;
-
-            case Translation:
-                isDeleted = administratorUseCase.deleteTranslation(code);
-                break;
-        }
+        isDeleted = switch(eCodeTable) {
+            case Companies -> administratorUseCase.deleteCompany(code);
+            case GameConsole -> administratorUseCase.deleteGameConsole(code);
+            case ProductType -> administratorUseCase.deleteProductType(code);
+            case RatingUrl -> administratorUseCase.deleteRatingUrl(code);
+            case Translation -> administratorUseCase.deleteTranslation(code);
+            case Unknown -> throw new RuntimeException("No codetable found for id = " + eCodeTable.getId());
+        };
 
         JSONObject response = new JSONObject();
         response.put("result", isDeleted.toString());

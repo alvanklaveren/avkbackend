@@ -21,7 +21,7 @@ public class ProductDTO extends AbstractDTO{
     public Set<ProductRatingDTO> productRatings;
 
     public static List<ProductDTO> toDto(List<Product> products, int level){
-        return products.stream().map(p -> ProductDTO.toDto(p, level)).collect(Collectors.toList());
+        return products.stream().map(p -> ProductDTO.toDto(p, level)).toList();
     }
 
     public static ProductDTO toDto(Product product, int level) {

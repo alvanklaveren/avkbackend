@@ -10,7 +10,7 @@ public class MessageCategoryDTO extends AbstractDTO{
     public int version;
 
     public static List<MessageCategoryDTO> toDto(List<MessageCategory> messageCategories, int level){
-        return messageCategories.stream().map(m -> MessageCategoryDTO.toDto(m, level)).collect(Collectors.toList());
+        return messageCategories.stream().map(m -> MessageCategoryDTO.toDto(m, level)).toList();
     }
 
     public static MessageCategoryDTO toDto(MessageCategory messageCategory, int level) {

@@ -11,7 +11,7 @@ public class ClassificationDTO extends AbstractDTO {
     public int version;
 
     public static List<ClassificationDTO> toDto(List<Classification> classifications, int level){
-        return classifications.stream().map(c -> ClassificationDTO.toDto(c, level)).collect(Collectors.toList());
+        return classifications.stream().map(c -> ClassificationDTO.toDto(c, level)).toList();
     }
 
     public static ClassificationDTO toDto(Classification classification, int level) {

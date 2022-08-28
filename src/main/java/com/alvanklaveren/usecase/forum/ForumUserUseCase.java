@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@Component
+@Component("ForumUserUseCase")
 @Slf4j
 @AllArgsConstructor
 public class ForumUserUseCase {

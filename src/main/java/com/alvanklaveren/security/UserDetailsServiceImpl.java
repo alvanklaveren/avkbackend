@@ -57,9 +57,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Collection<GrantedAuthority> grantedAuthorities;
         Set<String> roles = new HashSet<>();
         switch(forumUser.getClassification().getCode()){
-            case 1: roles.add(EClassification.Administrator.getRoleName()); break;
-            case 2: roles.add(EClassification.Member.getRoleName()); break;
-            case 3: default: roles.add(EClassification.Guest.getRoleName()); break;
+            case 1 -> roles.add(EClassification.Administrator.getRoleName());
+            case 2 -> roles.add(EClassification.Member.getRoleName());
+            default -> roles.add(EClassification.Guest.getRoleName()); /* = also case 3*/
         }
 
         grantedAuthorities = toGrantedAuthorities(roles);

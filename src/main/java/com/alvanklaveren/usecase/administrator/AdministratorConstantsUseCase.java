@@ -15,9 +15,8 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
 
-import static com.alvanklaveren.enums.ECodeTable.*;
 
-@Component
+@Component("AdministratorConstantsUseCase")
 @Slf4j
 @AllArgsConstructor
 public class AdministratorConstantsUseCase {

@@ -18,7 +18,7 @@ public class MessageDTO extends AbstractDTO{
 
 
     public static List<MessageDTO> toDto(List<Message> messages, int level){
-        return messages.stream().map(m -> MessageDTO.toDto(m, level)).collect(Collectors.toList());
+        return messages.stream().map(m -> MessageDTO.toDto(m, level)).toList();
     }
 
     public static MessageDTO toDto(Message message, int level) {

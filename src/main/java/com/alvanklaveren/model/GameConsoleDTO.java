@@ -23,7 +23,7 @@ public class GameConsoleDTO extends AbstractDTO{
     }
 
     public static List<GameConsoleDTO> toDto(List<GameConsole> gameConsoles, int level){
-        return gameConsoles.stream().map(g -> GameConsoleDTO.toDto(g, level)).collect(Collectors.toList());
+        return gameConsoles.stream().map(g -> GameConsoleDTO.toDto(g, level)).toList();
     }
 
     public static GameConsoleDTO toDto(GameConsole gameConsole, int level) {

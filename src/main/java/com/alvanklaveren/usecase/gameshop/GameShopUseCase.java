@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Component("GameShopUseCase")
 @Slf4j
 @AllArgsConstructor
 public class GameShopUseCase {
@@ -107,7 +107,7 @@ public class GameShopUseCase {
         String productName = "%" + search.trim().replace(" ", "%") + "%";
         List<Product> products = productRepository.search(productName, productName, productName, pageRequest);
 
-        return products.stream().map(Product::getName).collect(Collectors.toList());
+        return products.stream().map(Product::getName).toList();
     }
 
 

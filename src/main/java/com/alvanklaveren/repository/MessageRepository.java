@@ -18,11 +18,15 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     @Query("select count(*) from Message m where m.messageCategory.code = :codeMessageCategory and m.message is null")
     Integer countByMessageCategory(Integer codeMessageCategory);
 
-    @Query( "select code as code, description as description, messageDate as messageDate, messageCategory.code as messageCategoryCode, " +
-            "       forumUser.displayName as forumUserName " +
-            "from   Message m " +
-            "where  m.messageCategory.code = :codeMessageCategory " +
-            "and    m.message is null")
+    @Query( """
+            select code as code 
+            ,      description as description 
+            ,      messageDate as messageDate 
+            ,      messageCategory.code as messageCategoryCode 
+            ,      forumUser.displayName as forumUserName 
+            from   Message m 
+            where  m.messageCategory.code = :codeMessageCategory 
+            and    m.message is null""")
     List<MessageListView> findByMessageCategory_Code(Integer codeMessageCategory, Sort sort);
 
     List<Message> findByMessage_Code(Integer codeMessage);

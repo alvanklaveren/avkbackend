@@ -24,7 +24,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
-@Component
+@Component("ForumMessageUseCase")
 @Slf4j
 @AllArgsConstructor
 public class ForumMessageUseCase {

@@ -10,7 +10,7 @@ public class RatingUrlDTO extends AbstractDTO{
     public int version;
 
     public static List<RatingUrlDTO> toDto(List<RatingUrl> ratingUrls, int level){
-        return ratingUrls.stream().map(r -> RatingUrlDTO.toDto(r, level)).collect(Collectors.toList());
+        return ratingUrls.stream().map(r -> RatingUrlDTO.toDto(r, level)).toList();
     }
 
     public static RatingUrlDTO toDto(RatingUrl ratingUrl, int level) {

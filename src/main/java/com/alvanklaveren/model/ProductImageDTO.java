@@ -14,7 +14,7 @@ public class ProductImageDTO extends AbstractDTO{
     public ProductDTO product;
 
     public static List<ProductImageDTO> toDto(List<ProductImage> productImages, int level){
-        return productImages.stream().map(p -> ProductImageDTO.toDto(p, level)).collect(Collectors.toList());
+        return productImages.stream().map(p -> ProductImageDTO.toDto(p, level)).toList();
     }
 
     public static ProductImageDTO toDto(ProductImage productImage, int level) {

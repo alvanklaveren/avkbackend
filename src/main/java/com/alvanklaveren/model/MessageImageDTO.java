@@ -14,7 +14,7 @@ public class MessageImageDTO extends AbstractDTO{
     public MessageDTO message;
 
     public static List<MessageImageDTO> toDto(List<MessageImage> messageImages, int level){
-        return messageImages.stream().map(m -> MessageImageDTO.toDto(m, level)).collect(Collectors.toList());
+        return messageImages.stream().map(m -> MessageImageDTO.toDto(m, level)).toList();
     }
 
     public static MessageImageDTO toDto(MessageImage messageImage, int level) {

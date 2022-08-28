@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -27,10 +28,10 @@ import java.util.List;
 public class ForumController {
 
     @Autowired
-    private final ForumMessageUseCase forumUseCase;
+    private final @Qualifier("ForumMessageUseCase") ForumMessageUseCase forumUseCase;
 
     @Autowired
-    private final ForumUserUseCase forumUserUseCase;
+    private final @Qualifier("ForumUserUseCase") ForumUserUseCase forumUserUseCase;
 
     @PostMapping(value = "/getHomePageMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages(@RequestBody String request) {

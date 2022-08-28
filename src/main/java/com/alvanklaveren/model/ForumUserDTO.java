@@ -17,7 +17,7 @@ public class ForumUserDTO extends AbstractDTO{
     public ClassificationDTO classification;
 
     public static List<ForumUserDTO> toDto(List<ForumUser> forumUsers, int level){
-        return forumUsers.stream().map(f -> ForumUserDTO.toDto(f, level)).collect(Collectors.toList());
+        return forumUsers.stream().map(f -> ForumUserDTO.toDto(f, level)).toList();
     }
 
     public static ForumUserDTO toDto(ForumUser forumUser, int level) {

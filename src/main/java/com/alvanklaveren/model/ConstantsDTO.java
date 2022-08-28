@@ -14,7 +14,7 @@ public class ConstantsDTO extends AbstractDTO{
     public int version;
 
     public static List<ConstantsDTO> toDto(List<Constants> constants, int level){
-        return constants.stream().map(c -> ConstantsDTO.toDto(c, level)).collect(Collectors.toList());
+        return constants.stream().map(c -> ConstantsDTO.toDto(c, level)).toList();
     }
 
     public static ConstantsDTO toDto(Constants constants, int level) {
