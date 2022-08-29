@@ -7,7 +7,7 @@ import com.mysql.cj.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static com.alvanklaveren.enums.ECodeTable.*;
 
-@Component("AdministratorCodeTablesUseCase")
+@Service("AdministratorCodeTablesUseCase")
 @Slf4j
 @AllArgsConstructor
 public class AdministratorCodeTablesUseCase {

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.alvanklaveren.utils.StringLogic;
@@ -24,7 +24,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
-@Component("ForumMessageUseCase")
+@Service("ForumMessageUseCase")
 @Slf4j
 @AllArgsConstructor
 public class ForumMessageUseCase {

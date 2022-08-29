@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +28,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
 
-@Component("GameShopUseCase")
+@Service("GameShopUseCase")
 @Slf4j
 @AllArgsConstructor
 public class GameShopUseCase {
