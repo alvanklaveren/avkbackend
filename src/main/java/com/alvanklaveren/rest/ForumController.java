@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -28,10 +27,10 @@ import java.util.List;
 public class ForumController {
 
     @Autowired
-    private final @Qualifier("ForumMessageUseCase") ForumMessageUseCase forumUseCase;
+    private final ForumMessageUseCase forumMessageUseCase;
 
     @Autowired
-    private final @Qualifier("ForumUserUseCase") ForumUserUseCase forumUserUseCase;
+    private final ForumUserUseCase forumUserUseCase;
 
     @PostMapping(value = "/getHomePageMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages(@RequestBody String request) {
@@ -40,7 +39,7 @@ public class ForumController {
         int page = jsonObject.getInt("page");
         int pageSize = jsonObject.getInt("pageSize");
 
-        List<MessageDTO> messageDTOs = forumUseCase.getByCategoryCode(-1, page, pageSize, 0);
+        List<MessageDTO> messageDTOs = forumMessageUseCase.getByCategoryCode(-1, page, pageSize, 0);
 
         return ResponseEntity.ok(messageDTOs);
     }
@@ -48,14 +47,14 @@ public class ForumController {
     @PostMapping(value = "/getMessage", produces = "application/json")
     public ResponseEntity<MessageDTO> getMessage(@RequestBody Integer codeMessage) {
 
-        MessageDTO messageDTO = forumUseCase.getMessage(codeMessage);
+        MessageDTO messageDTO = forumMessageUseCase.getMessage(codeMessage);
         return ResponseEntity.ok(messageDTO);
     }
 
     @PostMapping(value = "/getReplyMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getReplyMessages(@RequestBody Integer codeMessage) {
 
-        List<MessageDTO> messageDTOs = forumUseCase.getReplyMessages(codeMessage);
+        List<MessageDTO> messageDTOs = forumMessageUseCase.getReplyMessages(codeMessage);
         return ResponseEntity.ok(messageDTOs);
     }
 
@@ -68,7 +67,7 @@ public class ForumController {
     @PostMapping(value = "/prepareMessage", produces = "application/json")
     public ResponseEntity<String> prepareMessage(@RequestBody String messageText) {
 
-        String preparedMessageText = forumUseCase.prepareMessage(messageText);
+        String preparedMessageText = forumMessageUseCase.prepareMessage(messageText);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("result", preparedMessageText);
@@ -80,7 +79,7 @@ public class ForumController {
     @PostMapping(value = "/save", produces="application/json")
     public ResponseEntity<MessageDTO> save(@RequestBody MessageDTO messageDTO) {
 
-        messageDTO = forumUseCase.save(messageDTO);
+        messageDTO = forumMessageUseCase.save(messageDTO);
         return ResponseEntity.ok(messageDTO);
     }
 
@@ -88,7 +87,7 @@ public class ForumController {
     @PostMapping(value = "/saveMessageCategory", produces="application/json")
     public ResponseEntity<MessageCategoryDTO> saveMessageCategory(@RequestBody MessageCategoryDTO messageCategoryDTO) {
 
-        messageCategoryDTO = forumUseCase.saveMessageCategory(messageCategoryDTO);
+        messageCategoryDTO = forumMessageUseCase.saveMessageCategory(messageCategoryDTO);
         return ResponseEntity.ok(messageCategoryDTO);
     }
 
@@ -96,7 +95,7 @@ public class ForumController {
     @PostMapping(value = "/delete", produces="application/json")
     public ResponseEntity<String> delete(@RequestBody Integer codeMessage) {
 
-        forumUseCase.delete(codeMessage);
+        forumMessageUseCase.delete(codeMessage);
 
         JSONObject response = new JSONObject();
         response.put("result", Boolean.TRUE.toString());
@@ -108,7 +107,7 @@ public class ForumController {
     @PostMapping(value = "/deleteMessageCategory", produces="application/json")
     public ResponseEntity<String> deleteMessageCategory(@RequestBody Integer codeMessageCategory) {
 
-        forumUseCase.deleteMessageCategory(codeMessageCategory);
+        forumMessageUseCase.deleteMessageCategory(codeMessageCategory);
 
         JSONObject response = new JSONObject();
         response.put("result", Boolean.TRUE.toString());
@@ -119,28 +118,28 @@ public class ForumController {
     @GetMapping(value = "/getMessageCategories", produces = "application/json")
     public ResponseEntity<List<MessageCategoryDTO>> getMessageCategories() {
 
-        List<MessageCategoryDTO> categoryDTOs = forumUseCase.getMessageCategories();
+        List<MessageCategoryDTO> categoryDTOs = forumMessageUseCase.getMessageCategories();
         return ResponseEntity.ok(categoryDTOs);
     }
 
     @PostMapping(value = "/getMessageCategory", produces = "application/json")
     public ResponseEntity<MessageCategoryDTO> getMessageCategory(@RequestBody Integer codeMessageCategory) {
 
-        MessageCategoryDTO categoryDTO = forumUseCase.getMessageCategory(codeMessageCategory);
+        MessageCategoryDTO categoryDTO = forumMessageUseCase.getMessageCategory(codeMessageCategory);
         return ResponseEntity.ok(categoryDTO);
     }
 
     @PostMapping(value = "/getMessageCount", produces = "application/json")
     public ResponseEntity<Integer> getMessageCount(@RequestBody Integer codeMessageCategory) {
 
-        Integer messageCount = forumUseCase.getMessageCount(codeMessageCategory);
+        Integer messageCount = forumMessageUseCase.getMessageCount(codeMessageCategory);
         return ResponseEntity.ok(messageCount);
     }
 
     @PostMapping(value = "/getMessagesByCategory", produces = "application/json")
     public ResponseEntity<List<MessageListView>> getMessagesByCategory(@RequestBody Integer codeMessageCategory) {
 
-        List<MessageListView> messageListViews = forumUseCase.getMessagesByCategory(codeMessageCategory);
+        List<MessageListView> messageListViews = forumMessageUseCase.getMessagesByCategory(codeMessageCategory);
         return ResponseEntity.ok(messageListViews);
     }
 
@@ -148,7 +147,7 @@ public class ForumController {
     @PostMapping(value="/uploadImage", produces = "application/json")
     public ResponseEntity<MessageImageDTO> uploadImage(@RequestParam("imageFile") MultipartFile file, @RequestParam("codeMessage") Integer codeMessage){
 
-        MessageImageDTO messageImageDTO = forumUseCase.uploadImage(codeMessage, file);
+        MessageImageDTO messageImageDTO = forumMessageUseCase.uploadImage(codeMessage, file);
         return ResponseEntity.ok(messageImageDTO);
     }
 
@@ -160,14 +159,14 @@ public class ForumController {
         Integer codeMessage = jsonObject.getInt("codeMessage");
         String fileContent = jsonObject.getString("fileContent");
 
-        MessageImageDTO messageImageDTO = forumUseCase.uploadImageAlt(codeMessage, fileContent);
+        MessageImageDTO messageImageDTO = forumMessageUseCase.uploadImageAlt(codeMessage, fileContent);
         return ResponseEntity.ok(messageImageDTO);
     }
 
     @PostMapping(value="/getImages", produces = "application/json")
     public ResponseEntity<List<MessageImageDTO>> getImages(){
 
-        List<MessageImageDTO> messageImageDTOs = forumUseCase.getImages();
+        List<MessageImageDTO> messageImageDTOs = forumMessageUseCase.getImages();
 
         return ResponseEntity.ok(messageImageDTOs);
     }
@@ -175,7 +174,7 @@ public class ForumController {
     @GetMapping(value="/getMessageImage", produces=MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] getMessageImage(@RequestParam Integer codeMessageImage){
 
-        return forumUseCase.getImage(codeMessageImage);
+        return forumMessageUseCase.getImage(codeMessageImage);
     }
 
     @PostMapping(value = "/emailNewPassword", produces = "application/json")

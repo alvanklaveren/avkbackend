@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -27,10 +26,10 @@ import java.util.List;
 @Secured({EClassification.ROLE_ADMIN})
 public class AdministratorController {
 
-    @Autowired private final @Qualifier("AdministratorConstantsUseCase") AdministratorConstantsUseCase administratorConstantsUseCase;
-    @Autowired private final @Qualifier("AdministratorUserUseCase") AdministratorUserUseCase administratorUserUseCase;
-    @Autowired private final @Qualifier("AdministratorCodeTablesUseCase") AdministratorCodeTablesUseCase administratorUseCase;
-    @Autowired private final @Qualifier("ForumUserUseCase") ForumUserUseCase forumUserUseCase;
+    @Autowired private final AdministratorCodeTablesUseCase administratorCodeTablesUseCase;
+    @Autowired private final AdministratorConstantsUseCase administratorConstantsUseCase;
+    @Autowired private final AdministratorUserUseCase administratorUserUseCase;
+    @Autowired private final ForumUserUseCase forumUserUseCase;
 
     @PostMapping(value = "/getConstant", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {
@@ -128,7 +127,7 @@ public class AdministratorController {
         JSONObject jsonObject = new JSONObject(request);
 
         ECodeTable eCodeTable = ECodeTable.getByCode(jsonObject.getInt("codeTable"));
-        administratorUseCase.saveCodeTable(eCodeTable, jsonObject.get("codeTableRow").toString());
+        administratorCodeTablesUseCase.saveCodeTable(eCodeTable, jsonObject.get("codeTableRow").toString());
 
         JSONObject response = new JSONObject();
         response.put("result", Boolean.TRUE.toString());
@@ -148,11 +147,11 @@ public class AdministratorController {
 
         ECodeTable eCodeTable = ECodeTable.getByCode(codeTable);
         isDeleted = switch(eCodeTable) {
-            case Companies -> administratorUseCase.deleteCompany(code);
-            case GameConsole -> administratorUseCase.deleteGameConsole(code);
-            case ProductType -> administratorUseCase.deleteProductType(code);
-            case RatingUrl -> administratorUseCase.deleteRatingUrl(code);
-            case Translation -> administratorUseCase.deleteTranslation(code);
+            case Companies -> administratorCodeTablesUseCase.deleteCompany(code);
+            case GameConsole -> administratorCodeTablesUseCase.deleteGameConsole(code);
+            case ProductType -> administratorCodeTablesUseCase.deleteProductType(code);
+            case RatingUrl -> administratorCodeTablesUseCase.deleteRatingUrl(code);
+            case Translation -> administratorCodeTablesUseCase.deleteTranslation(code);
             case Unknown -> throw new RuntimeException("No codetable found for id = " + eCodeTable.getId());
         };
 

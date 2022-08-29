@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component("GameShopUseCase")
 @Slf4j

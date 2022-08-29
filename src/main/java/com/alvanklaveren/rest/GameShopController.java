@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.alvanklaveren.enums.EProductSort.EProductSortDTO;
 
@@ -30,7 +28,7 @@ import static com.alvanklaveren.enums.EProductSort.EProductSortDTO;
 public class GameShopController {
 
     @Autowired
-    private final @Qualifier("GameShopUseCase") GameShopUseCase gameShopUseCase;
+    private final GameShopUseCase gameShopUseCase;
 
     @PostMapping(value = "/getProductList", produces="application/json")
     public ResponseEntity<List<ProductDTO>> getProductList(@RequestBody String request) {
