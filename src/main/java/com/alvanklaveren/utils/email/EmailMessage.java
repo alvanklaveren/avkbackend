@@ -17,15 +17,15 @@ import java.util.Properties;
 @Slf4j
 public abstract class EmailMessage {
 
-	private String from = "";
-	private String passWord = "";
-    private final Properties properties;
+	protected String from = "";
+	protected String passWord = "";
+    protected final Properties properties;
 
-    private String subject = "";
-	private String body = "";
-	private String to = "";
+	protected String subject = "";
+	protected String body = "";
+	protected String to = "";
 
-    private final Multipart multiPart;
+	protected final Multipart multiPart;
 
 	public EmailMessage(){
 		properties = new Properties();
