@@ -2,8 +2,6 @@ package com.alvanklaveren.security;
 
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -20,9 +18,8 @@ public class JWTAuthorizationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
 
-        HttpServletRequest rq = (HttpServletRequest) request;
-
-        ServletContext sc = rq.getServletContext();
+        //HttpServletRequest rq = (HttpServletRequest) request;
+        //ServletContext sc = rq.getServletContext();
 
         try {
 
@@ -33,7 +30,7 @@ public class JWTAuthorizationFilter extends GenericFilterBean {
 
         } catch (JwtException ejwt) {
 
-            log.error("Exception: ", ejwt);
+            //log.error("Exception: ", ejwt);
 
             ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, ejwt.getMessage());
             return; // SKIP FILTER CHAIN
