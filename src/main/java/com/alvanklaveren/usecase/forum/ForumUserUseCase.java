@@ -6,9 +6,6 @@ import com.alvanklaveren.repository.ConstantsRepository;
 import com.alvanklaveren.repository.ForumUserRepository;
 import com.alvanklaveren.security.UserContext;
 import com.alvanklaveren.utils.email.HotmailMessage;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,14 +18,16 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Service("ForumUserUseCase")
-@Slf4j
-@AllArgsConstructor
 public class ForumUserUseCase {
-
-    @Autowired private final ForumUserRepository forumUserRepository;
-    @Autowired private final ConstantsRepository constantsRepository;
+    private final ForumUserRepository forumUserRepository;
+    private final ConstantsRepository constantsRepository;
 
     private final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!";
+
+    public ForumUserUseCase(ForumUserRepository forumUserRepository, ConstantsRepository constantsRepository) {
+        this.forumUserRepository = forumUserRepository;
+        this.constantsRepository = constantsRepository;
+    }
 
 
     @Transactional(readOnly=true)
@@ -81,7 +80,6 @@ public class ForumUserUseCase {
             hotmailMessage.send();
         } catch (MessagingException e) {
             e.printStackTrace();
-            log.error(e.getMessage());
             return false;
         }
 

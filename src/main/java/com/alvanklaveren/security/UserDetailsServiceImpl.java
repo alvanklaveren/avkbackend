@@ -3,8 +3,6 @@ package com.alvanklaveren.security;
 import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.ForumUser;
 import com.alvanklaveren.repository.ForumUserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,8 +19,6 @@ import static com.alvanklaveren.security.SecurityConstants.*;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     private ForumUserRepository forumUserRepository;
 
@@ -46,11 +42,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             throw new UsernameNotFoundException("Empty username");
         }
-        LOG.debug("Security verification for user '{}'", username);
         ForumUser forumUser = forumUserRepository.getByUsername(username);
         if (forumUser == null) {
 
-            LOG.info("User {} could not be found", username);
             throw new UsernameNotFoundException("user " + username + " could not be found");
         }
 

@@ -5,10 +5,7 @@ import com.alvanklaveren.enums.EProductSort;
 import com.alvanklaveren.enums.EProductStatus;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.usecase.gameshop.GameShopUseCase;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -23,12 +20,12 @@ import static com.alvanklaveren.enums.EProductSort.EProductSortDTO;
 
 @RestController
 @RequestMapping("/backend/gameshop")
-@AllArgsConstructor
-@Slf4j
 public class GameShopController {
-
-    @Autowired
     private final GameShopUseCase gameShopUseCase;
+
+    public GameShopController(GameShopUseCase gameShopUseCase) {
+        this.gameShopUseCase = gameShopUseCase;
+    }
 
     @PostMapping(value = "/getProductList", produces="application/json")
     public ResponseEntity<List<ProductDTO>> getProductList(@RequestBody String request) {

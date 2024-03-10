@@ -7,10 +7,7 @@ import com.alvanklaveren.usecase.administrator.AdministratorConstantsUseCase;
 import com.alvanklaveren.usecase.administrator.AdministratorCodeTablesUseCase;
 import com.alvanklaveren.usecase.administrator.AdministratorUserUseCase;
 import com.alvanklaveren.usecase.forum.ForumUserUseCase;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -21,15 +18,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/backend/administrator")
-@AllArgsConstructor
-@Slf4j
 @Secured({EClassification.ROLE_ADMIN})
 public class AdministratorController {
 
-    @Autowired private final AdministratorCodeTablesUseCase administratorCodeTablesUseCase;
-    @Autowired private final AdministratorConstantsUseCase administratorConstantsUseCase;
-    @Autowired private final AdministratorUserUseCase administratorUserUseCase;
-    @Autowired private final ForumUserUseCase forumUserUseCase;
+    private final AdministratorCodeTablesUseCase administratorCodeTablesUseCase;
+    private final AdministratorConstantsUseCase administratorConstantsUseCase;
+    private final AdministratorUserUseCase administratorUserUseCase;
+    private final ForumUserUseCase forumUserUseCase;
+
+    public AdministratorController(AdministratorCodeTablesUseCase administratorCodeTablesUseCase, AdministratorConstantsUseCase administratorConstantsUseCase, AdministratorUserUseCase administratorUserUseCase, ForumUserUseCase forumUserUseCase) {
+        this.administratorCodeTablesUseCase = administratorCodeTablesUseCase;
+        this.administratorConstantsUseCase = administratorConstantsUseCase;
+        this.administratorUserUseCase = administratorUserUseCase;
+        this.forumUserUseCase = forumUserUseCase;
+    }
 
     @PostMapping(value = "/getConstant", produces = "application/json")
     public ResponseEntity<ConstantsDTO> getConstant(@RequestBody Integer codeConstants) {

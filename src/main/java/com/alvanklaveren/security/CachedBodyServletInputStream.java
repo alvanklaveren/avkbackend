@@ -1,14 +1,12 @@
 package com.alvanklaveren.security;
 
-import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Slf4j
 public class CachedBodyServletInputStream extends ServletInputStream {
 
     private final InputStream cachedBodyInputStream;
@@ -23,7 +21,6 @@ public class CachedBodyServletInputStream extends ServletInputStream {
         try {
             return cachedBodyInputStream.available() == 0;
         } catch (IOException e) {
-            log.error("CachedBodyServletInputStream::isFinished", e);
         }
 
         return false;

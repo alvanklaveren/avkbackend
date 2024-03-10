@@ -5,9 +5,6 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.projections.MessageListView;
 import com.alvanklaveren.repository.*;
 import com.alvanklaveren.security.UserContext;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,14 +22,18 @@ import java.util.Base64;
 import java.util.List;
 
 @Service("ForumMessageUseCase")
-@Slf4j
-@AllArgsConstructor
 public class ForumMessageUseCase {
+    private final MessageCategoryRepository messageCategoryRepository;
+    private final MessageImageRepository messageImageRepository;
+    private final ForumUserRepository forumUserRepository;
+    private final MessageRepository messageRepository;
 
-    @Autowired private final MessageCategoryRepository messageCategoryRepository;
-    @Autowired private final MessageImageRepository messageImageRepository;
-    @Autowired private final ForumUserRepository forumUserRepository;
-    @Autowired private final MessageRepository messageRepository;
+    public ForumMessageUseCase(MessageCategoryRepository messageCategoryRepository, MessageImageRepository messageImageRepository, ForumUserRepository forumUserRepository, MessageRepository messageRepository) {
+        this.messageCategoryRepository = messageCategoryRepository;
+        this.messageImageRepository = messageImageRepository;
+        this.forumUserRepository = forumUserRepository;
+        this.messageRepository = messageRepository;
+    }
 
 
     @Transactional
@@ -306,7 +307,7 @@ public class ForumMessageUseCase {
     @Transactional
     public MessageImageDTO uploadImageAlt(Integer codeMessage, String fileContent){
 
-        byte[] imageByte = org.apache.tomcat.util.codec.binary.Base64.decodeBase64(fileContent.getBytes());
+        byte[] imageByte = org.apache.tomcat.util.codec.binary.Base64.decodeBase64(fileContent);
 
         Message message = null;
         if(codeMessage > 0) {

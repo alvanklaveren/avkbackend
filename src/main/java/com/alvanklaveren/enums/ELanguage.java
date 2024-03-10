@@ -1,14 +1,9 @@
 package com.alvanklaveren.enums;
 
 import com.alvanklaveren.model.Translation;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
-@Getter(AccessLevel.PUBLIC)
-@RequiredArgsConstructor
 public enum ELanguage {
 
     Unknown(0,"unknown"),
@@ -17,6 +12,11 @@ public enum ELanguage {
 
     private final int id;
     private final String isoA2;
+
+    ELanguage(int id, String isoA2) {
+        this.id = id;
+        this.isoA2 = isoA2;
+    }
 
     public String translate(Translation translation){
 
@@ -33,5 +33,13 @@ public enum ELanguage {
 
     public static ELanguage getByIsoA2(String isoA2){
         return Arrays.stream(values()).filter(value -> value.getIsoA2().equalsIgnoreCase(isoA2)).findFirst().orElse(Unknown);
+    }
+
+    public String getIsoA2() {
+        return isoA2;
+    }
+
+    public int getId() {
+        return id;
     }
 }

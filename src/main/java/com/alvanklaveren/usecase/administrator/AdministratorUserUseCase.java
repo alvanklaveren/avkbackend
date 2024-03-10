@@ -4,22 +4,21 @@ import com.alvanklaveren.enums.EClassification;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.mysql.cj.util.StringUtils;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
 @Service("AdministratorUserUseCase")
-@Slf4j
-@AllArgsConstructor
 public class AdministratorUserUseCase {
+    private final ForumUserRepository forumUserRepository;
+    private final ClassificationRepository classificationRepository;
 
-    @Autowired private final ForumUserRepository forumUserRepository;
-    @Autowired private final ClassificationRepository classificationRepository;
-
+    public AdministratorUserUseCase(ForumUserRepository forumUserRepository, ClassificationRepository classificationRepository) {
+        this.forumUserRepository = forumUserRepository;
+        this.classificationRepository = classificationRepository;
+    }
 
     @Transactional(readOnly=true)
     public List<ForumUserDTO> getUsers() {
@@ -74,7 +73,6 @@ public class AdministratorUserUseCase {
             forumUserRepository.delete(forumUser);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            log.error(e.getLocalizedMessage());
             return false;
         }
 

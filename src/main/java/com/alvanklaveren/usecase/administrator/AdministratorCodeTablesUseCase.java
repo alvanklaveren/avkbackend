@@ -4,8 +4,6 @@ import com.alvanklaveren.enums.ECodeTable;
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.mysql.cj.util.StringUtils;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +14,6 @@ import java.util.Map;
 import static com.alvanklaveren.enums.ECodeTable.*;
 
 @Service("AdministratorCodeTablesUseCase")
-@Slf4j
-@AllArgsConstructor
 public class AdministratorCodeTablesUseCase {
 
     @Autowired private final CompanyRepository companyRepository;
@@ -33,6 +29,14 @@ public class AdministratorCodeTablesUseCase {
         codeTableMap.put(Translation, TranslationDTO.class);
         codeTableMap.put(RatingUrl, RatingUrlDTO.class);
         codeTableMap.put(Companies, CompanyDTO.class);
+    }
+
+    public AdministratorCodeTablesUseCase(CompanyRepository companyRepository, RatingUrlRepository ratingUrlRepository, TranslationRepository translationRepository, GameConsoleRepository gameConsoleRepository, ProductTypeRepository productTypeRepository) {
+        this.companyRepository = companyRepository;
+        this.ratingUrlRepository = ratingUrlRepository;
+        this.translationRepository = translationRepository;
+        this.gameConsoleRepository = gameConsoleRepository;
+        this.productTypeRepository = productTypeRepository;
     }
 
     @Transactional
@@ -155,7 +159,6 @@ public class AdministratorCodeTablesUseCase {
             companyRepository.delete(company);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -169,7 +172,6 @@ public class AdministratorCodeTablesUseCase {
             gameConsoleRepository.delete(gameConsole);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -183,7 +185,6 @@ public class AdministratorCodeTablesUseCase {
             productTypeRepository.delete(productType);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -197,7 +198,6 @@ public class AdministratorCodeTablesUseCase {
             ratingUrlRepository.delete(ratingUrl);
         } catch(Exception e) {
             // delete fails when user either does not exist or user is already connected to forum messages.
-            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;
@@ -215,7 +215,6 @@ public class AdministratorCodeTablesUseCase {
         } catch(Exception e) {
 
             // delete fails when user either does not exist or user is already connected to forum messages.
-            log.error(e.getLocalizedMessage());
             return false;
         }
         return true;

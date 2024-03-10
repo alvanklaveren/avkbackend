@@ -3,11 +3,9 @@ package com.alvanklaveren.model;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-@Slf4j
 public class AbstractDTO {
 
     public static <T> AbstractDTO mapToDTO(Class<T> dtoClass, String content) {

@@ -3,10 +3,7 @@ package com.alvanklaveren.rest;
 import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.usecase.translation.TranslationUseCase;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +12,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/backend/translation")
-@AllArgsConstructor
-@Slf4j
 public class TranslationController {
-
-    @Autowired
     private final TranslationUseCase translationUseCase;
+
+    public TranslationController(TranslationUseCase translationUseCase) {
+        this.translationUseCase = translationUseCase;
+    }
 
     @PostMapping(value = "/translate", produces="application/text")
     public ResponseEntity<String> translate(@RequestBody String request) {

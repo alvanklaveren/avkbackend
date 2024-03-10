@@ -1,17 +1,9 @@
 package com.alvanklaveren.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@ToString
-@Getter(AccessLevel.PUBLIC)
-@Setter(AccessLevel.PUBLIC)
 public class Message {
 
     @Id
@@ -36,4 +28,68 @@ public class Message {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_message")
     private Message message; // contains the original message to which THIS message is replying
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getMessageText() {
+        return messageText;
+    }
+
+    public void setMessageText(String messageText) {
+        this.messageText = messageText;
+    }
+
+    public Date getMessageDate() {
+        return messageDate;
+    }
+
+    public void setMessageDate(Date messageDate) {
+        this.messageDate = messageDate;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public MessageCategory getMessageCategory() {
+        return messageCategory;
+    }
+
+    public void setMessageCategory(MessageCategory messageCategory) {
+        this.messageCategory = messageCategory;
+    }
+
+    public ForumUser getForumUser() {
+        return forumUser;
+    }
+
+    public void setForumUser(ForumUser forumUser) {
+        this.forumUser = forumUser;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
+    }
 }

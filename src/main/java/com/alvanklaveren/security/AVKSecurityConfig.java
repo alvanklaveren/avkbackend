@@ -81,10 +81,11 @@ public class AVKSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests((authReq) -> authReq
-                    .antMatchers("/").permitAll()
-                    .antMatchers("/backend/forum/**").permitAll()
-                    .antMatchers("/backend/gameshop/**").permitAll()
-                    .antMatchers("/backend/translation/**").permitAll()
+                        .requestMatchers( new AntPathRequestMatcher("/"),
+                                          new AntPathRequestMatcher("/backend/forum/**"),
+                                          new AntPathRequestMatcher("/backend/gameshop/**"),
+                                          new AntPathRequestMatcher("/backend/translation/**")
+                                        ).permitAll()
                     .anyRequest().authenticated())
                     // We filter the /login requests
                     .addFilterBefore(new JWTAuthenticationFilter("/backend/login", authentication -> authentication, tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
