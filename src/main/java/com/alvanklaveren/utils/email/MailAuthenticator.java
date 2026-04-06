@@ -1,14 +1,12 @@
 package com.alvanklaveren.utils.email;
 
 
-import lombok.extern.slf4j.Slf4j;
-
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 
-@Slf4j
 public class MailAuthenticator extends Authenticator {
-     String user;
+
+    String user;
      String pw;
 
      public MailAuthenticator (String username, String password)

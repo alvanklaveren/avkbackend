@@ -8,10 +8,7 @@ import com.alvanklaveren.model.MessageImageDTO;
 import com.alvanklaveren.projections.MessageListView;
 import com.alvanklaveren.usecase.forum.ForumMessageUseCase;
 import com.alvanklaveren.usecase.forum.ForumUserUseCase;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -20,17 +17,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/backend/forum")
-@AllArgsConstructor
-@Slf4j
 public class ForumController {
 
-    @Autowired
     private final ForumMessageUseCase forumMessageUseCase;
-
-    @Autowired
     private final ForumUserUseCase forumUserUseCase;
+
+    public ForumController(ForumMessageUseCase forumMessageUseCase, ForumUserUseCase forumUserUseCase) {
+        this.forumMessageUseCase = forumMessageUseCase;
+        this.forumUserUseCase = forumUserUseCase;
+    }
 
     @PostMapping(value = "/getHomePageMessages", produces = "application/json")
     public ResponseEntity<List<MessageDTO>> getHomePageMessages(@RequestBody String request) {
@@ -181,6 +179,16 @@ public class ForumController {
     public ResponseEntity<String> emailNewPassword(@RequestBody String username) {
 
         boolean emailed = forumUserUseCase.emailNewPassword(username);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("result", emailed);
+
+        return ResponseEntity.ok(jsonObject.toString());
+    }
+
+    @PostMapping(value = "/testEmail", produces = "application/json")
+    public ResponseEntity<String> testEmail() {
+        boolean emailed = forumUserUseCase.testEmail();
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("result", emailed);

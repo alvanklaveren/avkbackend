@@ -2,10 +2,7 @@ package com.alvanklaveren.usecase.administrator;
 
 import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +14,13 @@ import java.util.List;
 
 
 @Service("AdministratorConstantsUseCase")
-@Slf4j
-@AllArgsConstructor
 public class AdministratorConstantsUseCase {
 
-    @Autowired private final ConstantsRepository constantsRepository;
+    private final ConstantsRepository constantsRepository;
+
+    public AdministratorConstantsUseCase(ConstantsRepository constantsRepository) {
+        this.constantsRepository = constantsRepository;
+    }
 
 
     @Transactional(readOnly = true)
@@ -83,7 +82,7 @@ public class AdministratorConstantsUseCase {
     @Transactional
     public ConstantsDTO uploadImageAlt(Integer codeConstants, String fileContent){
 
-        byte[] imageByte = Base64.decodeBase64(fileContent.getBytes());
+        byte[] imageByte = Base64.decodeBase64(fileContent);
 
         Constants constants = constantsRepository.getByCode(codeConstants);
 

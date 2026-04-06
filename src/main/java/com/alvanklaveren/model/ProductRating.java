@@ -1,18 +1,13 @@
 package com.alvanklaveren.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
-@Getter(AccessLevel.PUBLIC)
-@Setter(AccessLevel.PUBLIC)
 public class ProductRating {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @SequenceGenerator(name = "product_rating_id_seq", sequenceName = "product_rating_seq")
     private Integer code;
 
     private int rating;
@@ -27,4 +22,45 @@ public class ProductRating {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_rating_url")
     private RatingUrl ratingUrl;
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public RatingUrl getRatingUrl() {
+        return ratingUrl;
+    }
+
+    public void setRatingUrl(RatingUrl ratingUrl) {
+        this.ratingUrl = ratingUrl;
+    }
+
 }

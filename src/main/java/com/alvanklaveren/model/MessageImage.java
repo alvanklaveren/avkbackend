@@ -1,19 +1,14 @@
 package com.alvanklaveren.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Blob;
 
 @Entity
-@Getter(AccessLevel.PUBLIC)
-@Setter(AccessLevel.PUBLIC)
 public class MessageImage {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @SequenceGenerator(name = "message_image_id_seq", sequenceName = "message_image_seq")
     private Integer code;
 
     private Blob image;
@@ -25,4 +20,44 @@ public class MessageImage {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="code_message")
     private Message message;
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public Blob getImage() {
+        return image;
+    }
+
+    public void setImage(Blob image) {
+        this.image = image;
+    }
+
+    public int getSortorder() {
+        return sortorder;
+    }
+
+    public void setSortorder(int sortorder) {
+        this.sortorder = sortorder;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
+    }
 }

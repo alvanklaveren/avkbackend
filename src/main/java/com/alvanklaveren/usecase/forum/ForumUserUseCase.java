@@ -5,10 +5,7 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.ConstantsRepository;
 import com.alvanklaveren.repository.ForumUserRepository;
 import com.alvanklaveren.security.UserContext;
-import com.alvanklaveren.utils.email.HotmailMessage;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.alvanklaveren.utils.email.GmailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,14 +18,16 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Service("ForumUserUseCase")
-@Slf4j
-@AllArgsConstructor
 public class ForumUserUseCase {
-
-    @Autowired private final ForumUserRepository forumUserRepository;
-    @Autowired private final ConstantsRepository constantsRepository;
+    private final ForumUserRepository forumUserRepository;
+    private final ConstantsRepository constantsRepository;
 
     private final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!";
+
+    public ForumUserUseCase(ForumUserRepository forumUserRepository, ConstantsRepository constantsRepository) {
+        this.forumUserRepository = forumUserRepository;
+        this.constantsRepository = constantsRepository;
+    }
 
 
     @Transactional(readOnly=true)
@@ -73,18 +72,39 @@ public class ForumUserUseCase {
         String from = getConstantsStringValueById("email_address");
         String fromPassword = getConstantsStringValueById("email_password");
 
-        HotmailMessage hotmailMessage = new HotmailMessage(to, from, fromPassword);
-        hotmailMessage.setSubject("Your password at alvanklaveren.com has been reset");
-        hotmailMessage.setBody("Username: " + username + "\nPassword: " + newPassword);
+        GmailMessage message = new GmailMessage(to, from, fromPassword);
+        message.setSubject("Your password at alvanklaveren.com has been reset");
+        message.setBody("Username: " + username + "\nPassword: " + newPassword);
 
         try {
-            hotmailMessage.send();
+            message.send();
         } catch (MessagingException e) {
             e.printStackTrace();
-            log.error(e.getMessage());
             return false;
         }
 
+        return true;
+    }
+
+    @Transactional
+    public boolean testEmail() {
+
+        ForumUser forumUser = forumUserRepository.getByUsername(UserContext.getUsername());
+
+        String to = forumUser.getEmailAddress();
+        String from = getConstantsStringValueById("email_address");
+        String fromPassword = getConstantsStringValueById("email_password");
+
+        GmailMessage message = new GmailMessage(to, from, fromPassword);
+        message.setSubject("Testing gmail emailing functionality");
+        message.setBody("Test successful for " + forumUser.getUsername());
+
+        try {
+            message.send();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 

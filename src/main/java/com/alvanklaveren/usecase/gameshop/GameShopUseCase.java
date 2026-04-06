@@ -5,10 +5,7 @@ import com.alvanklaveren.model.*;
 import com.alvanklaveren.repository.*;
 import com.alvanklaveren.utils.StringLogic;
 import com.mysql.cj.util.StringUtils;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,18 +26,25 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Service("GameShopUseCase")
-@Slf4j
-@AllArgsConstructor
 public class GameShopUseCase {
 
-    @Autowired private final ProductRatingRepository productRatingRepository;
-    @Autowired private final ProductImageRepository productImageRepository;
-    @Autowired private final GameConsoleRepository gameConsoleRepository;
-    @Autowired private final ProductTypeRepository productTypeRepository;
-    @Autowired private final RatingUrlRepository ratingUrlRepository;
-    @Autowired private final ProductRepository productRepository;
-    @Autowired private final CompanyRepository companyRepository;
+    private final ProductRatingRepository productRatingRepository;
+    private final ProductImageRepository productImageRepository;
+    private final GameConsoleRepository gameConsoleRepository;
+    private final ProductTypeRepository productTypeRepository;
+    private final RatingUrlRepository ratingUrlRepository;
+    private final ProductRepository productRepository;
+    private final CompanyRepository companyRepository;
 
+    public GameShopUseCase(ProductRatingRepository productRatingRepository, ProductImageRepository productImageRepository, GameConsoleRepository gameConsoleRepository, ProductTypeRepository productTypeRepository, RatingUrlRepository ratingUrlRepository, ProductRepository productRepository, CompanyRepository companyRepository) {
+        this.productRatingRepository = productRatingRepository;
+        this.productImageRepository = productImageRepository;
+        this.gameConsoleRepository = gameConsoleRepository;
+        this.productTypeRepository = productTypeRepository;
+        this.ratingUrlRepository = ratingUrlRepository;
+        this.productRepository = productRepository;
+        this.companyRepository = companyRepository;
+    }
 
     @Transactional(readOnly=true)
     public List<ProductDTO> getByGameConsoleAndProductType(Integer codeGameConsole, Integer codeProductType, EProductSort eProductSort, int page, int pageSize){
@@ -299,7 +303,7 @@ public class GameShopUseCase {
     @Transactional
     public ProductDTO uploadImageAlt(Integer codeProduct, String fileContent){
 
-        byte[] imageByte = Base64.decodeBase64(fileContent.getBytes());
+        byte[] imageByte = Base64.decodeBase64(fileContent);
 
         Product product = productRepository.findByCode(codeProduct)
                 .orElseThrow(() -> new RuntimeException("Could not find product with code: " + codeProduct));

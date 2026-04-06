@@ -4,8 +4,6 @@ import com.alvanklaveren.enums.ELanguage;
 import com.alvanklaveren.model.Translation;
 import com.alvanklaveren.model.TranslationDTO;
 import com.alvanklaveren.repository.TranslationRepository;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service("TranslationUseCase")
-@Slf4j
-@AllArgsConstructor
 public class TranslationUseCase {
 
     @Autowired private final TranslationRepository translationRepository;
 
+    public TranslationUseCase(TranslationRepository translationRepository) {
+        this.translationRepository = translationRepository;
+    }
 
     @Transactional(readOnly=true)
     public String translate(String original, ELanguage eLanguage){

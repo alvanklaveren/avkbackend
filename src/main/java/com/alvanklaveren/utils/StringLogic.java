@@ -1,16 +1,12 @@
 package com.alvanklaveren.utils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Slf4j
 public final class StringLogic {
-
 
 	static{ new StringLogic(); }
 
@@ -200,11 +196,8 @@ public final class StringLogic {
 		if(str.lastIndexOf(" ", str.length()) <= 0){
 			return str;
 		}
-		log.info("String: " + str);
 		String strStart = str.substring(0, str.lastIndexOf(" ", str.length()) + 1);
-		log.info("Start: " + strStart);
 		String strEnd   = str.substring(str.lastIndexOf(" ", str.length()), str.length());
-		log.info("End: " + strEnd);
 
 		strStart += switch(strEnd.trim()) {
 	    	case "I" -> 	"1";
@@ -250,8 +243,7 @@ public final class StringLogic {
 	    	case "20"->		"XX";
 	    	default->		strEnd;
 		};
-		log.info(strStart);
-		
+
 		// next, find version numbers that are somewhere in the middle of a string
 		String origStrStart = new String(strStart);
 		strStart = strStart.replace(" II ", 		" 2 ");
@@ -317,7 +309,6 @@ public final class StringLogic {
 			strStart = strStart.replace(" 20 ", 	" XX ");
 		}
 		
-		log.info(strStart);
 		return strStart;
 	}
 }

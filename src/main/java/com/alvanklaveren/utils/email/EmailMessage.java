@@ -1,10 +1,5 @@
 package com.alvanklaveren.utils.email;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -12,9 +7,6 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
 
-@Getter(AccessLevel.PUBLIC)
-@Setter(AccessLevel.PUBLIC)
-@Slf4j
 public abstract class EmailMessage {
 
 	protected String from = "";
@@ -31,6 +23,54 @@ public abstract class EmailMessage {
 		properties = new Properties();
 		multiPart = new MimeMultipart();
     }
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getPassWord() {
+		return passWord;
+	}
+
+	public void setPassWord(String passWord) {
+		this.passWord = passWord;
+	}
+
+	public Properties getProperties() {
+		return properties;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getBody() {
+		return body;
+	}
+
+	public void setBody(String body) {
+		this.body = body;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+	public Multipart getMultiPart() {
+		return multiPart;
+	}
 
 	public void send() throws MessagingException {
 

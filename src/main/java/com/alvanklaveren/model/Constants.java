@@ -1,19 +1,14 @@
 package com.alvanklaveren.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Blob;
 
 @Entity
-@Getter(AccessLevel.PUBLIC)
-@Setter(AccessLevel.PUBLIC)
 public class Constants {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @SequenceGenerator(name = "constants_id_seq", sequenceName = "constants_seq")
     private Integer code;
 
     private String id;
@@ -24,4 +19,44 @@ public class Constants {
 
     @Version
     private int version;
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public Blob getBlobValue() {
+        return blobValue;
+    }
+
+    public void setBlobValue(Blob blobValue) {
+        this.blobValue = blobValue;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
 }
