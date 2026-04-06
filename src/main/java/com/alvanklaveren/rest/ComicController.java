@@ -35,6 +35,8 @@ public class ComicController {
     public ResponseEntity<byte[]> getLatest() {
         byte[] imageBytes = comicService.generateThreeComics();
 
+        comicService.saveSelectedComic(imageBytes);
+
         if (imageBytes == null || imageBytes.length == 0) {
             return ResponseEntity.notFound().build();
         }

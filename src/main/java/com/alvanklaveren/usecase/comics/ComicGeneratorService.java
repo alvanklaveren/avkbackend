@@ -1,6 +1,7 @@
 package com.alvanklaveren.usecase.comics;
 
 import com.alvanklaveren.model.*;
+import com.alvanklaveren.repository.ConstantsRepository;
 import com.alvanklaveren.repository.MessageImageRepository;
 import com.alvanklaveren.repository.MessageRepository;
 import com.alvanklaveren.usecase.forum.ForumMessageUseCase;
@@ -8,7 +9,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.sql.rowset.serial.SerialBlob;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,28 +41,21 @@ public class ComicGeneratorService {
     private final ForumMessageUseCase forumMessageUseCase;
     private final MessageImageRepository messageImageRepository;
     private final MessageRepository messageRepository;
+    private final ConstantsRepository constantsRepository;
 
     public ComicGeneratorService(ForumMessageUseCase forumMessageUseCase,
                                  MessageImageRepository messageImageRepository,
-                                 MessageRepository messageRepository) {
+                                 MessageRepository messageRepository,
+                                 ConstantsRepository constantsRepository) {
         this.forumMessageUseCase = forumMessageUseCase;
         this.messageImageRepository = messageImageRepository;
         this.messageRepository = messageRepository;
+        this.constantsRepository = constantsRepository;
 
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
         this.objectMapper = new ObjectMapper();
-    }
-
-    /**
-     * Fetch the most recent news items of NU.nl and generate 2 comics for it
-     *
-     * @return Map containing news items and the two comics as base64 PNG
-     */
-    public byte[] generateComicsForLatestNews() {
-
-        return generateThreeComics();
     }
 
     /**
@@ -82,23 +86,27 @@ public class ComicGeneratorService {
 
     private String buildBasePrompt() {
         return """
-                Zet de volgende zaken op een, en ook niet meer dan een, A4 blad:
-                Maak drie comics bestaande uit EXACT drie panelen naast elkaar (links-midden-rechts),
-                gescheiden door dikke zwarte lijnen. Zorg dat deze comic een kindvriendelijke cartoon-stijl gebruikt
-                voor kinderen zes jaar en ouder: felle kleuren, grote ogen, eenvoudige vormen, vrolijke en positieve
-                uitstraling op basis van de drie meest recente artikelen op de rss van nu.nl in de categorieen
-                wetenschap, tech en politiek.
+                Een comic is een stripverhaal bestaande uit drie panelen die van links naar rechts in chronologische 
+                volgorde staan gescheiden door dikke lijnen. Zet 3 van deze comics op een A4 blad. 
+                Zorg dat deze comics een kindvriendelijke cartoon-stijl gebruikt voor kinderen zes jaar en ouder: 
+                felle kleuren, grote ogen, eenvoudige vormen, vrolijke en positieve uitstraling op basis van 
+                de drie meest recente artikelen op de rss van nu.nl in de categorieen wetenschap, tech en politiek.
                 
                 Belangrijk:
+                - Teken alleen in de comics zelf, dus geen extra teksten buiten de panelen.
                 - Elke naam van een persoon of plaats die genoemd wordt moet groot en duidelijk in het paneel staan
-                (met tekstballon of label).
-                - Elke comic bestaande uit drie van deze panelen zetten de panelen naast elkaar van links naar rechts.
+                (met tekstballon of label). Herhaal tekstballonnen niet.
+                - Het verplichte formaat is dus 3 comics op 1 A4, waarbij elk van de comics bestaat uit drie panelen
+                die chronologisch in volgorde van links naar rechts staan.
                 - Gebruik spraakballonnen waar dialoog past.
                 - Maak het eenvoudig, educatief en leuk voor kinderen vanaf 6 jaar en ouder.
                 - gebruik de nederlandse taal.
                 - Zorg er voor dat de content akkoord is bij de moderators.
                 - en comprimeer het gegenereerde a4 plaatje tot onder de 50 kilobyte als mogelijk
                 - gebruik een minimalistische stijl.
+                - zorg dat er geen spelfouten in de tekstballonnen staan
+                - zorg dat de juiste persoon of object aan de tekstballon vast zit.
+                - meld als titel de gebruikte nu.nl categorie.
                 """;
     }
 
@@ -106,7 +114,8 @@ public class ComicGeneratorService {
     private String callApi(String endpoint, String jsonBody) {
         try {
             // Move key to database constants
-            var key = "";
+            var key = constantsRepository.getByCode(7).getStringValue();
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(API_BASE + endpoint))
                     .header("Content-Type", "application/json")
@@ -176,12 +185,72 @@ public class ComicGeneratorService {
         messageImage.setMessage(message);
         messageImage.setSortorder(0);
         try {
-            Blob blob = new SerialBlob(imageData);
+            Blob blob = new SerialBlob(Objects.requireNonNull(saveCompressedImage(imageData)));
             messageImage.setImage(blob);
         } catch (Exception e) {
             e.printStackTrace();
         }
         messageImage = messageImageRepository.save(messageImage);
         message.setMessageText("[i:" + messageImage.getCode() + "]");
+        messageRepository.save(message);
+    }
+
+    /**
+     * Loads an image from bytes, compresses it (resize + JPEG quality), and saves it
+     * so that the final file size is under targetMaxBytes.
+     */
+    public static byte[] saveCompressedImage(byte[] imageBytes) {
+
+        // 1. Load the image from byte array
+        BufferedImage original = null;
+        try {
+            original = ImageIO.read(new ByteArrayInputStream(imageBytes));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Start with high quality and good size
+        float quality = 0.40f;
+        BufferedImage current = original;
+        int maxWidth = 900; // reasonable starting max width (adjust as needed)
+
+        boolean success = false;
+
+        // Iterative compression loop: reduce quality and/or size until under target
+        while (!success) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            // Optional: resize if too wide (preserves aspect ratio)
+            if (current.getWidth() > maxWidth) {
+                double ratio = (double) maxWidth / current.getWidth();
+                int newHeight = (int) (current.getHeight() * ratio);
+
+                BufferedImage resized = new BufferedImage(maxWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = resized.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g.drawImage(current, 0, 0, maxWidth, newHeight, null);
+                g.dispose();
+                current = resized;
+            }
+
+            // Write as JPEG with current quality
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+            ImageWriter writer = writers.next();
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionQuality(quality);
+
+            try (ImageOutputStream ios = ImageIO.createImageOutputStream(baos)) {
+                writer.setOutput(ios);
+                writer.write(null, new IIOImage(current, null, null), param);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                writer.dispose();
+            }
+
+            return baos.toByteArray();
+        }
+        return null;
     }
 }
