@@ -88,7 +88,7 @@ public class ComicGeneratorService {
         return """
                 Een comic is een stripverhaal bestaande uit drie panelen die van links naar rechts in chronologische 
                 volgorde staan gescheiden door dikke lijnen. Zet 3 van deze comics op een A4 blad. 
-                Zorg dat deze comics een kindvriendelijke cartoon-stijl gebruikt voor kinderen zes jaar en ouder: 
+                Zorg dat deze comics een kindvriendelijke cartoon-stijl gebruikt voor kinderen acht jaar en ouder: 
                 felle kleuren, grote ogen, eenvoudige vormen, vrolijke en positieve uitstraling op basis van 
                 de drie meest recente artikelen op de rss van nu.nl in de categorieen wetenschap, tech en politiek.
                 
@@ -99,7 +99,7 @@ public class ComicGeneratorService {
                 - Het verplichte formaat is dus 3 comics op 1 A4, waarbij elk van de comics bestaat uit drie panelen
                 die chronologisch in volgorde van links naar rechts staan.
                 - Gebruik spraakballonnen waar dialoog past.
-                - Maak het eenvoudig, educatief en leuk voor kinderen vanaf 6 jaar en ouder.
+                - Maak het eenvoudig, educatief en leuk voor kinderen vanaf 8 jaar en ouder.
                 - gebruik de nederlandse taal.
                 - Zorg er voor dat de content akkoord is bij de moderators.
                 - en comprimeer het gegenereerde a4 plaatje tot onder de 50 kilobyte als mogelijk
