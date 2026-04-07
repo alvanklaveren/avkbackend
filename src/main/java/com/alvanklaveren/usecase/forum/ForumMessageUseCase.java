@@ -125,6 +125,9 @@ public class ForumMessageUseCase {
     @Transactional
     public void delete(Integer codeMessage) {
 
+        List<MessageImage> messageImages = messageImageRepository.findByMessageCode(codeMessage);
+        messageImageRepository.deleteAll(messageImages);
+
         Message message = messageRepository.findById(codeMessage).orElse(null);
 
         if(!isEditable(message)) {

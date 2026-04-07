@@ -11,11 +11,19 @@ public interface MessageImageRepository extends JpaRepository<MessageImage, Inte
     MessageImage getByCode(Integer code);
 
     @Query( """
-            select    mi 
-            from      MessageImage mi 
-            left join Message m on mi.message = m 
-            where     (mi.message is not null and m.forumUser.code = :codeForumUser) 
-            or        mi.message is null""")
+            select    mi
+            from      MessageImage mi
+            left join Message m on mi.message = m
+            where     (mi.message is not null and m.forumUser.code = :codeForumUser)
+            or        mi.message is null
+            """)
     List<MessageImage> findAll(Integer codeForumUser);
 
+    @Query("""
+            select mi
+            from MessageImage mi
+            left join Message m on mi.message = m
+            where m.code = :id
+            """)
+    List<MessageImage> findByMessageCode(int id);
 }
