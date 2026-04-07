@@ -90,7 +90,8 @@ public class ComicGeneratorService {
                 volgorde staan gescheiden door dikke lijnen. Zet 3 van deze comics op een A4 blad. 
                 Zorg dat deze comics een kindvriendelijke cartoon-stijl gebruikt voor kinderen acht jaar en ouder: 
                 felle kleuren, grote ogen, eenvoudige vormen, vrolijke en positieve uitstraling op basis van 
-                de drie meest recente artikelen op de rss van nu.nl in de categorieen wetenschap, tech en politiek.
+                de drie meest recente belangrijke artikelen op de rss van nu.nl in de categorieen algemeen,
+                wetenschap, tech en politiek.
                 
                 Belangrijk:
                 - Teken alleen in de comics zelf, dus geen extra teksten buiten de panelen.
