@@ -162,6 +162,12 @@ public class ComicGeneratorService {
     }
 
     public void saveSelectedComic(byte[] imageData) {
+
+        // replace the one-daily-per-day if it already exists for this day
+        messageRepository.findMessagesByTodayDate().forEach((message) -> {
+            forumMessageUseCase.delete(message.getCode());
+        });
+
         MessageDTO messageDTO = new MessageDTO();
 
         MessageCategoryDTO messageCategoryDTO = new MessageCategoryDTO();

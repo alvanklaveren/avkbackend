@@ -19,18 +19,26 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     Integer countByMessageCategory(Integer codeMessageCategory);
 
     @Query( """
-            select code as code 
-            ,      description as description 
-            ,      messageDate as messageDate 
-            ,      messageCategory.code as messageCategoryCode 
-            ,      forumUser.displayName as forumUserName 
-            from   Message m 
-            where  m.messageCategory.code = :codeMessageCategory 
-            and    m.message is null""")
+            select code as code
+            ,      description as description
+            ,      messageDate as messageDate
+            ,      messageCategory.code as messageCategoryCode
+            ,      forumUser.displayName as forumUserName
+            from   Message m
+            where  m.messageCategory.code = :codeMessageCategory
+            and    m.message is null
+            """)
     List<MessageListView> findByMessageCategory_Code(Integer codeMessageCategory, Sort sort);
 
     List<Message> findByMessage_Code(Integer codeMessage);
 
     Optional<Message> findByCode(Integer codeMessage);
 
+    @Query("""
+           select m
+           from Message m
+           where Date(messageDate) = Date(CURRENT_TIMESTAMP)
+           and description = 'Dailies'
+           """)
+    List<Message> findMessagesByTodayDate();
 }
