@@ -85,30 +85,7 @@ public class ComicGeneratorService {
     }
 
     private String buildBasePrompt() {
-        return """
-                Een comic is een stripverhaal bestaande uit drie panelen die van links naar rechts in chronologische 
-                volgorde staan gescheiden door dikke lijnen. Zet 3 van deze comics op een A4 blad. 
-                Zorg dat deze comics een kindvriendelijke cartoon-stijl gebruikt voor kinderen acht jaar en ouder: 
-                felle kleuren, grote ogen, eenvoudige vormen, vrolijke en positieve uitstraling op basis van 
-                de drie meest recente belangrijke artikelen op de rss van nu.nl in de categorieen algemeen,
-                wetenschap, tech en politiek.
-                
-                Belangrijk:
-                - Teken alleen in de comics zelf, dus geen extra teksten buiten de panelen.
-                - Elke naam van een persoon of plaats die genoemd wordt moet groot en duidelijk in het paneel staan
-                (met tekstballon of label). Herhaal tekstballonnen niet.
-                - Het verplichte formaat is dus 3 comics op 1 A4, waarbij elk van de comics bestaat uit drie panelen
-                die chronologisch in volgorde van links naar rechts staan.
-                - Gebruik spraakballonnen waar dialoog past.
-                - Maak het eenvoudig, educatief en leuk voor kinderen vanaf 8 jaar en ouder.
-                - gebruik de nederlandse taal.
-                - Zorg er voor dat de content akkoord is bij de moderators.
-                - en comprimeer het gegenereerde a4 plaatje tot onder de 50 kilobyte als mogelijk
-                - gebruik een minimalistische stijl.
-                - zorg dat er geen spelfouten in de tekstballonnen staan
-                - zorg dat de juiste persoon of object aan de tekstballon vast zit.
-                - meld als titel de gebruikte nu.nl categorie.
-                """;
+        return constantsRepository.getByCode(8).getStringValue();
     }
 
     // Helper methodes (callApi, extractBase64Images, escapeJson)
