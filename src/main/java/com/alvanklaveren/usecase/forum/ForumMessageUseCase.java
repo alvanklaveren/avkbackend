@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("ForumMessageUseCase")
 public class ForumMessageUseCase {
@@ -201,10 +202,9 @@ public class ForumMessageUseCase {
         // remove the Homepage (admin only) category when not logged in as Admin
         if (!UserContext.hasRole(EClassification.Administrator)) {
 
-            messageCategories.stream()
-                    .filter(messageCategory -> messageCategory.getCode().equals(-1))
-                    .findFirst()
-                    .ifPresent(messageCategories::remove);
+            messageCategories = messageCategories.stream()
+                    .filter(messageCategory -> messageCategory.getCode() >= 0)
+                    .collect(Collectors.toList());
         }
 
         return MessageCategoryDTO.toDto(messageCategories, 0);
