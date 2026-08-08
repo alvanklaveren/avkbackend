@@ -80,6 +80,7 @@ public final class StringLogic {
 		preparedText = convertToHTML( preparedText, "***", "<b><i>", "</i></b>" );
 		preparedText = convertToHTML( preparedText, "**", "<b>", "</b>" );
 		preparedText = convertToHTML( preparedText, "*", "<i>", "</i>" );
+		preparedText = convertToHTML( preparedText, "!!", "<a style=\"font-size: 20px;\">", "</a>" );
 
 		preparedText = setHyperLink( preparedText );
 
